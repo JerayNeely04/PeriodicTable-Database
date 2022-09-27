@@ -1,6 +1,9 @@
 package datasource;
 
+import javax.xml.crypto.Data;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 
 public class SingleTableGateway {
     private Long id;
@@ -8,15 +11,33 @@ public class SingleTableGateway {
     private int atomicNum;
     private double atomicMass;
     private ListOfElements madeOf;
-    private  Chemical solute;
+    private Chemical solute;
     private Acid dissolvedBy;
     private ListOfChemicals chemicalsDissolvedBy;
+    private DatabaseConnection connection;
 
-    public void create(String name, int atomicNumber, double atomicMass)
+    public SingleTableGateway() throws SQLException {
+        this.connection = new DatabaseConnection();
+
+        String sql = "CREATE TABLE SingleTable ("
+                + "id INT NOT NULL AUTO_INCREMENT,"
+                + "name VARCHAR(20),"
+                + "atomicNum INT,"
+                + "atomicMass DOUBLE"
+                + "madeOf VARCHAR(20)"
+                + "solute VARCHAR(20)"
+                + "dissolvedBy VARCHAR(20)"
+                + "chemicalsDissolvedBy VARCHAR(20))";
+        PreparedStatement ps = this.connection.getConnection().prepareStatement(sql);
+        ps.execute();
+    }
+
+    public void create(String name, int atomicNum, double atomicMass)
     {
-        this.id = id;
+        String query = "INSERT INTO SingleTable";
         this.name = name;
         this.atomicNum = atomicNum;
+        this.atomicMass = atomicMass;
     }
     public void create(String name, Acid dissolvedBy)
     {

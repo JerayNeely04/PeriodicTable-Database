@@ -21,4 +21,23 @@ public class DatabaseConnection {
             e.printStackTrace();
         }
     }
+
+    public Connection getConnection()
+    {
+        return m_dbConn;
+    }
+
+    public boolean activateJDBC()
+    {
+        try
+        {
+            DriverManager.registerDriver(new com.mysql.jdbc.Driver());
+        }
+        catch (SQLException sqle)
+        {
+            sqle.printStackTrace();
+        }
+
+        return true;
+    }
 }
