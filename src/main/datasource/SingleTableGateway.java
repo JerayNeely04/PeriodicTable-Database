@@ -231,7 +231,15 @@ public class SingleTableGateway {
     }
 
     public void delete() {
+        this.connection = DatabaseConnection.getInstance().getConnection();
+        String query = "DELETE FROM SingleTable WHERE id = " + id;
 
+        try {
+            PreparedStatement stmt = this.connection.prepareStatement(query);
+            stmt.executeQuery();
+        } catch (SQLException e) {
+            System.out.println("Failed to create gateway");
+        }
     }
 
     public Long getId() {
