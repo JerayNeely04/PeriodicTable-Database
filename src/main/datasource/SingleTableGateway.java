@@ -24,6 +24,7 @@ public class SingleTableGateway {
             ResultSet results = stmt.executeQuery();
             results.next();
 
+            this.id = id;
             this.name = results.getString("name");
             this.atomicNum = results.getInt("atomicNum");
             this.atomicMass = results.getDouble("atomicMass");
@@ -235,7 +236,7 @@ public class SingleTableGateway {
         try {
             PreparedStatement stmt = this.connection.prepareStatement(query);
             int rowsAffected = stmt.executeUpdate();
-            if (rowsAffected == 0) {
+            if (rowsAffected > 0) {
                 return true;
             } else {
                 return false;

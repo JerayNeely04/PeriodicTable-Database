@@ -69,9 +69,8 @@ public class SingleTableGatewayTest {
     @Test
     public void testDelete() throws SQLException
     {
-        SingleTableGateway gateway = SingleTableGateway.createChemical("steve");
-        assertEquals("steve", gateway.getName());
-
+        SingleTableGateway gateway = SingleTableGateway.createChemical("newChem");
+        assertEquals("newChem", gateway.getName());
         assertTrue(gateway.delete());
     }
 
