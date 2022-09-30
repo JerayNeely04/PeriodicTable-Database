@@ -12,7 +12,7 @@ public class SingleTableGateway {
     private long solute;
     private long dissolvedBy;
     private long dissolves;
-    private Connection connection;
+    private final Connection connection;
 
     // finder constructor
     public SingleTableGateway(long id) throws SQLException {
