@@ -74,4 +74,13 @@ public class SingleTableGatewayTest {
         assertTrue(gateway.delete());
     }
 
+    @Test
+    public void testPersist() throws SQLException
+    {
+        SingleTableGateway gateway = SingleTableGateway.createChemical("newChem");
+        assertEquals("newChem", gateway.getName());
+        gateway.setName("diffChem");
+        assertEquals("diffChem", gateway.getName());
+        gateway.persist();
+    }
 }

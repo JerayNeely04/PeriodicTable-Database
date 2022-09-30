@@ -194,7 +194,14 @@ public class SingleTableGateway {
     }
 
     public void persist() {
-        String query = new String("UPDATE SingleTable SET name = ?, atomicNum = ?, atomicMass = ?, solute = ?, compoundID = ?, elementID = ?, dissolvedBy = ?, dissolves = ?");
+        String query = "UPDATE SingleTable SET name = ?, " +
+                "atomicNum = ?, " +
+                "atomicMass = ?, " +
+                "solute = ?, " +
+                "compoundID = ?, " +
+                "elementID = ?, " +
+                "dissolvedBy = ?, " +
+                "dissolves = ?";
 
         try {
             PreparedStatement stmt = this.connection.prepareStatement(query);
@@ -209,7 +216,7 @@ public class SingleTableGateway {
 
             stmt.executeUpdate();
         } catch (SQLException e) {
-
+            System.out.println("Data not persisted to the database.");
         }
     }
 
@@ -236,11 +243,8 @@ public class SingleTableGateway {
         try {
             PreparedStatement stmt = this.connection.prepareStatement(query);
             int rowsAffected = stmt.executeUpdate();
-            if (rowsAffected > 0) {
-                return true;
-            } else {
-                return false;
-            }
+            return rowsAffected > 0;
+
         } catch (SQLException e) {
             System.out.println("Failed to delete a row in the table!");
         }
@@ -249,10 +253,6 @@ public class SingleTableGateway {
 
     public Long getId() {
         return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public String getName() {
