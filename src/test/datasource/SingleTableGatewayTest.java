@@ -69,18 +69,18 @@ public class SingleTableGatewayTest {
     @Test
     public void testDelete() throws SQLException
     {
-        SingleTableGateway gateway = SingleTableGateway.createChemical("newChem");
-        assertEquals("newChem", gateway.getName());
+        SingleTableGateway gateway = SingleTableGateway.createChemical("chemicalToBeDeleted");
+        assertEquals("chemicalToBeDeleted", gateway.getName());
         assertTrue(gateway.delete());
     }
 
     @Test
     public void testPersist() throws SQLException
     {
-        SingleTableGateway gateway = SingleTableGateway.createChemical("newChem");
-        assertEquals("newChem", gateway.getName());
-        gateway.setName("diffChem");
-        assertEquals("diffChem", gateway.getName());
+        SingleTableGateway gateway = SingleTableGateway.createChemical("oldChemicalName");
+        assertEquals("oldChemicalName", gateway.getName());
+        gateway.setName("newChemicalName");
+        assertEquals("newChemicalName", gateway.getName());
         gateway.persist();
     }
 }
