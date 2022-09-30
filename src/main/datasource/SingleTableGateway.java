@@ -110,7 +110,7 @@ public class SingleTableGateway {
         long id = 0;
 
         try {
-            PreparedStatement stmt = conn.prepareStatement(query);
+            PreparedStatement stmt = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
             stmt.setString(1, name);
             stmt.setLong(2, compoundID);
             stmt.setLong(3, elementID);
@@ -132,7 +132,7 @@ public class SingleTableGateway {
         long id = 0;
 
         try {
-            PreparedStatement stmt = conn.prepareStatement(query);
+            PreparedStatement stmt = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
             stmt.setString(1, name);
             stmt.setLong(2, solute);
             if (stmt.executeUpdate() > 0) {
@@ -153,7 +153,7 @@ public class SingleTableGateway {
         long id = 0;
 
         try {
-            PreparedStatement stmt = conn.prepareStatement(query);
+            PreparedStatement stmt = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
             stmt.setString(1, name);
             stmt.setInt(2, atomicNum);
             stmt.setDouble(3, atomicMass);
@@ -175,7 +175,7 @@ public class SingleTableGateway {
         long id = 0;
 
         try {
-            PreparedStatement stmt = conn.prepareStatement(query);
+            PreparedStatement stmt = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
             stmt.setString(1, name);
             stmt.setInt(2, atomicNum);
             stmt.setDouble(3, atomicMass);
@@ -235,7 +235,7 @@ public class SingleTableGateway {
         try {
             PreparedStatement stmt = this.connection.prepareStatement(query);
             int rowsAffected = stmt.executeUpdate();
-            if (rowsAffected > 0) {
+            if (rowsAffected == 0) {
                 return true;
             } else {
                 return false;

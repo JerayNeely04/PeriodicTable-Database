@@ -5,6 +5,7 @@ import org.junit.Test;
 import java.sql.SQLException;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class SingleTableGatewayTest {
     @Test
@@ -29,14 +30,14 @@ public class SingleTableGatewayTest {
         assertEquals(1, gateway.getDissolves());
     }
 
-//    @Test
-//    public void testCreateCompound() throws SQLException
-//    {
-//        SingleTableGateway gateway = SingleTableGateway.createCompound("H2O", 1, 1);
-//        assertEquals("H2O", gateway.getName());
-//        assertEquals(1, gateway.getCompoundID());
-//        assertEquals(1, gateway.getElementID());
-//    }
+    @Test
+    public void testCreateCompound() throws SQLException
+    {
+        SingleTableGateway gateway = SingleTableGateway.createCompound("H2O", 1, 1);
+        assertEquals("H2O", gateway.getName());
+        assertEquals(1, gateway.getCompoundID());
+        assertEquals(1, gateway.getElementID());
+    }
 
     @Test
     public void testCreateBase() throws SQLException
@@ -63,7 +64,15 @@ public class SingleTableGatewayTest {
         assertEquals(1, gateway.getAtomicNum());
         assertEquals(2, gateway.getAtomicMass(), 0.0001);
         assertEquals(3, gateway.getDissolvedBy());
+    }
 
+    @Test
+    public void testDelete() throws SQLException
+    {
+        SingleTableGateway gateway = SingleTableGateway.createChemical("steve");
+        assertEquals("steve", gateway.getName());
+
+        assertTrue(gateway.delete());
     }
 
 }
