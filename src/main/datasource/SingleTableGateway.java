@@ -1,9 +1,6 @@
 package datasource;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 
 public class SingleTableGateway {
     private Long id;
@@ -20,8 +17,7 @@ public class SingleTableGateway {
     // finder constructor
     public SingleTableGateway(long id) throws SQLException {
         this.connection = DatabaseConnection.getInstance().getConnection();
-
-        String query = new String("SELECT * FROM SingleTable WHERE id =" + id);
+        String query = "SELECT * FROM SingleTable WHERE id = " + id;
 
         try {
             PreparedStatement stmt = this.connection.prepareStatement(query);
@@ -36,36 +32,47 @@ public class SingleTableGateway {
             this.solute = results.getLong("solute");
             this.dissolvedBy = results.getLong("dissolvedBy");
             this.dissolves = results.getLong("dissolves");
-        } catch (SQLException e)
-        {
 
+        } catch (SQLException e) {
+            System.out.println("Failed to create gateway");
         }
     }
-    public void createTable() {
-        String sql = "CREATE TABLE SingleTable ("
-                + "id INT NOT NULL AUTO_INCREMENT,"
-                + "name VARCHAR(20),"
-                + "atomicNum BIGINT,"
-                + "atomicMass DOUBLE,"
-                + "madeOf BIGINT,"
-                + "solute BIGINT,"
-                + "dissolvedBy BIGINT)";
+
+    public static void createTable() {
+        Connection conn = DatabaseConnection.getInstance().getConnection();
+        String dropStatement = "DROP TABLE IF EXISTS SingleTable";
+        String createStatement =
+                "CREATE TABLE SingleTable (id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, name VARCHAR(25), atomicNum BIGINT, atomicMass DOUBLE," +
+                        " elementID BIGINT, compoundID BIGINT, solute BIGINT, dissolvedBy BIGINT, " +
+                        " dissolves BIGINT)";
+
         try {
-            PreparedStatement ps = this.connection.prepareStatement(sql);
-            ps.execute();
+            // drop old table
+            PreparedStatement stmt;
+            stmt = conn.prepareStatement(dropStatement);
+            stmt.execute();
+            stmt.close();
+
+            // create new table
+            stmt = conn.prepareStatement(createStatement);
+            stmt.execute();
+            stmt.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
+
     public static SingleTableGateway createChemical(String name) throws SQLException {
-        String query = new String("INSERT INTO SingleTable (name) VALUES (?)");
+        String query = "INSERT INTO SingleTable (name) VALUES (?)";
         Connection conn = DatabaseConnection.getInstance().getConnection();
         long id = 0;
 
         try {
-            PreparedStatement stmt = conn.prepareStatement(query);
+            PreparedStatement stmt = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
             stmt.setString(1, name);
-            id = stmt.executeUpdate();
+            if (stmt.executeUpdate() > 0) {
+                id = getIDFromDatabase(stmt);
+            }
 
         } catch (SQLException e) {
             // throw exception later
@@ -76,16 +83,18 @@ public class SingleTableGateway {
     }
 
     public static SingleTableGateway createAcid(String name, long solute, long dissolves) throws SQLException {
-        String query = new String("INSERT INTO SingleTable (name, solute, dissolves) VALUES (?, ?, ?)");
+        String query = "INSERT INTO SingleTable (name, solute, dissolves) VALUES (?, ?, ?)";
         Connection conn = DatabaseConnection.getInstance().getConnection();
         long id = 0;
 
         try {
-            PreparedStatement stmt = conn.prepareStatement(query);
+            PreparedStatement stmt = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
             stmt.setString(1, name);
             stmt.setLong(2, solute);
             stmt.setLong(3, dissolves);
-            id = stmt.executeUpdate();
+            if (stmt.executeUpdate() > 0) {
+                id = getIDFromDatabase(stmt);
+            }
 
         } catch (SQLException e) {
             // throw exception later
@@ -94,6 +103,7 @@ public class SingleTableGateway {
 
         return new SingleTableGateway(id);
     }
+
     public static SingleTableGateway createCompound(String name, long compoundID, long elementID) throws SQLException {
         String query = new String("INSERT INTO SingleTable (name, compoundID, elementID) VALUES (?, ?, ?)");
         Connection conn = DatabaseConnection.getInstance().getConnection();
@@ -113,6 +123,7 @@ public class SingleTableGateway {
 
         return new SingleTableGateway(id);
     }
+
     public static SingleTableGateway createBase(String name, long solute) throws SQLException {
         String query = new String("INSERT INTO SingleTable (name, solute) VALUES (?, ?)");
         Connection conn = DatabaseConnection.getInstance().getConnection();
@@ -131,6 +142,7 @@ public class SingleTableGateway {
 
         return new SingleTableGateway(id);
     }
+
     public static SingleTableGateway createElement(String name, int atomicNum, double atomicMass) throws SQLException {
         String query = new String("INSERT INTO SingleTable (name, atomicNum, atomicMass) VALUES (?, ?, ?)");
         Connection conn = DatabaseConnection.getInstance().getConnection();
@@ -150,6 +162,7 @@ public class SingleTableGateway {
 
         return new SingleTableGateway(id);
     }
+
     public static SingleTableGateway createMetal(String name, int atomicNum, double atomicMass, long dissolvedBy) throws SQLException {
         String query = new String("INSERT INTO SingleTable (name, atomicNum, atomicMass, dissolvedBy) VALUES (?, ?, ?, ?)");
         Connection conn = DatabaseConnection.getInstance().getConnection();
@@ -189,6 +202,24 @@ public class SingleTableGateway {
         } catch (SQLException e) {
 
         }
+    }
+
+    /**
+     * Tries to return the ID value for the new row being added
+     *
+     * @param stmt the prepared statement we're pulling the ID from
+     * @return the ID of the row being added
+     */
+    private static long getIDFromDatabase(PreparedStatement stmt) {
+        try (ResultSet rs = stmt.getGeneratedKeys()) {
+            if (rs.next()) {
+                return rs.getLong(1);
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+
+        return 0;
     }
 
     public void delete() {
@@ -251,7 +282,11 @@ public class SingleTableGateway {
         this.dissolvedBy = dissolvedBy;
     }
 
-    public long getDissolves() { return dissolves; }
+    public long getDissolves() {
+        return dissolves;
+    }
 
-    public void setDissolves(long dissolves) { this.dissolves = dissolves; }
+    public void setDissolves(long dissolves) {
+        this.dissolves = dissolves;
+    }
 }

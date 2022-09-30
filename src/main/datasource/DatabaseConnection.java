@@ -7,7 +7,7 @@ import java.sql.SQLException;
 public class DatabaseConnection {
     private static DatabaseConnection databaseSingleton;
     private Connection connection = null;
-    public static final String DB_LOCATION = "jdbc:mysql://db.cs.ship.edu/swe400-41";
+    public static final String DB_LOCATION = "jdbc:mysql://db.cs.ship.edu:3306/swe400_41?useTimezone=true&serverTimezone=UTC";
     public static final String LOGIN_NAME = "swe400_4";
     public static final String PASSWORD = "pwd4swe400_4F22";
 
@@ -24,9 +24,9 @@ public class DatabaseConnection {
         if (connection == null) {
             // driver
             try {
-                Class.forName("com.mysql.jdbc.Driver");
+                Class.forName("com.mysql.cj.jdbc.Driver");
             } catch (ClassNotFoundException ex) {
-                System.out.println("Unable to load the class. Terminating the program");
+                System.out.println("Unable to load the class");
                 System.exit(-1);
             }
 
@@ -44,15 +44,5 @@ public class DatabaseConnection {
         }
 
         return connection;
-    }
-
-    public boolean activateJDBC() {
-        try {
-            DriverManager.registerDriver(new com.mysql.jdbc.Driver());
-        } catch (SQLException sqle) {
-            sqle.printStackTrace();
-        }
-
-        return true;
     }
 }
