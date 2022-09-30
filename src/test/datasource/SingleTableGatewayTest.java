@@ -28,4 +28,42 @@ public class SingleTableGatewayTest {
         assertEquals(1, gateway.getSolute());
         assertEquals(1, gateway.getDissolves());
     }
+
+//    @Test
+//    public void testCreateCompound() throws SQLException
+//    {
+//        SingleTableGateway gateway = SingleTableGateway.createCompound("H2O", 1, 1);
+//        assertEquals("H2O", gateway.getName());
+//        assertEquals(1, gateway.getCompoundID());
+//        assertEquals(1, gateway.getElementID());
+//    }
+
+    @Test
+    public void testCreateBase() throws SQLException
+    {
+        SingleTableGateway gateway = SingleTableGateway.createBase("Bleach", 1);
+        assertEquals("Bleach", gateway.getName());
+        assertEquals(1, gateway.getSolute());
+    }
+
+    @Test
+    public void testCreateElement() throws SQLException
+    {
+        SingleTableGateway gateway = SingleTableGateway.createElement("Fire", 1, 2);
+        assertEquals("Fire", gateway.getName());
+        assertEquals(1, gateway.getAtomicNum());
+        assertEquals(2, gateway.getAtomicMass(), 0.0001);
+    }
+
+    @Test
+    public void testCreateMetal() throws SQLException
+    {
+        SingleTableGateway gateway = SingleTableGateway.createMetal("Steel", 1, 2, 3);
+        assertEquals("Steel", gateway.getName());
+        assertEquals(1, gateway.getAtomicNum());
+        assertEquals(2, gateway.getAtomicMass(), 0.0001);
+        assertEquals(3, gateway.getDissolvedBy());
+
+    }
+
 }
