@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
-    <data-source source="LOCAL" name="swe400group4" uuid="1159c237-c396-4a90-b20c-d83d32f8765f">
+    <data-source source="LOCAL" name="swe400db" uuid="dc296c60-79de-41ba-a99e-2b4b76ed97f0">
       <driver-ref>mysql.8</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>com.mysql.cj.jdbc.Driver</jdbc-driver>

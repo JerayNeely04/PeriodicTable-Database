@@ -114,7 +114,9 @@ public class SingleTableGateway {
             stmt.setString(1, name);
             stmt.setLong(2, compoundID);
             stmt.setLong(3, elementID);
-            id = stmt.executeUpdate();
+            if (stmt.executeUpdate() > 0) {
+                id = getIDFromDatabase(stmt);
+            }
 
         } catch (SQLException e) {
             // throw exception later
@@ -133,7 +135,9 @@ public class SingleTableGateway {
             PreparedStatement stmt = conn.prepareStatement(query);
             stmt.setString(1, name);
             stmt.setLong(2, solute);
-            id = stmt.executeUpdate();
+            if (stmt.executeUpdate() > 0) {
+                id = getIDFromDatabase(stmt);
+            }
 
         } catch (SQLException e) {
             // throw exception later
@@ -153,7 +157,9 @@ public class SingleTableGateway {
             stmt.setString(1, name);
             stmt.setInt(2, atomicNum);
             stmt.setDouble(3, atomicMass);
-            id = stmt.executeUpdate();
+            if (stmt.executeUpdate() > 0) {
+                id = getIDFromDatabase(stmt);
+            }
 
         } catch (SQLException e) {
             // throw exception later
@@ -174,7 +180,9 @@ public class SingleTableGateway {
             stmt.setInt(2, atomicNum);
             stmt.setDouble(3, atomicMass);
             stmt.setLong(4, dissolvedBy);
-            id = stmt.executeUpdate();
+            if (stmt.executeUpdate() > 0) {
+                id = getIDFromDatabase(stmt);
+            }
 
         } catch (SQLException e) {
             // throw exception later
