@@ -3,7 +3,7 @@ package datasource;
 import java.sql.*;
 
 public class SingleTableGateway {
-    private Long id;
+    private long id;
     private String name;
     private int atomicNum;
     private double atomicMass;
@@ -42,7 +42,7 @@ public class SingleTableGateway {
         Connection conn = DatabaseConnection.getInstance().getConnection();
         String dropStatement = "DROP TABLE IF EXISTS SingleTable";
         String createStatement =
-                "CREATE TABLE SingleTable (id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, name VARCHAR(25), atomicNum BIGINT, atomicMass DOUBLE," +
+                "CREATE TABLE SingleTable (id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY, name VARCHAR(25), atomicNum INT, atomicMass DOUBLE," +
                         " elementID BIGINT, compoundID BIGINT, solute BIGINT, dissolvedBy BIGINT, " +
                         " dissolves BIGINT)";
 
