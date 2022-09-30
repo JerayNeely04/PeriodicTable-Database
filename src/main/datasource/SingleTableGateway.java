@@ -230,16 +230,20 @@ public class SingleTableGateway {
         return 0;
     }
 
-    public void delete() {
-        this.connection = DatabaseConnection.getInstance().getConnection();
+    public boolean delete() {
         String query = "DELETE FROM SingleTable WHERE id = " + id;
-
         try {
             PreparedStatement stmt = this.connection.prepareStatement(query);
-            stmt.executeQuery();
+            int rowsAffected = stmt.executeUpdate();
+            if (rowsAffected > 0) {
+                return true;
+            } else {
+                return false;
+            }
         } catch (SQLException e) {
-            System.out.println("Failed to create gateway");
+            System.out.println("Failed to delete a row in the table!");
         }
+        return false;
     }
 
     public Long getId() {
@@ -280,6 +284,14 @@ public class SingleTableGateway {
 
     public void setElementID(long elementID) {
         this.elementID = elementID;
+    }
+
+    public long getCompoundID() {
+        return compoundID;
+    }
+
+    public void setCompoundID(long compoundID) {
+        this.compoundID = compoundID;
     }
 
     public long getSolute() {
