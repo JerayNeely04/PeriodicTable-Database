@@ -1,4 +1,4 @@
-package src.main.gatewayDTOs;
+package gatewayDTOs;
 
 public class MetalDTO {
    private  long id;

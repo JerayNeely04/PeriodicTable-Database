@@ -1,7 +1,5 @@
 package datasource;
-
 import gatewayDTOs.ElementDTO;
-
 import java.util.ArrayList;
 
 /**
@@ -57,6 +55,6 @@ public class ElementTDG {
      */
     public void createRow()
     {
-
+        KeyRDG.generateId();
     }
 }
