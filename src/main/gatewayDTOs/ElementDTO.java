@@ -1,4 +1,4 @@
-package gatewayDTOs;
+package src.main.gatewayDTOs;
 
 public class ElementDTO {
     private long id;
@@ -71,5 +71,8 @@ public class ElementDTO {
      */
     public void setAtomicMass(long atomicMass) {
         this.atomicMass = atomicMass;
+    }
+
+    public static class MetalDTO {
     }
 }
