@@ -7,7 +7,7 @@ import java.sql.SQLException;
 public class DatabaseConnection {
     private static DatabaseConnection databaseSingleton;
     private Connection connection = null;
-    public static final String DB_LOCATION = "jdbc:mysql://db.cs.ship.edu:3306/swe400_41?useTimezone=true&serverTimezone=UTC";
+    public static final String DB_LOCATION = "jdbc:mysql://db.cs.ship.edu:3306/swe400_43?useTimezone=true&serverTimezone=UTC";
     public static final String LOGIN_NAME = "swe400_4";
     public static final String PASSWORD = "pwd4swe400_4F22";
 
