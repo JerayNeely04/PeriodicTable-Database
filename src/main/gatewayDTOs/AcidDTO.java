@@ -3,7 +3,7 @@ package gatewayDTOs;
 public class AcidDTO {
     private Long id;
     private String name;
-  private Chemical Solute;
+  private long Solute;
 
     /**
      * 
@@ -11,7 +11,7 @@ public class AcidDTO {
      * @param name
      * @param solute
      */
-    public AcidDTO(long id, String name,Chemical solute ){
+    public AcidDTO(long id, String name,long solute ){
 
         this.id = id;
         this.name = name;
@@ -38,7 +38,7 @@ public class AcidDTO {
      * 
      * @param solute
      */
-    public void setSolute(Chemical solute) {
+    public void setSolute(long solute) {
         Solute = solute;
     }
 
@@ -62,7 +62,7 @@ public class AcidDTO {
      * 
      * @return the solute
      */
-    public Chemical getSolute() {
+    public long getSolute() {
         return Solute;
     }
 }

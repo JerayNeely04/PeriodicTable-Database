@@ -3,21 +3,21 @@ package gatewayDTOs;
 public class ElementDTO {
     private long id;
     private String name;
-    private long atomicNumber;
-    private long atomicMass;
+    private long atomicNum;
+    private double atomicMass;
 
     /**
      * creates a new object for an element
      * @param id primary key
      * @param name the name of the element
-     * @param atomicNumber the atomic number
+     * @param atomicNum the atomic number
      * @param atomicMass the atomic mass value
      */
-    public ElementDTO(long id, String name, long atomicNumber, long atomicMass)
+    public ElementDTO(long id, String name, long atomicNum, double atomicMass)
     {
         this.id = id;
         this.name = name;
-        this.atomicNumber = atomicNumber;
+        this.atomicNum = atomicNum;
         this.atomicMass = atomicMass;
     }
 
@@ -46,22 +46,22 @@ public class ElementDTO {
     /**
      * @return the elements atomic number
      */
-    public long getAtomicNumber() {
-        return atomicNumber;
+    public long getAtomicNum() {
+        return atomicNum;
     }
 
     /**
      * changes the elements atomic number
-     * @param atomicNumber new atomic number
+     * @param atomicNum new atomic number
      */
-    public void setAtomicNumber(long atomicNumber) {
-        this.atomicNumber = atomicNumber;
+    public void setAtomicNum(long atomicNum) {
+        this.atomicNum = atomicNum;
     }
 
     /**
      * @return the elements atomic mass
      */
-    public long getAtomicMass() {
+    public double getAtomicMass() {
         return atomicMass;
     }
 
