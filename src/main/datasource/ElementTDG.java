@@ -77,11 +77,7 @@ public class ElementTDG {
             ResultSet results = stmt.executeQuery();
             results.next();
 
-            long id = results.getLong("id");
-            String name = results.getString("name");
-            double atomicMass = results.getDouble("atomicMass");
-
-            return new ElementDTO(id, name, atomicNum, atomicMass);
+            return createElementRecord(results);
 
         } catch (SQLException e)
         {
@@ -106,11 +102,7 @@ public class ElementTDG {
             ResultSet results = stmt.executeQuery();
             results.next();
 
-            long id = results.getLong("id");
-            long atomicNum = results.getLong("atomicNum");
-            double atomicMass = results.getDouble("atomicMass");
-
-            return new ElementDTO(id, name, atomicNum, atomicMass);
+            return createElementRecord(results);
 
         } catch (SQLException e)
         {
@@ -119,6 +111,34 @@ public class ElementTDG {
 
         return null;
     }
+
+    /**
+     * creates a new element DTO using a queries results
+     * @param results the results given back from the query
+     * @return the element DTO
+     */
+    private ElementDTO createElementRecord(ResultSet results)
+    {
+        try {
+            long id = results.getLong("id");
+            String name = results.getString("name");
+            long atomicNum = results.getLong("atomicNum");
+            double atomicMass = results.getDouble("atomicMass");
+
+            return new ElementDTO(id, name, atomicNum, atomicMass);
+        } catch (SQLException e)
+        {
+            System.out.println("Could not create element DTO");
+        }
+
+        return null;
+    }
+
+    /**
+     * updates a row in the table
+     * @param id the id which corresponds to a row in the database
+     */
+    public void update(long id) {}
 
     /**
      * creates a new row in the element table

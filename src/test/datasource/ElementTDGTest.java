@@ -53,7 +53,7 @@ public class ElementTDGTest {
         ElementDTO hydrogenDTO = gateway.findByName("Hydrogen");
 
         // Equals tests
-        assertEquals(2, hydrogenDTO.getId());
+        assertEquals(1, hydrogenDTO.getId());
         assertEquals("Hydrogen", hydrogenDTO.getName());
         assertEquals(1, hydrogenDTO.getAtomicNum());
         assertEquals(1.0078, hydrogenDTO.getAtomicMass(), 0.0001);
