@@ -97,8 +97,7 @@ public class ElementGatewayTest {
     }
 
     /**
-     * Tests to make sure the table data gateway can create a new row and fetch that
-     * row by ID and return a DTO
+     * Tests to make sure the gateway can find a row in the table by id
      */
     @Test
     public void testFindingAnElementByID() {
