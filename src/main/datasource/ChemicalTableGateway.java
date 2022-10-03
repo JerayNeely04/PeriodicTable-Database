@@ -1,8 +1,10 @@
 package datasource;
 
 import gatewayDTOs.Chemical;
+import gatewayDTOs.Element;
 
 import java.sql.*;
+import java.util.ArrayList;
 
 public class ChemicalTableGateway {
 
@@ -92,6 +94,10 @@ public class ChemicalTableGateway {
         }
     }
 
+    public static ChemicalTableGateway findById(long id) {
+        return new ChemicalTableGateway(id);
+    }
+
     public boolean delete() {
         String query = "DELETE FROM ChemicalTable WHERE id = " + chemicalDTO.getId();
         try {
@@ -105,4 +111,36 @@ public class ChemicalTableGateway {
         return false;
     }
 
+    public static ArrayList<Chemical> findAll()
+    {
+        Connection conn = DatabaseConnection.getInstance().getConnection();
+        String query = "SELECT * FROM ChemicalTable ORDER BY id";
+        ArrayList<Chemical> chemicalsList = new ArrayList<>();
+
+        try {
+            PreparedStatement stmt = conn.prepareStatement(query);
+            ResultSet results = stmt.executeQuery();
+
+            while (results.next()) {
+                Chemical chemical = createChemicalRecord(results);
+                chemicalsList.add(chemical);
+            }
+            return chemicalsList;
+        } catch (SQLException e)
+        {
+            System.out.println("Could not fetch all chemicals for the Class Table!");
+        }
+        return null;
+    }
+
+    private static Chemical createChemicalRecord(ResultSet results) {
+        try {
+            long id = results.getLong("id");
+            String name = results.getString("name");
+            return new Chemical(id, name);
+        } catch (SQLException e) {
+            System.out.println("Could not create a Chemical DTO!");
+        }
+        return null;
+    }
 }

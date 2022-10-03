@@ -3,6 +3,7 @@ package datasource;
 import gatewayDTOs.Element;
 
 import java.sql.*;
+import java.util.ArrayList;
 
 public class ElementTableGateway {
 
@@ -85,5 +86,44 @@ public class ElementTableGateway {
             System.out.println("Failed to delete a row in the Element table!");
         }
         return false;
+    }
+
+    public static ElementTableGateway findByAtomicNumber(long atomicNum) {
+        return new ElementTableGateway(atomicNum);
+    }
+
+    public static ArrayList<Element> findAll()
+    {
+        Connection conn = DatabaseConnection.getInstance().getConnection();
+        String query = "SELECT * FROM ElementTable ORDER BY atomicNumber";
+        ArrayList<Element> elementsList = new ArrayList<>();
+
+        try {
+            PreparedStatement stmt = conn.prepareStatement(query);
+            ResultSet results = stmt.executeQuery();
+
+            while (results.next()) {
+                Element element = createElementRecord(results);
+                elementsList.add(element);
+            }
+            return elementsList;
+        } catch (SQLException e)
+        {
+            System.out.println("Could not fetch all elements for the Class Table!");
+        }
+        return null;
+    }
+
+    private static Element createElementRecord(ResultSet results) {
+        try {
+            long atomicNum = results.getLong("atomicNumber");
+            double atomicMass = results.getDouble("atomicMass");
+
+            return new Element(atomicNum, atomicMass);
+        } catch (SQLException e)
+        {
+            System.out.println("Could not create element DTO!");
+        }
+        return null;
     }
 }
