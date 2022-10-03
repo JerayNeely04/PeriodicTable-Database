@@ -22,17 +22,18 @@ public class ElementGatewayTest {
 
         assertEquals(Carbon.getAtomicMass(), elementGateway.elementDTO.getAtomicMass(), 0.001);
     }
-/*
+
     @Test
     public void testPersistElement() throws SQLException {
         Element element = new Element(24, 23.3);
         ElementTableGateway elementGateway = ElementTableGateway.createElement(24, 23.3);
-        assertEquals(element.getName(), elementGateway.ElementDTO.getName());
-        elementGateway.ElementDTO.setName("Lead");
-        element.setName("Lead");
+        assertEquals(element.getAtomicMass(), elementGateway.elementDTO.getAtomicMass(), 0.001);
+
+        elementGateway.elementDTO.setAtomicMass(4.11);
+        element.setAtomicMass(4.11);
         elementGateway.persist();
 
-        assertEquals(element.getName(), elementGateway.ElementDTO.getName());
+        assertEquals(element.getAtomicMass(), elementGateway.elementDTO.getAtomicMass(), 0.001);
     }
 
     @Test
@@ -40,5 +41,5 @@ public class ElementGatewayTest {
         Element element = new Element(3, 1.8);
         ElementTableGateway elementGateway = ElementTableGateway.createElement(3, 1.8);
         assertTrue(elementGateway.delete());
-    }*/
+    }
 }

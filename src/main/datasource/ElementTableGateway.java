@@ -46,7 +46,7 @@ public class ElementTableGateway {
     }
 
     public static ElementTableGateway createElement(long atomicNumber, double atomicMass) throws SQLException {
-        String query = "INSERT INTO ElementTable  (atomicNumber, atomicMass) VALUES (?,?)";
+        String query = "INSERT INTO ElementTable (atomicNumber, atomicMass) VALUES (?,?)";
 
         try {
             Connection conn = DatabaseConnection.getInstance().getConnection();
@@ -60,5 +60,30 @@ public class ElementTableGateway {
             System.out.println("Create Element failed!");
         }
         return new ElementTableGateway(atomicNumber);
+    }
+
+    public void persist() {
+        String query = "UPDATE ElementTable SET atomicMass = ? WHERE atomicNumber = " + elementDTO.getAtomicNumber();
+
+        try {
+            PreparedStatement stmt = this.connection.prepareStatement(query);
+            stmt.setDouble(1, elementDTO.getAtomicMass());
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println("Data not persisted to the Element table!");
+        }
+    }
+
+    public boolean delete() {
+        String query = "DELETE FROM ElementTable WHERE atomicNumber = " + elementDTO.getAtomicNumber();
+        try {
+            PreparedStatement stmt = this.connection.prepareStatement(query);
+            int rowsAffected = stmt.executeUpdate();
+            return rowsAffected > 0;
+
+        } catch (SQLException e) {
+            System.out.println("Failed to delete a row in the Element table!");
+        }
+        return false;
     }
 }
