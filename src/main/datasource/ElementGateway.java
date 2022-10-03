@@ -1,10 +1,7 @@
 package datasource;
 import gatewayDTOs.ElementDTO;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 
 public class ElementGateway {
@@ -13,7 +10,7 @@ public class ElementGateway {
     private String name;
     private long atomicNum;
     private double atomicMass;
-    private Connection connection;
+    private final Connection connection;
 
     /**
      * creates a new element object and adds the entry into the database
@@ -63,7 +60,8 @@ public class ElementGateway {
     public boolean update() {
         String query = "UPDATE ElementTable SET name = ?, " +
                 "atomicNum = ?, " +
-                "atomicMass = ?";
+                "atomicMass = ?" +
+                "WHERE id = " + id;
 
         try {
             PreparedStatement stmt = connection.prepareStatement(query);
@@ -187,6 +185,25 @@ public class ElementGateway {
      */
     public static ArrayList<ElementDTO> findAll()
     {
+        Connection conn = DatabaseConnection.getInstance().getConnection();
+        String query = "SELECT * FROM ElementTable ORDER BY id";
+        ArrayList<ElementDTO> elementsList = new ArrayList<>();
+
+        try {
+            PreparedStatement stmt = conn.prepareStatement(query);
+            ResultSet results = stmt.executeQuery();
+
+            while (results.next()) {
+                ElementDTO element = createElementRecord(results);
+                elementsList.add(element);
+            }
+
+            return elementsList;
+        } catch (SQLException e)
+        {
+            System.out.println("Could not fetch all elements");
+        }
+
         return null;
     }
 
@@ -200,8 +217,7 @@ public class ElementGateway {
         String query = "SELECT * FROM ElementTable WHERE atomicNum = " + atomicNum;
 
         try {
-            PreparedStatement stmt;
-            stmt = conn.prepareStatement(query);
+            PreparedStatement stmt = conn.prepareStatement(query);
             ResultSet results = stmt.executeQuery();
             results.next();
 

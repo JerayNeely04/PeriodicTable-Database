@@ -3,6 +3,8 @@ package datasource;
 import gatewayDTOs.ElementDTO;
 import org.junit.Test;
 
+import java.util.ArrayList;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -156,6 +158,17 @@ public class ElementGatewayTest {
     @Test
     public void testGettingAllRows()
     {
+        // Get all rows from element table
+        ArrayList<ElementDTO> elementsList = ElementGateway.findAll();
+        int idToCheck = 0;
 
+        // Check to make sure each element DTO has the correct ID
+        for (ElementDTO element : elementsList) {
+            idToCheck++;
+            assertEquals(idToCheck, element.getId());
+        }
+
+        // 5 element DTOs were checked in total
+        assertEquals(5, idToCheck);
     }
 }
