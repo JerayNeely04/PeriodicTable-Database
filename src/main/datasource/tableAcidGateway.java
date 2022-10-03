@@ -5,18 +5,23 @@ import java.util.ArrayList;
 import gatewayDTOs.Acid;
 
 public class tableAcidGateway {
-    private final Connection conn = null;
-    private Acid acidDTO;
+    private Connection conn = null;
+    private long solute;
+    //protected Acid acidDTO;
 
-    //public tableAcidGateway() {}
+    public tableAcidGateway(long solute) {
+        this.conn = DatabaseConnection.getInstance().getConnection();
+        this.solute = solute;
+        this.insertRow(solute);
+    }
 
     public static void createTable() {
         Connection conn = DatabaseConnection.getInstance().getConnection();
         String dropStatement = "DROP TABLE IF EXISTS AcidTable";
         String createStatement =
                 "CREATE TABLE AcidTable ("
-                    + "solute   BIGINT PRIMARY KEY"
-                + ")";
+                        + "solute   BIGINT PRIMARY KEY"
+                        + ")";
 
         try {
             PreparedStatement stmt;
@@ -35,30 +40,69 @@ public class tableAcidGateway {
         }
     }
 
-    public void CreateAcid(ResultSet rs) {
+    public long getSolute() {
+        return solute;
+    }
+
+    public static Acid createAcid(ResultSet rs) {
+//        String query = "INSERT INTO AcidTable VALUES(?)";
+//
+//        try {
+//            Connection conn = DatabaseConnection.getInstance().getConnection();
+//            PreparedStatement stmt = conn.prepareStatement(query);
+//            stmt.setLong(1, solute);
+//
+//            stmt.executeUpdate();
+//        } catch (SQLException e) {
+//            e.printStackTrace();
+//        }
+//
+//        return new tableAcidGateway(solute);
+
         try {
-            this.acidDTO = new Acid(rs.getLong("solute"));
+            long solute = rs.getLong("solute");
+
+            return new Acid(solute);
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
-        //return null;
+        return null;
     }
 
-    public ArrayList<Acid> FindByAcid(long id, String name, long solute) {
-        ArrayList<Acid> acid = new ArrayList<Acid>();
+    public static ArrayList<Acid> findAll() {
+        Connection conn = DatabaseConnection.getInstance().getConnection();
+        String query = "SELECT * FROM AcidTable ORDER BY solute";
+        ArrayList<Acid> acidsList = new ArrayList<>();
+
+        try {
+            PreparedStatement stmt = conn.prepareStatement(query);
+            ResultSet results = stmt.executeQuery();
+
+            while (results.next()) {
+                Acid acid = createAcid(results);
+                acidsList.add(acid);
+            }
+
+            return acidsList;
+        } catch (SQLException e)
+        {
+            System.out.println("Could not fetch all acids");
+        }
+
+        return null;
+    }
+
+    public static Acid findBySolute(long solute) {
+        String query = "SELECT * FROM AcidTable WHERE solute = " + solute;
 
         try {
             Connection conn = DatabaseConnection.getInstance().getConnection();
-            ResultSet rs = null;
-            String query = "SELECT * FROM ClassTable WHERE solute = " + solute;
-
             PreparedStatement ps = conn.prepareStatement(query);
-            rs = ps.executeQuery();
+            ResultSet rs = ps.executeQuery();
 
-            while (rs.next()) {
-                Acid ac = createAcid(rs);
-                acid.add(ac);
+            if (rs.next()) {
+                return createAcid(rs);
             }
 
             rs.close();
@@ -66,37 +110,37 @@ public class tableAcidGateway {
             sqle.printStackTrace();
         }
 
-        return acid;
+        return null;
     }
 
-    // Update table with info for a specific acid
-    public void persist() {
-        String query = "UPDATE GatewayDTOs.Acid"
-             + "SET name = ?,"
-             + "solute = ? WHERE solute = " + acidDTO.getSolute();
+    public boolean persist() {
+        String query = "UPDATE AcidTable "
+                + "SET solute = ? WHERE solute = " + solute;
 
         try {
-            Connection conn = DatabaseConnection.getInstance().getConnection();
-            PreparedStatement ps = conn.prepareStatement(query);
+            PreparedStatement stmt = conn.prepareStatement(query);
 
-            ps.setLong(1, acidDTO.getSolute());
+            stmt.setLong(1, solute);
 
-            ps.executeUpdate();
-
-            // Idk where to go from here
+            if (stmt.executeUpdate() > 0) {
+                return true;
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
+
+        return false;
     }
 
-    public boolean delete(long solute) {
+    public boolean delete() {
         String query = "DELETE FROM AcidTable WHERE solute = " + solute;
 
         try {
             PreparedStatement stmt = this.conn.prepareStatement(query);
-            int rowsAffected = stmt.executeUpdate();
 
-            return rowsAffected > 0;
+            if (stmt.executeUpdate() > 0) {
+                return true;
+            }
         } catch (SQLException e) {
             System.out.println("Failed to delete a row in the table!");
         }
@@ -104,24 +148,21 @@ public class tableAcidGateway {
         return false;
     }
 
-    public boolean insertRow(Acid acid) {
-        String query = "INSERT INTO classTable VALUES (?, ?, ?)";
-        Connection conn = DatabaseConnection.getInstance().getConnection();
+    public void insertRow(long solute) {
+        String query = "INSERT INTO AcidTable VALUES (?)";
 
         try {
             PreparedStatement stmt = conn.prepareStatement(query);
-            stmt.setLong(3, acid.getSolute());
+            stmt.setLong(1, solute);
 
-            if (stmt.executeUpdate() > 0) {
-                return true;
+            int n = stmt.executeUpdate();
+            if (n > 0) {
+                System.out.println("Insert SUCCEEDED with " + n + " affected rows");
+            } else {
+                System.out.println("Insert FAILED");
             }
         } catch (SQLException e) {
             System.out.println("Error: Couldn't insert acid into table");
         }
-
-        return false;
     }
 }
-
-
-
