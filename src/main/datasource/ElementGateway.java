@@ -7,9 +7,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-/**
- * singleton for the element table
- */
 public class ElementGateway {
     // Row data gateway
     private long id;

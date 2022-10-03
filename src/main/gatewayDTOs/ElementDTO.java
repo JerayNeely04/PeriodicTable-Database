@@ -72,7 +72,4 @@ public class ElementDTO {
     public void setAtomicMass(long atomicMass) {
         this.atomicMass = atomicMass;
     }
-
-    public static class MetalDTO {
-    }
 }
