@@ -5,7 +5,7 @@ import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-public class KeyRDGTest {
+public class KeyRowDataGatewayTest {
 
     /**
      * Creates the table without a runner
@@ -13,7 +13,7 @@ public class KeyRDGTest {
     @Test
     public void createTable()
     {
-        KeyRDG.createTable();
+        KeyRowDataGateway.createTable();
     }
 
     /**
@@ -22,9 +22,9 @@ public class KeyRDGTest {
     @Test
     public void testKeyIncrement()
     {
-        assertEquals(1, KeyRDG.generateId());
-        assertEquals(2, KeyRDG.generateId());
-        assertEquals(3, KeyRDG.generateId());
+        assertEquals(1, KeyRowDataGateway.generateId());
+        assertEquals(2, KeyRowDataGateway.generateId());
+        assertEquals(3, KeyRowDataGateway.generateId());
     }
 
     /**
@@ -33,11 +33,11 @@ public class KeyRDGTest {
     @Test
     public void testKeyReset()
     {
-        assertEquals(1, KeyRDG.generateId());
-        assertEquals(2, KeyRDG.generateId());
-        assertEquals(3, KeyRDG.generateId());
+        assertEquals(1, KeyRowDataGateway.generateId());
+        assertEquals(2, KeyRowDataGateway.generateId());
+        assertEquals(3, KeyRowDataGateway.generateId());
 
-        assertTrue(KeyRDG.reset());
-        assertEquals(1, KeyRDG.generateId());
+        assertTrue(KeyRowDataGateway.reset());
+        assertEquals(1, KeyRowDataGateway.generateId());
     }
 }

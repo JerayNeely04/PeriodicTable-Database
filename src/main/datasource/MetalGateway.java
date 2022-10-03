@@ -4,15 +4,15 @@ import java.util.ArrayList;
 /**
  * singleton for the element table
  */
-public class MetalTDG {
-    private static MetalTDG singleton;
+public class MetalGateway {
+    private static MetalGateway singleton;
 
     /**
      * @return the only instance of the element TDG
      */
-    public static MetalTDG getInstance() {
+    public static MetalGateway getInstance() {
         if (singleton == null) {
-            singleton = new MetalTDG();
+            singleton = new MetalGateway();
         }
         return singleton;
     }
@@ -20,13 +20,13 @@ public class MetalTDG {
     /**
      * private constructor to create the singleton
      */
-    private MetalTDG() {}
+    private MetalGateway() {}
 
     /**
      * every entry in the element table
      * @return DTO containing the element data
      */
-    public ArrayList<MetalTDG> findAll()
+    public ArrayList<MetalGateway> findAll()
     {
         return null;
     }
@@ -35,7 +35,7 @@ public class MetalTDG {
      * @param atomicNumber the atomic number of the element
      * @return the element with the matching atomic number
      */
-    public MetalTDG findByAtomicNumber(long atomicNumber)
+    public MetalGateway findByAtomicNumber(long atomicNumber)
     {
         return null;
     }
@@ -44,7 +44,7 @@ public class MetalTDG {
      * @param name of the element
      * @return the element with the matching name
      */
-    public MetalTDG findByName(String name)
+    public MetalGateway findByName(String name)
     {
         return null;
     }
@@ -54,6 +54,6 @@ public class MetalTDG {
      */
     public void createRow()
     {
-        KeyRDG.generateId();
+        KeyRowDataGateway.generateId();
     }
 }

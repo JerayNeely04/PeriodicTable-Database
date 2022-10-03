@@ -5,7 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class KeyRDG {
+public class KeyRowDataGateway {
 
     /**
      * creates a new key table and adds the globally unique key tracker row
