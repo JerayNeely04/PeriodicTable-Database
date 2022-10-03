@@ -7,33 +7,38 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
+
+
 /**
  * singleton for the element table
  */
-public class MetalTDG {
-    private static MetalTDG singleton;
+public class MetalGateway {
+    // Row data gateway
+    private long id;
+    private String name;
+    private long atomicNum;
+    private double atomicMass;
 
-    /**
-     * @return the only instance of the element TDG
-     */
-    public static MetalTDG getInstance() {
-        if (singleton == null) {
-            singleton = new MetalTDG();
-        }
-        return singleton;
-    }
+    private final Connection connection;
+
 
     /**
      * private constructor to create the singleton
      */
-    private MetalTDG() {}
+    private MetalGateway(long id, String name, long atomicNum, double atomicMass) {
+      this.connection = DatabaseConnection.getInstance().getConnection();
+      this.name = name;
+      this.atomicNum = atomicNum;
+      this.atomicMass = atomicMass;
+      this.createRow(name,atomicNum, atomicMass);
+    }
 
     /**
      * Creates the table for metal in database
      */
     public void createTable()
     {
-       Connection conn = DatabaseConnection.getInstance().getConnection();
+        Connection conn = DatabaseConnection.getInstance().getConnection();
         String dropStatement = "DROP TABLE IF EXISTS MetalTable";
         String createStatement = "CREATE TABLE ElementTable (" +
                 "id BIGINT PRIMARY KEY, " +
@@ -61,20 +66,20 @@ public class MetalTDG {
      */
     public ArrayList<MetalDTO> findAll()
     {
-       Connection conn = DatabaseConnection.getInstance().getConnection();
-       String Query = "SELECT * FROM MetalTable ORDER BY id";
-       ArrayList<MetalDTO> metalList = new ArrayList<>();
-       try{
-           PreparedStatement stmt = conn.prepareStatement(Query);
-           ResultSet results = stmt.executeQuery();
+        Connection conn = DatabaseConnection.getInstance().getConnection();
+        String Query = "SELECT * FROM MetalTable ORDER BY id";
+        ArrayList<MetalDTO> metalList = new ArrayList<>();
+        try{
+            PreparedStatement stmt = conn.prepareStatement(Query);
+            ResultSet results = stmt.executeQuery();
 
-           while(results.next()){
-               MetalDTO metal = createMentalRecord(results);
-               metalList.add(metal);
-           }
-       } catch (SQLException e) {
-           System.out.println("Could not fetch all metals");
-       }
+            while(results.next()){
+                MetalDTO metal = createMentalRecord(results);
+                metalList.add(metal);
+            }
+        } catch (SQLException e) {
+            System.out.println("Could not fetch all metals");
+        }
         return null;
     }
 
@@ -115,12 +120,56 @@ public class MetalTDG {
         return null;
     }
 
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setAtomicNum(long atomicNum) {
+        this.atomicNum = atomicNum;
+    }
+
+    public void setAtomicMass(double atomicMass) {
+        this.atomicMass = atomicMass;
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public long getAtomicNum() {
+        return atomicNum;
+    }
+
+    public double getAtomicMass() {
+        return atomicMass;
+    }
+
     /**
      * @param name of the element
      * @return the element with the matching name
      */
-    public MetalTDG findByName(String name)
+    public MetalDTO findByName(String name)
     {
+        Connection conn = DatabaseConnection.getInstance().getConnection();
+        String Query = "SELECT * FROM MetalTable WHERE name =" + name + "";
+
+        try{
+            PreparedStatement stmt;
+            stmt = conn.prepareStatement(Query);
+            ResultSet results =stmt.executeQuery();
+            results.next();
+            return createMentalRecord(results);
+        } catch (SQLException e) {
+           System.out.println("No Metal with name " + name + " found");
+        }
         return null;
     }
 
@@ -135,7 +184,7 @@ public class MetalTDG {
 
         try{
             PreparedStatement stmt = conn.prepareStatement(query);
-            stmt.setLong(1,KeyRDG.generateId());
+            stmt.setLong(1,id);
             stmt.setString(2,name);
             stmt.setLong(3,atomicNum);
             stmt.setDouble(4,atomicMass);
@@ -146,3 +195,4 @@ public class MetalTDG {
         }
     }
 }
+
