@@ -6,7 +6,7 @@ public class MetalDTO {
    private   long atomicNumber;
    private   double atomicMass;
 
-   public MetalDTO(long id, String name, long atomicNumber, long atomicMass){
+   public MetalDTO(long id, String name, long atomicNumber, double atomicMass){
 
       this.id = id;
       this.name = name;
