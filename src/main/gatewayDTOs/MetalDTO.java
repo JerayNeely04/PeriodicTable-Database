@@ -30,18 +30,34 @@ public class MetalDTO {
       this.atomicMass = atomicMass;
    }
 
+   /**
+    *
+    * @return the ID
+    */
    public long getId() {
       return id;
    }
 
+   /**
+    *
+    * @return the name of the metal
+    */
    public String getName() {
       return name;
    }
 
+   /**
+    *
+    * @return the atomic number
+    */
    public long getAtomicNumber() {
       return atomicNumber;
    }
 
+   /**
+    *
+    * @return the atomicmass
+    */
    public double getAtomicMass() {
       return atomicMass;
    }
