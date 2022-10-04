@@ -43,6 +43,9 @@ public class MetalGatewayTest {
         assertTrue(gateway.delete());
     }
 
+    /**
+     * testing updating row for the metal table
+     */
     @Test
     public void testUpdateMetal(){
         //Rest the id key and metal table
@@ -62,6 +65,48 @@ public class MetalGatewayTest {
 
         assertTrue(gateway.update());
 
+    }
+    @Test
+    public void testCorrectID(){
+        KeyRowDataGateway.reset();
+        MetalGateway.createTable();
+
+        MetalGateway Goldgateway = new MetalGateway("Gold", 79, 196.96);
+        MetalGateway Silvergateway = new MetalGateway("Silver",47,107.86);
+        MetalGateway Coppergateway = new MetalGateway("Copper",29, 63.546);
+
+        //Testing ID incrementation
+        assertEquals(1,Goldgateway.getId());
+        assertEquals(2,Silvergateway.getId());
+        assertEquals(3, Coppergateway.getId());
+    }
+
+    @Test
+    public void testFindingMetalById(){
+        KeyRowDataGateway.reset();
+        MetalGateway.createTable();
+
+        MetalGateway gateway = new MetalGateway("Cobalt", 27, 58.933);
+
+        MetalDTO CobaltDTO = gateway.findByAtomicNumber(27);
+
+        assertEquals(1, CobaltDTO.getId());
+        assertEquals("Cobalt", CobaltDTO.getName());
+        assertEquals(27,CobaltDTO.getAtomicNum());
+        assertEquals(58.933, gateway.getAtomicMass(), 0.0001);
+
+    }
+
+    @Test
+            public void CreateMetals() {
+        KeyRowDataGateway.reset();
+        MetalGateway.createTable();
+
+        //Creating metal elements
+        MetalGateway Goldgateway = new MetalGateway("Gold", 79, 196.96);
+        MetalGateway Silvergateway = new MetalGateway("Silver",47,107.86);
+        MetalGateway Coppergateway = new MetalGateway("Copper",29, 63.546);
+        MetalGateway Colbaltgateway = new MetalGateway("Cobalt", 27, 58.933);
     }
 
 }
