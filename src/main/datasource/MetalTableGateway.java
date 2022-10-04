@@ -6,7 +6,7 @@ import gatewayDTOs.Metal;
 
 public class MetalTableGateway {
     private long dissolvedBy;
-    private Connection connection;
+    private final Connection connection;
     public MetalTableGateway(long dissolvedBy)
     {
         this.connection = DatabaseConnection.getInstance().getConnection();
@@ -16,9 +16,8 @@ public class MetalTableGateway {
     public static void createTable() {
         Connection connection = DatabaseConnection.getInstance().getConnection();
         String dropStatement = "DROP TABLE IF EXISTS MetalTable";
-        String createStatement = "CREATE TABLE MetalTable " +
-                "(dissolvedBy BIGINT, " +
-                "FOREIGN KEY (dissolvedBy) REFERENCES acid(id))";
+        String createStatement = "CREATE TABLE MetalTable (" +
+                "dissolvedBy BIGINT)";
         try {
             // drop old table
             PreparedStatement stmt;
@@ -29,7 +28,6 @@ public class MetalTableGateway {
             // create new table
             stmt = connection.prepareStatement(createStatement);
             stmt.execute();
-            stmt.close();
         } catch (SQLException e) {
             System.out.println("ERROR: cannot create Metal Table");
         }
@@ -56,7 +54,7 @@ public class MetalTableGateway {
             ResultSet rs = stmt.executeQuery();
 
             while(rs.next()) {
-                Metal metal = createMetal(rs);
+                Metal metal = createMentalRecord(rs);
                 metalList.add(metal);
             }
             return metalList;
@@ -75,7 +73,7 @@ public class MetalTableGateway {
             ResultSet rs = stmt.executeQuery();
 
             if (rs.next()) {
-                return createMetal(rs);
+                return createMentalRecord(rs);
             }
             rs.close();
         } catch (SQLException e) {
@@ -83,6 +81,17 @@ public class MetalTableGateway {
         }
         return null;
     }
+    public static Metal createMentalRecord(ResultSet results) {
+        try {
+            long dissolvedBy = results.getLong("dissolvedBy");
+
+            return new Metal(dissolvedBy);
+        } catch(SQLException e) {
+            System.out.println("Metal was not created");
+        }
+        return null;
+    }
+
     public boolean delete() {
         String query = "DELETE FROM MetalTable WHERE dissolvedBy = " + dissolvedBy;
         try {
@@ -110,7 +119,7 @@ public class MetalTableGateway {
         return false;
     }
     public void insertRow(long dissolvedBy) {
-        String query = "INSERT INTO MetalTable VALUES (?)";
+        String query = "INSERT INTO MetalTable (dissolvedBy) VALUES (?)";
         try {
             PreparedStatement stmt = connection.prepareStatement(query);
             stmt.setLong(1, dissolvedBy);

@@ -16,9 +16,8 @@ public class BaseTableGateway {
     public static void createTable() {
         Connection connection = DatabaseConnection.getInstance().getConnection();
         String dropStatement = "DROP TABLE IF EXISTS BaseTable";
-        String createStatement = "CREATE TABLE BaseTable " +
-                "(solute BIGINT, " +
-                "FOREIGN KEY (solute) REFERENCES chemical(solute))";
+        String createStatement = "CREATE TABLE BaseTable (" +
+                "solute BIGINT)";
         try {
             PreparedStatement stmt;
             // drop old table
