@@ -101,20 +101,16 @@ public class BaseGateway {
      * deletes a row from the base table by id
      * @return true if the row was deleted otherwise returns false
      */
-    public boolean delete() throws DataException {
+    public void delete() throws DataException {
         String query = "DELETE FROM BaseTable WHERE id = " + id;
 
         try {
             PreparedStatement stmt = connection.prepareStatement(query);
+            stmt.executeUpdate();
 
-            if (stmt.executeUpdate() > 0) {
-                return true;
-            }
         } catch (SQLException e) {
             throw new DataException("Base row could not be deleted", e);
         }
-
-        return false;
     }
 
     /**

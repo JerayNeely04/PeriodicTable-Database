@@ -13,32 +13,20 @@ public class BaseGatewayTest {
     public void testCreateBase() throws DataException {
         // Resets
         KeyRowDataGateway.reset();
-        ElementGateway.createTable();
         BaseGateway.createTable();
-
-        // Create element to use as a solute (temp)
-        ElementGateway elementGateway = new ElementGateway("TempSolute", 1, 1.0);
 
         // Create new base
         BaseGateway baseGateway = new BaseGateway("Lithium hydroxide", 1);
 
-        // Instance variable tests
-        assertEquals("TempSolute", elementGateway.getName());
-        assertEquals(1, elementGateway.getAtomicNum());
-        assertEquals(1.0, elementGateway.getAtomicMass(), 0.0001);
-
+        assertEquals(1, baseGateway.getId());
         assertEquals("Lithium hydroxide", baseGateway.getName());
         assertEquals(1, baseGateway.getSolute());
-
-        // Globally unique ids test
-        assertEquals(1, elementGateway.getId());
-        assertEquals(2, baseGateway.getId());
     }
 
     /**
      * Tests to make sure a base can be deleted
      */
-    @Test
+    @Test(expected = DataException.class)
     public void testDeleteBase() throws DataException {
         // Resets
         KeyRowDataGateway.reset();
@@ -53,7 +41,8 @@ public class BaseGatewayTest {
         assertEquals(1, baseGateway.getSolute());
 
         // Delete test
-        assertTrue(baseGateway.delete());
+        baseGateway.delete();
+        new BaseGateway(1);
     }
 
     @Test
