@@ -11,7 +11,7 @@ public class ChemicalTableGateway {
     protected Chemical chemicalDTO;
     private Connection connection = null;
 
-    public ChemicalTableGateway(long id) {
+    public ChemicalTableGateway(long id) throws DataException {
         connection = DatabaseConnection.getInstance().getConnection();
         String query = "SELECT * FROM ChemicalTable WHERE id = " + id;
 
@@ -22,12 +22,12 @@ public class ChemicalTableGateway {
 
             chemicalDTO = new Chemical(id,results.getString("name"));
         } catch (SQLException e) {
-            System.out.println("Failed to create Chemical gateway!");
+            throw new DataException("Failed to create Chemical gateway!", e);
         }
 
     }
 
-    public static void createTable() {
+    public static void createTable() throws DataException {
         Connection conn = DatabaseConnection.getInstance().getConnection();
         String dropStatement = "DROP TABLE IF EXISTS ChemicalTable";
         String createStatement =
@@ -45,11 +45,11 @@ public class ChemicalTableGateway {
             stmt.execute();
             stmt.close();
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new DataException("Failed to create Chemical Table!", e);
         }
     }
 
-    public static ChemicalTableGateway createChemical(String name) throws SQLException {
+    public static ChemicalTableGateway createChemical(String name) throws DataException {
         String query = "INSERT INTO ChemicalTable (name) VALUES (?)";
         long id = 0;
 
@@ -62,27 +62,26 @@ public class ChemicalTableGateway {
             }
 
         } catch (SQLException e) {
-            // throw exception later
-            System.out.println("Create Chemical failed!");
+            throw new DataException("Create Chemical failed!", e);
         }
         return new ChemicalTableGateway(id);
     }
 
 
 
-    private static long getIDFromDatabase(PreparedStatement stmt) {
+    private static long getIDFromDatabase(PreparedStatement stmt) throws DataException {
         try (ResultSet rs = stmt.getGeneratedKeys()) {
             if (rs.next()) {
                 return rs.getLong(1);
             }
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
+            throw new DataException("Cannot get Chemical ID from Chemical Table!", e);
         }
 
         return 0;
     }
 
-    public void persist() {
+    public void persist() throws DataException {
         String query = "UPDATE ChemicalTable SET name = ? WHERE id = " + chemicalDTO.getId();
 
         try {
@@ -90,15 +89,15 @@ public class ChemicalTableGateway {
             stmt.setString(1, chemicalDTO.getName());
             stmt.executeUpdate();
         } catch (SQLException e) {
-            System.out.println("Data not persisted to the chemical table!");
+            throw new DataException("Data not persisted to the chemical table!", e);
         }
     }
 
-    public static ChemicalTableGateway findById(long id) {
+    public static ChemicalTableGateway findById(long id) throws DataException {
         return new ChemicalTableGateway(id);
     }
 
-    public boolean delete() {
+    public boolean delete() throws DataException {
         String query = "DELETE FROM ChemicalTable WHERE id = " + chemicalDTO.getId();
         try {
             PreparedStatement stmt = this.connection.prepareStatement(query);
@@ -106,13 +105,11 @@ public class ChemicalTableGateway {
             return rowsAffected > 0;
 
         } catch (SQLException e) {
-            System.out.println("Failed to delete a row in the chemical table!");
+            throw new DataException("Failed to delete a row in the chemical table!", e);
         }
-        return false;
     }
 
-    public static ArrayList<Chemical> findAll()
-    {
+    public static ArrayList<Chemical> findAll() throws DataException {
         Connection conn = DatabaseConnection.getInstance().getConnection();
         String query = "SELECT * FROM ChemicalTable ORDER BY id";
         ArrayList<Chemical> chemicalsList = new ArrayList<>();
@@ -126,21 +123,18 @@ public class ChemicalTableGateway {
                 chemicalsList.add(chemical);
             }
             return chemicalsList;
-        } catch (SQLException e)
-        {
-            System.out.println("Could not fetch all chemicals for the Class Table!");
+        } catch (SQLException e) {
+            throw new DataException("Could not fetch all chemicals for the Class Table!", e);
         }
-        return null;
     }
 
-    private static Chemical createChemicalRecord(ResultSet results) {
+    private static Chemical createChemicalRecord(ResultSet results) throws DataException {
         try {
             long id = results.getLong("id");
             String name = results.getString("name");
             return new Chemical(id, name);
         } catch (SQLException e) {
-            System.out.println("Could not create a Chemical DTO!");
+            throw new DataException("Could not create a Chemical DTO!", e);
         }
-        return null;
     }
 }
