@@ -15,10 +15,10 @@ public class CompoundGateway {
 
     /**
      * Creates a new compound and adds it to the database
-     * @param id
+     * @param name the name
      */
 
-    public CompoundGateway(String name, long id){
+    public CompoundGateway(String name){
         this.connection = DatabaseConnection.getInstance().getConnection();
         this.name = name;
         this.createRow(name);
@@ -30,20 +30,20 @@ public class CompoundGateway {
      */
     private void createRow(String name) {
 
-        String query = "INSERT INTO CompoundTable (name, id) VALUES (?, ?)";
+        String query = "INSERT INTO CompoundTable (id, name) VALUES (?, ?)";
 
         try{
             long id = KeyRowDataGateway.generateId();
             this.id = id;
 
             PreparedStatement stmt = connection.prepareStatement(query);
-            stmt.setString(2, name);
             stmt.setLong(1, id);
+            stmt.setString(2, name);
             stmt.executeUpdate();
 
         } catch (SQLException e) {
             // throw exception later
-            System.out.println("Create element row failed");
+            System.out.println("Create compound row failed");
         }
     }
 
@@ -75,21 +75,20 @@ public class CompoundGateway {
      * @return  this method will return true if the row is deleted it will return false if otherwise
      */
 
-    public boolean delete() {
+    public void delete() throws DataException {
         String query = "DELETE FROM CompoundTable WHERE id = ?";
 
         try {
             PreparedStatement stmt = connection.prepareStatement(query);
             stmt.setLong(1, id);
+            stmt.executeUpdate();
 
-            //if there is a row that is deleted it will return true
-            if (stmt.executeUpdate() > 0) {
-                return true;
-            }
+            // try to delete from the base table
+            BaseGateway.deleteAllFromForeignReference(id);
+
         } catch (SQLException e) {
-            System.out.println("The row was not detected");
+            throw new DataException("The row was not detected", e);
         }
-        return false;
     }
 
 

@@ -18,12 +18,37 @@ public class ElementGateway {
      * @param atomicNum of the element
      * @param atomicMass of the element
      */
-    public ElementGateway(String name, long atomicNum, double atomicMass) {
+    public ElementGateway(String name, long atomicNum, double atomicMass) throws DataException {
         this.connection = DatabaseConnection.getInstance().getConnection();
         this.name = name;
         this.atomicNum = atomicNum;
         this.atomicMass = atomicMass;
+
         this.createRow(name, atomicNum, atomicMass);
+    }
+
+    /**
+     * finds an existing element in the element table
+     * @param id the id to search for
+     * @throws DataException
+     */
+    public ElementGateway(long id) throws DataException {
+        this.connection = DatabaseConnection.getInstance().getConnection();
+        String query = "SELECT * FROM ElementTable WHERE id = " + id;
+
+        try {
+            PreparedStatement stmt = this.connection.prepareStatement(query);
+            ResultSet results = stmt.executeQuery();
+            results.next();
+
+            this.id = id;
+            this.name = results.getString("name");
+            this.atomicNum = results.getInt("atomicNum");
+            this.atomicMass = results.getDouble("atomicMass");
+
+        } catch (SQLException e) {
+            throw new DataException("Could not find element with ID: " + id, e);
+        }
     }
 
     /**
@@ -32,7 +57,7 @@ public class ElementGateway {
      * @param atomicNum of the element
      * @param atomicMass of the element
      */
-    public void createRow(String name, long atomicNum, double atomicMass)
+    public void createRow(String name, long atomicNum, double atomicMass) throws DataException
     {
         String query = "INSERT INTO ElementTable (id, name, atomicNum, atomicMass) VALUES (?, ?, ?, ?)";
 
@@ -48,8 +73,7 @@ public class ElementGateway {
             stmt.executeUpdate();
 
         } catch (SQLException e) {
-            // throw exception later
-            System.out.println("Create element row failed");
+            throw new DataException("Create element row failed");
         }
     }
 
