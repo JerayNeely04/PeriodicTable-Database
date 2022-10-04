@@ -1,86 +1,128 @@
 package datasource;
 
+import gatewayDTOs.Base;
 import java.sql.*;
+import java.util.ArrayList;
 
 public class BaseTableGateway {
-    private long id;
-    private long solute;
+    private final long solute;
     private final Connection connection;
-    public BaseTableGateway(long id) throws SQLException {
+    public BaseTableGateway(long solute)
+    {
         this.connection = DatabaseConnection.getInstance().getConnection();
-        String query = "SELECT * FROM BaseTable WHERE id = " + id;
-
+        this.solute = solute;
+        this.insertRow(solute);
+    }
+    public static void createTable() {
+        Connection connection = DatabaseConnection.getInstance().getConnection();
+        String dropStatement = "DROP TABLE IF EXISTS BaseTable";
+        String createStatement = "CREATE TABLE BaseTable " +
+                "(solute BIGINT, " +
+                "FOREIGN KEY (solute) REFERENCES chemical(solute))";
         try {
-            PreparedStatement stmt = this.connection.prepareStatement(query);
-            ResultSet results = stmt.executeQuery();
-            results.next();
+            PreparedStatement stmt;
+            // drop old table
+            stmt = connection.prepareStatement(dropStatement);
+            stmt.execute();
+            stmt.close();
 
-            this.id = id;
-            this.solute = results.getLong("solute");
+            // create new table
+            stmt = connection.prepareStatement(createStatement);
+            stmt.execute();
+            stmt.close();
         } catch (SQLException e) {
-            System.out.println("Failed to create gateway");
+            e.printStackTrace();
         }
     }
-    public static BaseTableGateway createBase(long solute) throws SQLException {
-        String query = new String("INSERT INTO BaseTable (solute) VALUES (?)");
-        Connection conn = DatabaseConnection.getInstance().getConnection();
-        long id = 0;
+    public long getSolute() { return solute; }
+    public static Base createBase(ResultSet rs) {
         try {
-            PreparedStatement stmt = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
-            stmt.setLong(1, solute);
-            if (stmt.executeUpdate() > 0) {
-                id = getIDFromDatabase(stmt);
-            }
+            long solute = rs.getLong("solute");
+            return new Base(solute);
         } catch (SQLException e) {
             // throw exception later
             System.out.println("Create base table failed");
         }
-        return new BaseTableGateway(id);
+        return null;
     }
-    //    public RecordSet FindByAcid(String name, int atomicNum, double atomicMass, long dissolvedBy) {
-//
-//    }
-    public void updateBase() {
-        String query = "UPDATE BaseTable SET solute = ?";
-        try {
-            PreparedStatement stmt = this.connection.prepareStatement(query);
-            stmt.setLong(1, this.solute);
 
-            stmt.executeUpdate();
+    public static ArrayList<Base> findAll() {
+        Connection connection = DatabaseConnection.getInstance().getConnection();
+        String query = "SELECT * FROM BaseTable ORDER BY solute";
+        ArrayList<Base> baseList = new ArrayList<>();
+
+        try {
+            PreparedStatement stmt = connection.prepareStatement(query);
+            ResultSet rs = stmt.executeQuery();
+
+            while(rs.next()) {
+                Base base = createBase(rs);
+                baseList.add(base);
+            }
+            return baseList;
         } catch (SQLException e) {
-            System.out.println("Data not persisted to the database.");
+            System.out.println("Could not fetch all base");
         }
+        return null;
+    }
+
+    public static Base findSolute(long solute) {
+        String query = "SELECT * FROM BaseTable WHERE solute = " + solute;
+
+        try {
+            Connection connection = DatabaseConnection.getInstance().getConnection();
+            PreparedStatement stmt = connection.prepareStatement(query);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                return createBase(rs);
+            }
+            rs.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
     public boolean delete() {
-        String query = "DELETE FROM BaseTable WHERE id = " + id;
+        String query = "DELETE FROM BaseTable WHERE solute = " + solute;
         try {
             PreparedStatement stmt = this.connection.prepareStatement(query);
-            int rowsAffected = stmt.executeUpdate();
-            return rowsAffected > 0;
 
+            if (stmt.executeUpdate() > 0) {
+                return true;
+            }
         } catch (SQLException e) {
             System.out.println("Failed to delete a row in the table!");
         }
         return false;
     }
-    public void persist() {
-        String query = "UPDATE BaseTable SET solute = ?";
+    public boolean persist() {
+        String query = "UPDATE BaseTable SET solute = ? WHERE solute =" + solute;
         try {
             PreparedStatement stmt = this.connection.prepareStatement(query);
             stmt.setLong(1, this.solute);
-            stmt.executeUpdate();
+            if (stmt.executeUpdate() > 0) {
+                return true;
+            }
         } catch (SQLException e) {
             System.out.println("Data not persisted to the database.");
         }
+        return false;
     }
-    private static long getIDFromDatabase(PreparedStatement stmt) {
-        try (ResultSet rs = stmt.getGeneratedKeys()) {
-            if (rs.next()) {
-                return rs.getLong(1);
+    public void insertRow(long solute) {
+        String query = "INSERT INTO BaseTable VALUES (?)";
+        try {
+            PreparedStatement stmt = connection.prepareStatement(query);
+            stmt.setLong(1, this.solute);
+
+            int n = stmt.executeUpdate();
+            if(n > 0) {
+                System.out.println("Insert SUCCEEDED with " + n + " affected rows");
+            } else {
+                System.out.println("Insert FAILED");
             }
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
+            System.out.println("Error: Couldn't insert base into table");
         }
-        return 0;
     }
 }
