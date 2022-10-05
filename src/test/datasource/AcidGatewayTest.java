@@ -11,12 +11,8 @@ import static org.junit.Assert.*;
 
 public class AcidGatewayTest {
     @Test
-    public void testCreateTable() {
-        tableAcidGateway.createTable();
-    }
-
-    @Test
     public void testCreateAcid() throws SQLException {
+        tableAcidGateway.createTable();
         tableAcidGateway acidGate = new tableAcidGateway(1);
 
         assertEquals(1, acidGate.getSolute());
@@ -24,11 +20,12 @@ public class AcidGatewayTest {
 
     @Test
     public void testFindBySolute() throws SQLException {
-        tableAcidGateway acidGateway = new tableAcidGateway(20);
-        Acid findAcid = tableAcidGateway.findBySolute(20);
+        tableAcidGateway.createTable();
+        tableAcidGateway acidGateway = new tableAcidGateway(2);
+        Acid findAcid = tableAcidGateway.findBySolute(2);
 
         assertNotNull(findAcid);
-        assertEquals(20, findAcid.getSolute());
+        assertEquals(2, findAcid.getSolute());
     }
 
     @Test
@@ -37,9 +34,9 @@ public class AcidGatewayTest {
         tableAcidGateway.createTable();
 
         tableAcidGateway acidGateway = new tableAcidGateway(5);
+        acidGateway.insertRow(7);
+        acidGateway.insertRow(8);
         acidGateway.insertRow(10);
-        acidGateway.insertRow(15);
-        acidGateway.insertRow(20);
 
         ArrayList<Acid> allAcidRecords = tableAcidGateway.findAll();
 
@@ -49,25 +46,27 @@ public class AcidGatewayTest {
 
     @Test
     public void testPersist() throws SQLException {
-        tableAcidGateway acidGateway = new tableAcidGateway(30);
-        assertEquals(30, acidGateway.getSolute());
+        tableAcidGateway.createTable();
+        tableAcidGateway acidGateway = new tableAcidGateway(11);
+        assertEquals(11, acidGateway.getSolute());
         acidGateway.persist();
 
-        Acid findAcid = tableAcidGateway.findBySolute(30);
+        Acid findAcid = tableAcidGateway.findBySolute(11);
 
         assertNotNull(findAcid);
-        assertEquals(30, findAcid.getSolute());
+        assertEquals(11, findAcid.getSolute());
     }
 
     @Test
     public void testDelete() throws SQLException {
-        tableAcidGateway acidGateway = new tableAcidGateway(50);
-        Acid findAcid = tableAcidGateway.findBySolute(50);
+        tableAcidGateway.createTable();
+        tableAcidGateway acidGateway = new tableAcidGateway(16);
+        Acid findAcid = tableAcidGateway.findBySolute(16);
         assertNotNull(findAcid);
-        assertEquals(50, findAcid.getSolute());
+        assertEquals(16, findAcid.getSolute());
 
         acidGateway.delete();
-        findAcid = tableAcidGateway.findBySolute(50);
+        findAcid = tableAcidGateway.findBySolute(16);
 
         assertNull(findAcid);
     }
