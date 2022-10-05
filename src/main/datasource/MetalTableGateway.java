@@ -17,7 +17,9 @@ public class MetalTableGateway {
         Connection connection = DatabaseConnection.getInstance().getConnection();
         String dropStatement = "DROP TABLE IF EXISTS MetalTable";
         String createStatement = "CREATE TABLE MetalTable (" +
-                "dissolvedBy BIGINT)";
+                "dissolvedBy BIGINT, " +
+                "FOREIGN KEY (dissolvedBy) REFERENCES acid(id) ON DELETE CASCADE" +
+                ")";
         try {
             // drop old table
             PreparedStatement stmt;
