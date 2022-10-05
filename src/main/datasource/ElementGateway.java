@@ -210,7 +210,7 @@ public class ElementGateway {
     public static ArrayList<ElementDTO> findAll()
     {
         Connection conn = DatabaseConnection.getInstance().getConnection();
-        String query = "SELECT * FROM ElementTable ORDER BY id";
+        String query = "SELECT * FROM Element Table ORDER BY id";
         ArrayList<ElementDTO> elementsList = new ArrayList<>();
 
         try {
