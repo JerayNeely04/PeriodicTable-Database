@@ -1,9 +1,13 @@
 package datasource;
 
+import gatewayDTOs.AcidDTO;
+
+import javax.xml.crypto.Data;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 
 
 public class AcidGateway {
@@ -128,5 +132,82 @@ public class AcidGateway {
         }
     }
 
+    /**
+     * find every entry that is within the table.
+     * @return the Acid DTO containing the data base.
+     * @throws DataException
+     */
+        public static ArrayList<AcidDTO> findAll()throws DataException
+    {
+        Connection conn = DatabaseConnection.getInstance().getConnection();
+        String Query = "SELECT * FROM AcidTable ORDER BY id";
 
+        ArrayList<AcidDTO> AcidList = new ArrayList<>();
+        try{
+            PreparedStatement stmt = conn.prepareStatement(Query);
+            ResultSet results = stmt.executeQuery();
+
+            while(results.next()){
+                AcidDTO Acid = createRecord(results);
+                AcidList.add(Acid);
+            }
+            return AcidList;
+        } catch (SQLException e) {
+            throw new DataException("Could not fetch all Acids", e);
+        }
+
+    }
+
+    public static ArrayList<AcidDTO> findBySolute(long solute){
+            return null;
+    }
+
+    public static AcidDTO findByName(String name){
+            return null;
+    }
+    public static void deleteAllFromForeignReference(long solute){
+
+    }
+    /**
+     * Create a new element DTO using a query result
+     * @param results that are given back from the query
+     * @return the Acid DTO
+     * @throws DataException
+     */
+    private static AcidDTO createRecord(ResultSet results)throws DataException {
+            try{
+                long id = results.getLong("id");
+                String name = results.getString("name");
+                long solute = results.getLong("solute");
+
+                return new AcidDTO(id,name,solute);
+            } catch (SQLException e) {
+                throw new DataException("Could not create Acid DTO", e);
+            }
+
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setSolute(long solute) {
+        this.solute = solute;
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public long getSolute() {
+        return solute;
+    }
 }
