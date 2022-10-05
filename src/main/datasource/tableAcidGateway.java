@@ -20,7 +20,8 @@ public class tableAcidGateway {
         String dropStatement = "DROP TABLE IF EXISTS AcidTable";
         String createStatement =
                 "CREATE TABLE AcidTable ("
-                        + "solute   BIGINT PRIMARY KEY"
+                        + "solute   BIGINT,"
+                        + "FOREIGN KEY (solute) REFERENCES ChemicalTable(id) ON DELETE CASCADE"
                         + ")";
 
         try {
@@ -45,20 +46,6 @@ public class tableAcidGateway {
     }
 
     public static Acid createAcid(ResultSet rs) {
-//        String query = "INSERT INTO AcidTable VALUES(?)";
-//
-//        try {
-//            Connection conn = DatabaseConnection.getInstance().getConnection();
-//            PreparedStatement stmt = conn.prepareStatement(query);
-//            stmt.setLong(1, solute);
-//
-//            stmt.executeUpdate();
-//        } catch (SQLException e) {
-//            e.printStackTrace();
-//        }
-//
-//        return new tableAcidGateway(solute);
-
         try {
             long solute = rs.getLong("solute");
 
@@ -156,11 +143,6 @@ public class tableAcidGateway {
             stmt.setLong(1, solute);
 
             int n = stmt.executeUpdate();
-            if (n > 0) {
-                System.out.println("Insert SUCCEEDED with " + n + " affected rows");
-            } else {
-                System.out.println("Insert FAILED");
-            }
         } catch (SQLException e) {
             System.out.println("Error: Couldn't insert acid into table");
         }
