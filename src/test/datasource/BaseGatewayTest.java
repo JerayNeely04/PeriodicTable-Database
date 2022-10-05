@@ -8,6 +8,7 @@ import static org.junit.Assert.assertTrue;
 public class BaseGatewayTest {
     /**
      * Tests to make sure a base can be created
+     * @throws DataException the database exception
      */
     @Test
     public void testCreateBase() throws DataException {
@@ -25,6 +26,7 @@ public class BaseGatewayTest {
 
     /**
      * Tests to make sure a base can be deleted
+     * @throws DataException the database exception
      */
     @Test(expected = DataException.class)
     public void testDeleteBase() throws DataException {
@@ -45,6 +47,10 @@ public class BaseGatewayTest {
         new BaseGateway(1);
     }
 
+    /**
+     * Tests to make sure a base row can be updated
+     * @throws DataException the database exception
+     */
     @Test
     public void testUpdateBase() throws DataException {
         // Resets
@@ -66,6 +72,10 @@ public class BaseGatewayTest {
         assertTrue(baseGateway.update());
     }
 
+    /**
+     * Tests to make sure the foreign key dependencies are deleted properly
+     * @throws DataException the database exception
+     */
     @Test(expected = DataException.class)
     public void testParentRowDeleted() throws DataException {
         // Resets
