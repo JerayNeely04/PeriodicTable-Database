@@ -75,7 +75,7 @@ public class CompoundGateway {
 
     public boolean update()
     {
-        String query = "UPDATE CompoundTable SET name = ?, " +
+        String query = "UPDATE CompoundTable SET name = ? " +
                 "WHERE id = " + id;
         try{
             PreparedStatement stmt = connection.prepareStatement(query);
@@ -86,7 +86,7 @@ public class CompoundGateway {
             }
 
         } catch (SQLException e) {
-            System.out.println("Row cannot be updated");
+            System.out.println(e.getMessage());
         }
 
         return false;
