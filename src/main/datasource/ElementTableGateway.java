@@ -7,8 +7,14 @@ import java.util.ArrayList;
 
 public class ElementTableGateway {
 
-    protected Element elementDTO;
+    protected Element elementDTO;               /* I used this to act as a DTO and hold info for the current Element */
     private Connection connection = null;
+
+    /**
+     * The constructor for the Element table Gateway
+     * @param atomicNumber the primary key of the Element table
+     * @throws DataException SQL exception if we failed to SELECT FROM the Element Table!
+     */
     public ElementTableGateway(long atomicNumber) throws DataException {
         connection = DatabaseConnection.getInstance().getConnection();
         String query = "SELECT * FROM ElementTable WHERE atomicNumber = " + atomicNumber;
@@ -20,10 +26,16 @@ public class ElementTableGateway {
 
             elementDTO = new Element(atomicNumber,results.getDouble("atomicMass"));
         } catch (SQLException e) {
-            throw new DataException("Failed to create Element gateway!", e);
+            throw new DataException("Failed to Select Element gateway!", e);
         }
 
     }
+
+    /**
+     * Create the Element table in the database, drop if it's already there just for
+     * testing purposes!
+     * @throws DataException SQL Exception if we cannot create the table!
+     */
     public static void createTable() throws DataException {
         Connection conn = DatabaseConnection.getInstance().getConnection();
         String dropStatement = "DROP TABLE IF EXISTS ElementTable";
@@ -46,6 +58,13 @@ public class ElementTableGateway {
         }
     }
 
+    /**
+     * Creat constructor for an element in the Element table.
+     * @param atomicNumber the primary key for the Element table
+     * @param atomicMass the second column for our table.
+     * @return the new constructor with the atomic number of the created element.
+     * @throws DataException SQL Exception if we cannot create an Element.
+     */
     public static ElementTableGateway createElement(long atomicNumber, double atomicMass) throws DataException {
         String query = "INSERT INTO ElementTable (atomicNumber, atomicMass) VALUES (?,?)";
 
@@ -62,6 +81,10 @@ public class ElementTableGateway {
         return new ElementTableGateway(atomicNumber);
     }
 
+    /**
+     * Updating the current Element in the Element table.
+     * @throws DataException SQL Exception if we failed to update to the element table.
+     */
     public void persist() throws DataException {
         String query = "UPDATE ElementTable SET atomicMass = ? WHERE atomicNumber = " + elementDTO.getAtomicNumber();
 
@@ -74,6 +97,11 @@ public class ElementTableGateway {
         }
     }
 
+    /**
+     * Delete the current row for the element table.
+     * @return a boolean if one row is affected after we execute the query.
+     * @throws DataException SQL exception if we cannot delete from the table
+     */
     public boolean delete() throws DataException {
         String query = "DELETE FROM ElementTable WHERE atomicNumber = " + elementDTO.getAtomicNumber();
         try {
@@ -86,10 +114,21 @@ public class ElementTableGateway {
         }
     }
 
+    /**
+     * find constructor that uses the atomicNumber to find an Element.
+     * @param atomicNum the primary key for the Element table
+     * @return the new constructor with the specified atomicNumber
+     * @throws DataException SQL exception if cannot find the element
+     */
     public static ElementTableGateway findByAtomicNumber(long atomicNum) throws DataException {
         return new ElementTableGateway(atomicNum);
     }
 
+    /**
+     * Find all the element from the element table.
+     * @return an array list with all the DTO's of the Element table.
+     * @throws DataException SQL exception if we cannot find all the elements.
+     */
     public static ArrayList<Element> findAll() throws DataException {
         Connection conn = DatabaseConnection.getInstance().getConnection();
         String query = "SELECT * FROM ElementTable ORDER BY atomicNumber";
@@ -110,6 +149,12 @@ public class ElementTableGateway {
         }
     }
 
+    /**
+     * Creating an element object to hold the information about the DTO's for the findAll().
+     * @param results the result set from executing the query in the findAll().
+     * @return new Element object.
+     * @throws DataException SQL exception if we cannot create the Element record.
+     */
     private static Element createElementRecord(ResultSet results) throws DataException {
         try {
             long atomicNum = results.getLong("atomicNumber");
