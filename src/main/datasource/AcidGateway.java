@@ -158,14 +158,59 @@ public class AcidGateway {
 
     }
 
-    public static ArrayList<AcidDTO> findBySolute(long solute){
-            return null;
+    public static ArrayList<AcidDTO> findBySolute(long solute)throws DataException{
+        Connection conn = DatabaseConnection.getInstance().getConnection();
+        String query = "SELECT * FROM AcidTable WHERE solute = " + solute;
+        ArrayList<AcidDTO> AcidList = new ArrayList<>();
+
+        try {
+            PreparedStatement stmt = conn.prepareStatement(query);
+            ResultSet results = stmt.executeQuery();
+
+            while (results.next()) {
+                AcidDTO Acid = createRecord(results);
+                AcidList.add(Acid);
+            }
+
+            return AcidList;
+
+        } catch (SQLException e)
+        {
+            throw new DataException("No Acid with solute id: " + solute + " found.", e);
+        }
+
     }
 
-    public static AcidDTO findByName(String name){
-            return null;
+    public static AcidDTO findByName(String name) throws DataException{
+        Connection conn = DatabaseConnection.getInstance().getConnection();
+        String query = "SELECT * FROM AcidTable WHERE name = '" + name + "'";
+
+        try {
+            PreparedStatement stmt;
+            stmt = conn.prepareStatement(query);
+            ResultSet results = stmt.executeQuery();
+            results.next();
+
+            return createRecord(results);
+
+        } catch (SQLException e)
+        {
+           throw new DataException("No Acid with name: " + name + " found.");
+        }
+
+
     }
-    public static void deleteAllFromForeignReference(long solute){
+    public static void deleteAllFromForeignReference(long solute)throws DataException{
+        Connection conn = DatabaseConnection.getInstance().getConnection();
+        String query = "DELETE FROM AcidTable WHERE solute = " + solute;
+
+        try {
+            PreparedStatement stmt = conn.prepareStatement(query);
+            stmt.executeUpdate();
+
+        } catch (SQLException e) {
+            throw new DataException("Acid rows could not be deleted", e);
+        }
 
     }
     /**
