@@ -1,4 +1,5 @@
 package datasource;
+
 import gatewayDTOs.CompoundDTO;
 
 import java.sql.Connection;
@@ -14,6 +15,7 @@ public class CompoundGateway {
 
     /**
      * Creates a new compound and adds it to the database
+     *
      * @param name the name
      */
     public CompoundGateway(String name) throws DataException {
@@ -25,10 +27,11 @@ public class CompoundGateway {
 
     /**
      * Finds a compound that already exists in the compound table
+     *
      * @param id, id that you are searching for
      * @throws DataException
      */
-    public CompoundGateway(long id)throws DataException{
+    public CompoundGateway(long id) throws DataException {
         this.connection = DatabaseConnection.getInstance().getConnection();
         String query = "Select * from CompoundTable WHERE id = " + id;
 
@@ -47,13 +50,14 @@ public class CompoundGateway {
 
     /**
      * This method will create a new row in the Compound table
+     *
      * @param name, the name of the element
      */
     private void createRow(String name) throws DataException {
 
         String query = "INSERT INTO CompoundTable (id, name) VALUES (?, ?)";
 
-        try{
+        try {
             long id = KeyRowDataGateway.generateId();
             this.id = id;
 
@@ -70,14 +74,14 @@ public class CompoundGateway {
 
     /**
      * This method will update a row in the compound table
+     *
      * @return it will return true if the row was updated. Otherwise, it will return false.
      */
 
-    public boolean update()
-    {
+    public boolean update() {
         String query = "UPDATE CompoundTable SET name = ? " +
                 "WHERE id = " + id;
-        try{
+        try {
             PreparedStatement stmt = connection.prepareStatement(query);
             stmt.setString(1, name);
 
@@ -94,50 +98,49 @@ public class CompoundGateway {
 
     /**
      * This method will delete a row from the compound table by ID.
-     * @return  this method will return true if the row is deleted it will return false if otherwise
+     *
+     * @return this method will return true if the row is deleted it will return false if otherwise
      */
 
-    public boolean delete()
-    {
+    public void delete() throws DataException {
         String query = "DELETE FROM CompoundTable WHERE id = ?";
 
         try {
             PreparedStatement stmt = connection.prepareStatement(query);
             stmt.setLong(1, id);
-            //stmt.executeUpdate();
+            stmt.executeUpdate();
 
-            if (stmt.executeUpdate() > 0) {
-                return true;
-            }
+            BaseGateway.deleteAllFromForeignReference(id);
+
         } catch (SQLException e) {
-            System.out.println("The row was not detected");
+            throw new DataException("The row was not detected", e);
         }
-
-        return false;
     }
-        /**
-         * @return the row id
-         */
-        public long getId() {
-            return id;
-        }
 
-        /**
-         * @return the name of the element
-         */
-        public String getName() {
-            return name;
-        }
+    /**
+     * @return the row id
+     */
+    public long getId() {
+        return id;
+    }
 
-        /**
-         * changes the name of the element
-         * @param name the new name
-         */
-        public void setName(String name) {
-            this.name = name;
-        }
+    /**
+     * @return the name of the element
+     */
+    public String getName() {
+        return name;
+    }
 
-        //Table Data Gateway
+    /**
+     * changes the name of the element
+     *
+     * @param name the new name
+     */
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    //Table Data Gateway
 
     /**
      * Creates a new compound in the table
@@ -164,10 +167,10 @@ public class CompoundGateway {
 
     /**
      * gets every entry in the compound table
+     *
      * @return DTO containing the compound data
      */
-    public static ArrayList<CompoundDTO> findAll()
-    {
+    public static ArrayList<CompoundDTO> findAll() {
         Connection conn = DatabaseConnection.getInstance().getConnection();
         String query = "SELECT * FROM CompoundTable ORDER BY id";
         ArrayList<CompoundDTO> compoundList = new ArrayList<>();
@@ -182,8 +185,7 @@ public class CompoundGateway {
             }
 
             return compoundList;
-        } catch (SQLException e)
-        {
+        } catch (SQLException e) {
             System.out.println("Could not fetch all elements");
         }
 
@@ -191,12 +193,10 @@ public class CompoundGateway {
     }
 
     /**
-     *
      * @param name, name od the element
      * @return the compound row that has a matching name as a DTO
      */
-    public static CompoundDTO findByName(String name)
-    {
+    public static CompoundDTO findByName(String name) {
         Connection conn = DatabaseConnection.getInstance().getConnection();
         String query = "SELECT * FROM CompoundTable WHERE name = '" + name + "'";
 
@@ -208,17 +208,14 @@ public class CompoundGateway {
 
             return createCompoundRecord(results);
 
-        } catch (SQLException e)
-
-        {
+        } catch (SQLException e) {
             System.out.println("No element with name: " + name + " found.");
         }
 
         return null;
     }
 
-    public static CompoundDTO findByAtomicNumber(long id)
-    {
+    public static CompoundDTO findByAtomicNumber(long id) {
         Connection conn = DatabaseConnection.getInstance().getConnection();
         String query = "SELECT * FROM CompoundTable WHERE id = " + id;
 
@@ -229,8 +226,7 @@ public class CompoundGateway {
 
             return createCompoundRecord(results);
 
-        } catch (SQLException e)
-        {
+        } catch (SQLException e) {
             System.out.println("No element with id: " + id + " found.");
         }
 
@@ -239,23 +235,22 @@ public class CompoundGateway {
 
     /**
      * Creates a New DTO using queries results
+     *
      * @param results, the results given back from the query
      * @return, returns the compound DTO
      */
-    private static CompoundDTO createCompoundRecord(ResultSet results)
-    {
+    private static CompoundDTO createCompoundRecord(ResultSet results) {
         try {
             long id = results.getLong("id");
             String name = results.getString("name");
 
             return new CompoundDTO(id, name);
-        } catch (SQLException e)
-        {
+        } catch (SQLException e) {
             System.out.println("Could not create compound DTO");
         }
 
         return null;
     }
 
-    }
+}
 
