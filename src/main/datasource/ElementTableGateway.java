@@ -19,8 +19,7 @@ public class ElementTableGateway {
         connection = DatabaseConnection.getInstance().getConnection();
         String query = "SELECT * FROM ElementTable WHERE atomicNumber = " + atomicNumber;
 
-        try {
-            PreparedStatement stmt = this.connection.prepareStatement(query);
+        try (PreparedStatement stmt = this.connection.prepareStatement(query)){
             ResultSet results = stmt.executeQuery();
             results.next();
 
@@ -43,7 +42,6 @@ public class ElementTableGateway {
 
         try {
             PreparedStatement stmt;
-            // create new table
             stmt = conn.prepareStatement(createStatement);
             stmt.execute();
             stmt.close();
@@ -69,6 +67,7 @@ public class ElementTableGateway {
             stmt.setDouble(2, atomicMass);
 
             stmt.executeUpdate();
+            stmt.close();
         } catch (SQLException e) {
             throw new DataException("Cannot crate an Element in the Element Table!", e);
         }
@@ -82,8 +81,7 @@ public class ElementTableGateway {
     public void persist() throws DataException {
         String query = "UPDATE ElementTable SET atomicMass = ? WHERE atomicNumber = " + elementDTO.getAtomicNumber();
 
-        try {
-            PreparedStatement stmt = this.connection.prepareStatement(query);
+        try(PreparedStatement stmt = this.connection.prepareStatement(query)) {
             stmt.setDouble(1, elementDTO.getAtomicMass());
             stmt.executeUpdate();
         } catch (SQLException e) {
@@ -98,8 +96,7 @@ public class ElementTableGateway {
      */
     public boolean delete() throws DataException {
         String query = "DELETE FROM ElementTable WHERE atomicNumber = " + elementDTO.getAtomicNumber();
-        try {
-            PreparedStatement stmt = this.connection.prepareStatement(query);
+        try(PreparedStatement stmt = this.connection.prepareStatement(query)) {
             int rowsAffected = stmt.executeUpdate();
             return rowsAffected > 0;
 
@@ -128,8 +125,7 @@ public class ElementTableGateway {
         String query = "SELECT * FROM ElementTable ORDER BY atomicNumber";
         ArrayList<Element> elementsList = new ArrayList<>();
 
-        try {
-            PreparedStatement stmt = conn.prepareStatement(query);
+        try(PreparedStatement stmt = conn.prepareStatement(query)) {
             ResultSet results = stmt.executeQuery();
 
             while (results.next()) {
