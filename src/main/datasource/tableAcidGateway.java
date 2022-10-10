@@ -17,23 +17,17 @@ public class tableAcidGateway {
 
     public static void createTable() {
         Connection conn = DatabaseConnection.getInstance().getConnection();
-        String dropStatement = "DROP TABLE IF EXISTS AcidTable";
-        String createStatement =
+        String query =
                 "CREATE TABLE AcidTable ("
                         + "solute   BIGINT,"
                         + "FOREIGN KEY (solute) REFERENCES ChemicalTable(id) ON DELETE CASCADE"
-                        + ")";
+                + ")";
 
         try {
             PreparedStatement stmt;
 
-            // drop old table
-            stmt = conn.prepareStatement(dropStatement);
-            stmt.execute();
-            stmt.close();
-
             // create new table
-            stmt = conn.prepareStatement(createStatement);
+            stmt = conn.prepareStatement(query);
             stmt.execute();
             stmt.close();
         } catch (SQLException e) {

@@ -57,7 +57,7 @@ public class AcidGatewayTest {
             ArrayList<Acid> allAcidRecords = tableAcidGateway.findAll();
 
             assertNotNull(allAcidRecords);
-            assertEquals(4, allAcidRecords.size());
+            assertEquals(11, allAcidRecords.size());
         } finally {
             conn.rollback();
             conn.close();
