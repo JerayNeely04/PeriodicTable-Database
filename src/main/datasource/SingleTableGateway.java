@@ -74,7 +74,6 @@ public class SingleTableGateway {
             if (stmt.executeUpdate() > 0) {
                 id = getIDFromDatabase(stmt);
             }
-
         } catch (SQLException e) {
             // throw exception later
             System.out.println("Create chemical table failed");
@@ -118,12 +117,10 @@ public class SingleTableGateway {
             if (stmt.executeUpdate() > 0) {
                 id = getIDFromDatabase(stmt);
             }
-
         } catch (SQLException e) {
             // throw exception later
             System.out.println("Create compound table failed");
         }
-
         return new SingleTableGateway(id);
     }
 
@@ -192,7 +189,7 @@ public class SingleTableGateway {
 
         return new SingleTableGateway(id);
     }
-
+    
     public void persist() {
         String query = "UPDATE SingleTable SET name = ?, " +
                 "atomicNum = ?, " +
@@ -234,7 +231,6 @@ public class SingleTableGateway {
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
-
         return 0;
     }
 
