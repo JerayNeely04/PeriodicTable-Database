@@ -2,7 +2,6 @@ package datasource;
 
 import gatewayDTOs.AcidDTO;
 
-import javax.xml.crypto.Data;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -94,8 +93,9 @@ public class AcidGateway {
     /**
      *  deletes the row that was inserted into the database.
      * @throws DataException
+     * @return
      */
-    public void delete() throws DataException {
+    public boolean delete() throws DataException {
         String query = "DELETE FROM AcidTable WHERE id = " + id;
 
         try {
@@ -105,6 +105,7 @@ public class AcidGateway {
         } catch (SQLException e) {
             throw new DataException("Acid row could not be deleted", e);
         }
+        return false;
     }
 
     /**
