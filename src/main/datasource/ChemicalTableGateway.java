@@ -20,8 +20,7 @@ public class ChemicalTableGateway {
         connection = DatabaseConnection.getInstance().getConnection();
         String query = "SELECT * FROM ChemicalTable WHERE id = " + id;
 
-        try {
-            PreparedStatement stmt = this.connection.prepareStatement(query);
+        try(PreparedStatement stmt = this.connection.prepareStatement(query)) {
             ResultSet results = stmt.executeQuery();
             results.next();
 
@@ -39,17 +38,11 @@ public class ChemicalTableGateway {
      */
     public static void createTable() throws DataException {
         Connection conn = DatabaseConnection.getInstance().getConnection();
-        String dropStatement = "DROP TABLE IF EXISTS ChemicalTable";
         String createStatement =
                 "CREATE TABLE ChemicalTable (id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY, name VARCHAR(50))";
 
         try {
-            // drop old table
             PreparedStatement stmt;
-            stmt = conn.prepareStatement(dropStatement);
-            stmt.execute();
-            stmt.close();
-
             // create new table
             stmt = conn.prepareStatement(createStatement);
             stmt.execute();
@@ -76,6 +69,7 @@ public class ChemicalTableGateway {
             if (stmt.executeUpdate() > 0) {
                 id = getIDFromDatabase(stmt);
             }
+            stmt.close();
 
         } catch (SQLException e) {
             throw new DataException("Create Chemical failed!", e);
@@ -108,8 +102,7 @@ public class ChemicalTableGateway {
     public void persist() throws DataException {
         String query = "UPDATE ChemicalTable SET name = ? WHERE id = " + chemicalDTO.getId();
 
-        try {
-            PreparedStatement stmt = this.connection.prepareStatement(query);
+        try(PreparedStatement stmt = this.connection.prepareStatement(query)) {
             stmt.setString(1, chemicalDTO.getName());
             stmt.executeUpdate();
         } catch (SQLException e) {
@@ -134,8 +127,7 @@ public class ChemicalTableGateway {
      */
     public boolean delete() throws DataException {
         String query = "DELETE FROM ChemicalTable WHERE id = " + chemicalDTO.getId();
-        try {
-            PreparedStatement stmt = this.connection.prepareStatement(query);
+        try(PreparedStatement stmt = this.connection.prepareStatement(query)) {
             int rowsAffected = stmt.executeUpdate();
             return rowsAffected > 0;
 
@@ -154,8 +146,7 @@ public class ChemicalTableGateway {
         String query = "SELECT * FROM ChemicalTable ORDER BY id";
         ArrayList<Chemical> chemicalsList = new ArrayList<>();
 
-        try {
-            PreparedStatement stmt = conn.prepareStatement(query);
+        try(PreparedStatement stmt = conn.prepareStatement(query)) {
             ResultSet results = stmt.executeQuery();
 
             while (results.next()) {
