@@ -11,10 +11,6 @@ import static org.junit.Assert.assertTrue;
 
 public class SingleTableGatewayTest {
     private final Connection conn = DatabaseConnection.getInstance().getConnection();
-//    @Test
-//    public void testCreateTable() {
-//        SingleTableGateway.createTable();
-//    }
 
     @Test
     public void testCreateChemical() throws SQLException
@@ -80,19 +76,19 @@ public class SingleTableGatewayTest {
         assertEquals(3, gateway.getDissolvedBy());
     }
 
-    @Test
+    @Test(expected = DataException.class)
     public void testDelete() throws SQLException
     {
         conn.setAutoCommit(false);
 
         SingleTableGateway gateway = SingleTableGateway.createChemical("chemicalToBeDeleted");
         assertEquals("chemicalToBeDeleted", gateway.getName());
-        assertTrue(gateway.delete());
+        gateway.delete();
+        SingleTableGateway temp = new SingleTableGateway(1);
     }
 
     @Test
-    public void testPersist() throws SQLException
-    {
+    public void testPersist() throws SQLException {
         conn.setAutoCommit(false);
 
         SingleTableGateway gateway = SingleTableGateway.createChemical("oldChemicalName");

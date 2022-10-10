@@ -15,7 +15,7 @@ public class SingleTableGateway {
     private final Connection connection;
 
     // finder constructor
-    public SingleTableGateway(long id) throws SQLException {
+    public SingleTableGateway(long id) throws DataException {
         this.connection = DatabaseConnection.getInstance().getConnection();
         String query = "SELECT * FROM SingleTable WHERE id = " + id;
 
@@ -35,11 +35,11 @@ public class SingleTableGateway {
             this.dissolves = results.getLong("dissolves");
 
         } catch (SQLException e) {
-            System.out.println("Failed to create gateway");
+            throw new DataException(e.getMessage());
         }
     }
 
-    public static void createTable() {
+    public static void createTable() throws DataException {
         Connection conn = DatabaseConnection.getInstance().getConnection();
         String dropStatement = "DROP TABLE IF EXISTS SingleTable";
         String createStatement =
@@ -59,11 +59,11 @@ public class SingleTableGateway {
             stmt.execute();
             stmt.close();
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new DataException(e.getMessage());
         }
     }
 
-    public static SingleTableGateway createChemical(String name) throws SQLException {
+    public static SingleTableGateway createChemical(String name) throws DataException {
         String query = "INSERT INTO SingleTable (name) VALUES (?)";
         Connection conn = DatabaseConnection.getInstance().getConnection();
         long id = 0;
@@ -75,14 +75,13 @@ public class SingleTableGateway {
                 id = getIDFromDatabase(stmt);
             }
         } catch (SQLException e) {
-            // throw exception later
-            System.out.println("Create chemical row failed");
+            throw new DataException(e.getMessage());
         }
 
         return new SingleTableGateway(id);
     }
 
-    public static SingleTableGateway createAcid(String name, long solute, long dissolves) throws SQLException {
+    public static SingleTableGateway createAcid(String name, long solute, long dissolves) throws DataException {
         String query = "INSERT INTO SingleTable (name, solute, dissolves) VALUES (?, ?, ?)";
         Connection conn = DatabaseConnection.getInstance().getConnection();
         long id = 0;
@@ -97,14 +96,13 @@ public class SingleTableGateway {
             }
 
         } catch (SQLException e) {
-            // throw exception later
-            System.out.println("Create acid row failed");
+            throw new DataException(e.getMessage());
         }
 
         return new SingleTableGateway(id);
     }
 
-    public static SingleTableGateway createCompound(String name, long compoundID, long elementID) throws SQLException {
+    public static SingleTableGateway createCompound(String name, long compoundID, long elementID) throws DataException {
         String query = new String("INSERT INTO SingleTable (name, compoundID, elementID) VALUES (?, ?, ?)");
         Connection conn = DatabaseConnection.getInstance().getConnection();
         long id = 0;
@@ -118,13 +116,12 @@ public class SingleTableGateway {
                 id = getIDFromDatabase(stmt);
             }
         } catch (SQLException e) {
-            // throw exception later
-            System.out.println("Create compound row failed");
+            throw new DataException(e.getMessage());
         }
         return new SingleTableGateway(id);
     }
 
-    public static SingleTableGateway createBase(String name, long solute) throws SQLException {
+    public static SingleTableGateway createBase(String name, long solute) throws DataException {
         String query = new String("INSERT INTO SingleTable (name, solute) VALUES (?, ?)");
         Connection conn = DatabaseConnection.getInstance().getConnection();
         long id = 0;
@@ -138,14 +135,13 @@ public class SingleTableGateway {
             }
 
         } catch (SQLException e) {
-            // throw exception later
-            System.out.println("Create base row failed");
+            throw new DataException(e.getMessage());
         }
 
         return new SingleTableGateway(id);
     }
 
-    public static SingleTableGateway createElement(String name, int atomicNum, double atomicMass) throws SQLException {
+    public static SingleTableGateway createElement(String name, int atomicNum, double atomicMass) throws DataException {
         String query = new String("INSERT INTO SingleTable (name, atomicNum, atomicMass) VALUES (?, ?, ?)");
         Connection conn = DatabaseConnection.getInstance().getConnection();
         long id = 0;
@@ -160,14 +156,13 @@ public class SingleTableGateway {
             }
 
         } catch (SQLException e) {
-            // throw exception later
-            System.out.println("Create element row failed");
+            throw new DataException(e.getMessage());
         }
 
         return new SingleTableGateway(id);
     }
 
-    public static SingleTableGateway createMetal(String name, int atomicNum, double atomicMass, long dissolvedBy) throws SQLException {
+    public static SingleTableGateway createMetal(String name, int atomicNum, double atomicMass, long dissolvedBy) throws DataException {
         String query = new String("INSERT INTO SingleTable (name, atomicNum, atomicMass, dissolvedBy) VALUES (?, ?, ?, ?)");
         Connection conn = DatabaseConnection.getInstance().getConnection();
         long id = 0;
@@ -181,16 +176,14 @@ public class SingleTableGateway {
             if (stmt.executeUpdate() > 0) {
                 id = getIDFromDatabase(stmt);
             }
-
         } catch (SQLException e) {
-            // throw exception later
-            System.out.println("Create metal row failed");
+            throw new DataException(e.getMessage());
         }
 
         return new SingleTableGateway(id);
     }
 
-    public void persist() {
+    public void persist() throws DataException {
         String query = "UPDATE SingleTable SET name = ?, " +
                 "atomicNum = ?, " +
                 "atomicMass = ?, " +
@@ -198,10 +191,10 @@ public class SingleTableGateway {
                 "compoundID = ?, " +
                 "elementID = ?, " +
                 "dissolvedBy = ?, " +
-                "dissolves = ?";
+                "dissolves = ? " +
+                "WHERE id = " + id;
 
-        try {
-            PreparedStatement stmt = this.connection.prepareStatement(query);
+        try (PreparedStatement stmt = this.connection.prepareStatement(query)){
             stmt.setString(1, this.name);
             stmt.setInt(2, this.atomicNum);
             stmt.setDouble(3, this.atomicMass);
@@ -213,7 +206,7 @@ public class SingleTableGateway {
 
             stmt.executeUpdate();
         } catch (SQLException e) {
-            System.out.println("Data not persisted to the database.");
+            throw new DataException(e.getMessage());
         }
     }
 
@@ -223,28 +216,24 @@ public class SingleTableGateway {
      * @param stmt the prepared statement we're pulling the ID from
      * @return the ID of the row being added
      */
-    private static long getIDFromDatabase(PreparedStatement stmt) {
+    private static long getIDFromDatabase(PreparedStatement stmt) throws DataException {
         try (ResultSet rs = stmt.getGeneratedKeys()) {
             if (rs.next()) {
                 return rs.getLong(1);
             }
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
+            throw new DataException(e.getMessage());
         }
         return 0;
     }
 
-    public boolean delete() {
+    public void delete() throws DataException {
         String query = "DELETE FROM SingleTable WHERE id = " + id;
-        try {
-            PreparedStatement stmt = this.connection.prepareStatement(query);
-            int rowsAffected = stmt.executeUpdate();
-            return rowsAffected > 0;
-
+        try (PreparedStatement stmt = this.connection.prepareStatement(query)){
+            stmt.executeUpdate();
         } catch (SQLException e) {
-            System.out.println("Failed to delete a row in the table!");
+            throw new DataException(e.getMessage());
         }
-        return false;
     }
 
     public Long getId() {

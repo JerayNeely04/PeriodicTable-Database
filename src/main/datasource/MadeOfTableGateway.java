@@ -15,7 +15,7 @@ public class MadeOfTableGateway {
     /**
      * Creates the madeOfTable in the database
      */
-    public static void createTable() throws SQLException {
+    public static void createTable() throws DataException {
 
         try (Connection conn = DatabaseConnection.getInstance().getConnection()) {
             String query =
@@ -31,21 +31,19 @@ public class MadeOfTableGateway {
             stmt.execute();
             stmt.close();
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new DataException(e.getMessage());
         }
     }
 
-    public static madeOfDTO createMadeOf(ResultSet rs) {
+    public static madeOfDTO createMadeOf(ResultSet rs) throws DataException {
         try {
             long compoundID = rs.getLong("compoundID");
             long elementID = rs.getLong("elementID");
 
             return new madeOfDTO(compoundID, elementID);
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new DataException(e.getMessage());
         }
-
-        return null;
     }
 
     /**
@@ -55,7 +53,7 @@ public class MadeOfTableGateway {
      *         Return null is nothing is found or exception is thrown
      * @throws SQLException - for when either the connection or the query failed
      */
-    public static ArrayList<madeOfDTO> findAll() throws SQLException {
+    public static ArrayList<madeOfDTO> findAll() throws DataException {
         Connection conn = DatabaseConnection.getInstance().getConnection();
         ArrayList<madeOfDTO> madeOfList = new ArrayList<>();
 
@@ -71,10 +69,8 @@ public class MadeOfTableGateway {
 
             return madeOfList;
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new DataException(e.getMessage());
         }
-
-        return null;
     }
 
     /**
@@ -84,7 +80,7 @@ public class MadeOfTableGateway {
      * @return ResultSet containing the row.
      *         Return null is nothing is found or exception is thrown
      */
-    public static madeOfDTO findByCompoundID(long compoundID) {
+    public static madeOfDTO findByCompoundID(long compoundID) throws DataException {
         try (Connection conn = DatabaseConnection.getInstance().getConnection()) {
             String query = "SELECT * FROM madeOfTable WHERE compoundID = " + compoundID;
             PreparedStatement stmt = conn.prepareStatement(query);
@@ -94,9 +90,8 @@ public class MadeOfTableGateway {
                 return createMadeOf(rs);
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new DataException(e.getMessage());
         }
-
         return null;
     }
 
@@ -107,7 +102,7 @@ public class MadeOfTableGateway {
      * @return ResultSet containing the row.
      *         Return null is nothing is found or exception is thrown
      */
-    public static madeOfDTO findByElementID(long elementID) {
+    public static madeOfDTO findByElementID(long elementID) throws DataException {
         Connection conn = DatabaseConnection.getInstance().getConnection();
 
         // TODO: If there are two rows with the specific elementID,
@@ -124,7 +119,7 @@ public class MadeOfTableGateway {
                 return createMadeOf(rs);
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new DataException(e.getMessage());
         }
 
         return null;
@@ -138,7 +133,7 @@ public class MadeOfTableGateway {
      * @param elementID The elementID to insert
      *                  ElementID must exist in the ElementTable to succeed
      */
-    public void insertRow(long compoundID, long elementID) {
+    public void insertRow(long compoundID, long elementID) throws DataException {
         Connection conn = DatabaseConnection.getInstance().getConnection();
         String query = "INSERT INTO madeOfTable VALUES (?, ?)";
 
@@ -150,7 +145,7 @@ public class MadeOfTableGateway {
 
             stmt.executeUpdate();
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new DataException(e.getMessage());
         }
     }
 

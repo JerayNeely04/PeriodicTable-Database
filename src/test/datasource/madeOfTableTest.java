@@ -66,7 +66,7 @@ public class madeOfTableTest {
 
             assertNotNull(compoundID);
             assertEquals(4, compoundID.getCompoundID());
-        } catch (AssertionError e) {
+        } catch (AssertionError | DataException e) {
             e.printStackTrace();
         }
     }
@@ -78,7 +78,7 @@ public class madeOfTableTest {
 
             assertNotNull(compoundID);
             assertEquals(25, compoundID.getElementID());
-        } catch (AssertionError e) {
+        } catch (AssertionError | DataException e) {
             e.printStackTrace();
         }
     }
@@ -88,20 +88,18 @@ public class madeOfTableTest {
         Connection conn = DatabaseConnection.getInstance().getConnection();
         conn.setAutoCommit(false);
 
-        try {
-            MadeOfTableGateway madeOf = new MadeOfTableGateway();
-            madeOf.insertRow(1, 16);
+        SingleTableGateway.createCompound("H20", 2, 16);
 
-            madeOfDTO elementID = MadeOfTableGateway.findByElementID(16);
-            madeOfDTO compoundID = MadeOfTableGateway.findByCompoundID(1);
+        MadeOfTableGateway madeOf = new MadeOfTableGateway();
+        madeOf.insertRow(2, 16);
 
-            assertNotNull(elementID);
-            assertNotNull(compoundID);
+        madeOfDTO elementID = MadeOfTableGateway.findByElementID(16);
+        madeOfDTO compoundID = MadeOfTableGateway.findByCompoundID(2);
 
-            assertEquals(16, elementID.getElementID());
-            assertEquals(1, compoundID.getCompoundID());
-        } catch (AssertionError e) {
-            e.printStackTrace();
-        }
+        assertNotNull(elementID);
+        assertNotNull(compoundID);
+
+        assertEquals(16, elementID.getElementID());
+        assertEquals(2, compoundID.getCompoundID());
     }
 }
