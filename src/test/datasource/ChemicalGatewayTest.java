@@ -2,6 +2,8 @@ package datasource;
 
 import gatewayDTOs.Chemical;
 import org.junit.Test;
+
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
@@ -10,33 +12,31 @@ import static org.junit.Assert.assertTrue;
 
 public class ChemicalGatewayTest {
 
-    /**
-     * Creates the Chemical table in the database.
-     * @throws DataException if we cannot create the table.
-     */
-    @Test
-    public void createChemicalTable() throws DataException {
-        ChemicalTableGateway.createTable();
-    }
+    private Connection conn = DatabaseConnection.getInstance().getConnection();
 
     /**
-     * testing if we can create a chemical in the Chemical table.
-     * @throws DataException if we cannot create the chemical.
+     * Testing if we can create a chemical in the Chemical table.
+     * @throws SQLException if we cannot create the chemical.
      */
     @Test
-    public void testCreateChemical() throws DataException {
+    public void testCreateChemical() throws SQLException {
+        conn.setAutoCommit(false);
+
         Chemical Carbon = new Chemical(1, "Carbon");
         ChemicalTableGateway chemicalGateway = ChemicalTableGateway.createChemical("Carbon");
 
         assertEquals(Carbon.getName(), chemicalGateway.chemicalDTO.getName());
+        conn.rollback();
     }
 
     /**
      * Testing the update method.
-     * @throws DataException SQL Exception if we cannot update to the database.
+     * @throws SQLException SQL Exception if we cannot update to the database.
      */
     @Test
-    public void testPersistChemical() throws DataException {
+    public void testPersistChemical() throws SQLException {
+        conn.setAutoCommit(false);
+
         Chemical chem = new Chemical(2, "Mercury");
         ChemicalTableGateway chemicalGateway = ChemicalTableGateway.createChemical("Mercury");
         assertEquals(chem.getName(), chemicalGateway.chemicalDTO.getName());
@@ -49,10 +49,11 @@ public class ChemicalGatewayTest {
 
     /**
      * Testing the delete method.
-     * @throws DataException SQL Exception if we cannot delete from the database.
+     * @throws SQLException SQL Exception if we cannot delete from the database.
      */
     @Test
-    public void testDeleteChemical() throws DataException {
+    public void testDeleteChemical() throws SQLException {
+        conn.setAutoCommit(false);
         Chemical chem = new Chemical(3, "Mercury");
         ChemicalTableGateway chemicalGateway = ChemicalTableGateway.createChemical("Mercury");
         assertTrue(chemicalGateway.delete());
@@ -70,11 +71,11 @@ public class ChemicalGatewayTest {
 
     /**
      * Testing the findAll method that returns all the chemicals.
-     * @throws DataException if cannot return all the chemicals.
+     * @throws DataException if we cannot return all the chemicals.
      */
     @Test
     public void testFindAll() throws DataException {
         ArrayList<Chemical> chemicalsList = ChemicalTableGateway.findAll();
-        assertEquals(12, chemicalsList.size());
+        assertEquals(11, chemicalsList.size());    /* We already have 11 rows in our database by default */
     }
 }

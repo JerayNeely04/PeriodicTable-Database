@@ -38,17 +38,11 @@ public class ElementTableGateway {
      */
     public static void createTable() throws DataException {
         Connection conn = DatabaseConnection.getInstance().getConnection();
-        String dropStatement = "DROP TABLE IF EXISTS ElementTable";
         String createStatement =
                 "CREATE TABLE ElementTable (atomicNumber BIGINT NOT NULL PRIMARY KEY, atomicMass DOUBLE NOT NULL)";
 
         try {
-            // drop old table
             PreparedStatement stmt;
-            stmt = conn.prepareStatement(dropStatement);
-            stmt.execute();
-            stmt.close();
-
             // create new table
             stmt = conn.prepareStatement(createStatement);
             stmt.execute();

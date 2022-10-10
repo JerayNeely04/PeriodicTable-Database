@@ -3,6 +3,7 @@ package datasource;
 import gatewayDTOs.Element;
 import org.junit.Test;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
@@ -11,39 +12,37 @@ import static org.junit.Assert.assertTrue;
 
 public class ElementGatewayTest {
 
-    /**
-     * Creates the Element table in the database.
-     * @throws DataException if we cannot create the table.
-     */
-    @Test
-    public void createElementTable() throws DataException {
-        ElementTableGateway.createTable();
-    }
+    private Connection conn = DatabaseConnection.getInstance().getConnection();
 
     /**
-     * testing if we can create an Element in the Element table.
-     * @throws DataException if we cannot create the Element.
+     * Testing if we can create an Element in the Element table.
+     * @throws SQLException if we cannot create the Element.
      */
     @Test
-    public void testCreateElement() throws DataException {
-        Element Carbon = new Element(16, 2.32);
-        ElementTableGateway elementGateway = ElementTableGateway.createElement(16, 2.32);
+    public void testCreateElement() throws SQLException {
+        conn.setAutoCommit(false);
+
+        Element Carbon = new Element(11, 6.2);
+        ElementTableGateway elementGateway = ElementTableGateway.createElement(11, 6.2);
 
         assertEquals(Carbon.getAtomicMass(), elementGateway.elementDTO.getAtomicMass(), 0.001);
+        conn.rollback();
     }
 
     /**
      * Testing the update method.
-     * @throws DataException SQL Exception if we cannot update to the database.
+     * @throws SQLException SQL Exception if we cannot update to the database.
      */
     @Test
-    public void testPersistElement() throws DataException {
-        Element element = new Element(24, 23.3);
-        ElementTableGateway elementGateway = ElementTableGateway.createElement(24, 23.3);
+    public void testPersistElement() throws SQLException {
+        conn.setAutoCommit(false);
+
+        Element element = new Element(4, 3.3);
+        ElementTableGateway elementGateway = ElementTableGateway.createElement(4, 3.3);
         assertEquals(element.getAtomicMass(), elementGateway.elementDTO.getAtomicMass(), 0.001);
 
-        elementGateway.elementDTO.setAtomicMass(4.11);
-        element.setAtomicMass(4.11);
+        elementGateway.elementDTO.setAtomicMass(8.6);
+        element.setAtomicMass(8.6);
         elementGateway.persist();
 
         assertEquals(element.getAtomicMass(), elementGateway.elementDTO.getAtomicMass(), 0.001);
@@ -72,11 +71,11 @@ public class ElementGatewayTest {
 
     /**
      * Testing the findAll method that returns all the elements.
-     * @throws DataException if cannot return all the elements.
+     * @throws DataException if we cannot return all the elements.
      */
     @Test
     public void testFindAll() throws DataException {
         ArrayList<Element> elements = ElementTableGateway.findAll();
-        assertEquals(2, elements.size());
+        assertEquals(4, elements.size());           /* we have 4 rows in our database table by default */
     }
 }

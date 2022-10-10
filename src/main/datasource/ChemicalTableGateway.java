@@ -39,17 +39,11 @@ public class ChemicalTableGateway {
      */
     public static void createTable() throws DataException {
         Connection conn = DatabaseConnection.getInstance().getConnection();
-        String dropStatement = "DROP TABLE IF EXISTS ChemicalTable";
         String createStatement =
                 "CREATE TABLE ChemicalTable (id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY, name VARCHAR(50))";
 
         try {
-            // drop old table
             PreparedStatement stmt;
-            stmt = conn.prepareStatement(dropStatement);
-            stmt.execute();
-            stmt.close();
-
             // create new table
             stmt = conn.prepareStatement(createStatement);
             stmt.execute();
