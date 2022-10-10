@@ -42,7 +42,7 @@ public class CompoundGatewayTest {
 
     }
 
-    @Test
+    @Test(expected = DataException.class)
     public void testDeleteElement() throws DataException {
         // Reset the id key and element table
         KeyRowDataGateway.reset();
@@ -56,7 +56,8 @@ public class CompoundGatewayTest {
         assertEquals("Carbon Dioxide", gateway.getName());
 
         // Deleted test
-        assertTrue(gateway.delete());
+        gateway.delete();
+        new CompoundGateway(1);
     }
 
     @Test

@@ -119,7 +119,7 @@ public class ElementGatewayTest {
     }
 
     /**
-     * Tests to make sure the TD gateway can find a row in the table by id
+     * Tests to make sure the TD gateway can find a row in the table by its atomic number
      */
     @Test
     public void testFindingAnElementByIdTDG() throws DataException {

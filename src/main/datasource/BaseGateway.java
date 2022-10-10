@@ -209,7 +209,7 @@ public class BaseGateway {
      * @return the element row with the matching atomic number as a DTO
      * @throws DataException the database exception
      */
-    public static ArrayList<BaseDTO> findBySolute(long solute) throws DataException
+    public static ArrayList<BaseDTO> findAllBasesSolubleBy(long solute) throws DataException
     {
         Connection conn = DatabaseConnection.getInstance().getConnection();
         String query = "SELECT * FROM BaseTable WHERE solute = " + solute;
