@@ -120,7 +120,7 @@ public class BaseGatewayTest {
         new BaseGateway("Calcium hydroxide", 1);
 
         // Try to retrieve that row
-        ArrayList<BaseDTO> basesList = BaseGateway.findAllBasesSoluableBy(1);
+        ArrayList<BaseDTO> basesList = BaseGateway.findAllBasesSolubleBy(1);
 
         // Equals checks
         assert basesList != null;
