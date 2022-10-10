@@ -11,6 +11,11 @@ public class DatabaseConnection {
     public static final String LOGIN_NAME = "swe400_4";
     public static final String PASSWORD = "pwd4swe400_4F22";
 
+    /**
+     * Singleton: Create new connection if connection is null or return connection if connection exists
+     *
+     * @return new / existing connection to database
+     */
     public static DatabaseConnection getInstance() {
         if (databaseSingleton == null) {
             databaseSingleton = new DatabaseConnection();
@@ -18,8 +23,17 @@ public class DatabaseConnection {
         return databaseSingleton;
     }
 
+    /**
+     * Empty DatabaseConnection constructor
+     */
     private DatabaseConnection() {}
 
+    /**
+     * Get database connection.
+     * If connection is null, setup the driver then start up a new connection
+     *
+     * @return New / existing connection to database
+     */
     public Connection getConnection() {
         if (connection == null) {
             // driver

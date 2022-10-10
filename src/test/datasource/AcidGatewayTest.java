@@ -11,24 +11,23 @@ import java.sql.SQLException;
 import static org.junit.Assert.*;
 
 public class AcidGatewayTest {
+    private final Connection conn = DatabaseConnection.getInstance().getConnection();
+
     @Test
     public void testCreateAcid() throws SQLException {
-        Connection conn = DatabaseConnection.getInstance().getConnection();
         conn.setAutoCommit(false);
 
         try {
             tableAcidGateway acidGate = new tableAcidGateway(1);
 
             assertEquals(1, acidGate.getSolute());
-        } finally {
-            conn.rollback();
-            conn.close();
+        } catch (SQLException e) {
+            throw new DataException(e.getMessage());
         }
     }
 
     @Test
     public void testFindBySolute() throws SQLException {
-        Connection conn = DatabaseConnection.getInstance().getConnection();
         conn.setAutoCommit(false);
 
         try {
@@ -37,15 +36,13 @@ public class AcidGatewayTest {
 
             assertNotNull(findAcid);
             assertEquals(2, findAcid.getSolute());
-        } finally {
-            conn.rollback();
-            conn.close();
+        } catch (SQLException e) {
+            throw new DataException(e.getMessage());
         }
     }
 
     @Test
     public void testFindAll() throws SQLException {
-        Connection conn = DatabaseConnection.getInstance().getConnection();
         conn.setAutoCommit(false);
 
         try {
@@ -58,15 +55,13 @@ public class AcidGatewayTest {
 
             assertNotNull(allAcidRecords);
             assertEquals(11, allAcidRecords.size());
-        } finally {
-            conn.rollback();
-            conn.close();
+        } catch (SQLException e) {
+            throw new DataException(e.getMessage());
         }
     }
 
     @Test
     public void testPersist() throws SQLException {
-        Connection conn = DatabaseConnection.getInstance().getConnection();
         conn.setAutoCommit(false);
 
         try {
@@ -78,15 +73,13 @@ public class AcidGatewayTest {
 
             assertNotNull(findAcid);
             assertEquals(11, findAcid.getSolute());
-        } finally {
-            conn.rollback();
-            conn.close();
+        } catch (SQLException e) {
+            throw new DataException(e.getMessage());
         }
     }
 
     @Test
     public void testDelete() throws SQLException {
-        Connection conn = DatabaseConnection.getInstance().getConnection();
         conn.setAutoCommit(false);
 
         try {
@@ -99,9 +92,8 @@ public class AcidGatewayTest {
             findAcid = tableAcidGateway.findBySolute(16);
 
             assertNull(findAcid);
-        } finally {
-            conn.rollback();
-            conn.close();
+        } catch (SQLException e) {
+            throw new DataException(e.getMessage());
         }
     }
 }

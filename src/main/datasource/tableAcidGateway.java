@@ -7,15 +7,22 @@ import gatewayDTOs.Acid;
 public class tableAcidGateway {
     private Connection conn = null;
     private long solute;
-    //protected Acid acidDTO;
 
-    public tableAcidGateway(long solute) {
+    /**
+     * Create new instance of tableAcidGateway
+     *
+     * @param solute Solute value to set to instance variable
+     */
+    public tableAcidGateway(long solute) throws DataException {
         this.conn = DatabaseConnection.getInstance().getConnection();
         this.solute = solute;
         this.insertRow(solute);
     }
 
-    public static void createTable() {
+    /**
+     * Creates the AcidTable in the database
+     */
+    public static void createTable() throws DataException {
         Connection conn = DatabaseConnection.getInstance().getConnection();
         String query =
                 "CREATE TABLE AcidTable ("
@@ -31,27 +38,41 @@ public class tableAcidGateway {
             stmt.execute();
             stmt.close();
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new DataException(e.getMessage());
         }
     }
 
+    /**
+     * Get solute value
+     *
+     * @return the solute value from instance
+     */
     public long getSolute() {
         return solute;
     }
 
-    public static Acid createAcid(ResultSet rs) {
+    /**
+     * Create Acid DTO with information from ResultSet
+     *
+     * @param rs   The ResultSet containing the info for the DTO
+     * @return the new DTO
+     */
+    public static Acid createAcid(ResultSet rs) throws DataException {
         try {
             long solute = rs.getLong("solute");
 
             return new Acid(solute);
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new DataException(e.getMessage());
         }
-
-        return null;
     }
 
-    public static ArrayList<Acid> findAll() {
+    /**
+     * Finds all rows in the AcidTable and orders them by solute
+     *
+     * @return Array of all rows in the AcidTable
+     */
+    public static ArrayList<Acid> findAll() throws DataException {
         Connection conn = DatabaseConnection.getInstance().getConnection();
         String query = "SELECT * FROM AcidTable ORDER BY solute";
         ArrayList<Acid> acidsList = new ArrayList<>();
@@ -68,13 +89,17 @@ public class tableAcidGateway {
             return acidsList;
         } catch (SQLException e)
         {
-            System.out.println("Could not fetch all acids");
+            throw new DataException(e.getMessage());
         }
-
-        return null;
     }
 
-    public static Acid findBySolute(long solute) {
+    /**
+     * Finds the row(s) with a certain solute
+     *
+     * @param solute The solute to find
+     * @return Row(s) containing the solute value
+     */
+    public static Acid findBySolute(long solute) throws DataException {
         String query = "SELECT * FROM AcidTable WHERE solute = " + solute;
 
         try {
@@ -87,14 +112,19 @@ public class tableAcidGateway {
             }
 
             rs.close();
-        } catch (SQLException sqle) {
-            sqle.printStackTrace();
+        } catch (SQLException e) {
+            throw new DataException(e.getMessage());
         }
 
         return null;
     }
 
-    public boolean persist() {
+    /**
+     * Update the database with the updated information
+     *
+     * @return true if update was successful; false otherwise
+     */
+    public boolean persist() throws DataException {
         String query = "UPDATE AcidTable "
                 + "SET solute = ? WHERE solute = " + solute;
 
@@ -107,13 +137,18 @@ public class tableAcidGateway {
                 return true;
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new DataException(e.getMessage());
         }
 
         return false;
     }
 
-    public boolean delete() {
+    /**
+     * Delete 1 or more rows in the database where solute is a certain value
+     *
+     * @return true if DELETE deleted 1+ rows; false otherwise
+     */
+    public boolean delete() throws DataException {
         String query = "DELETE FROM AcidTable WHERE solute = " + solute;
 
         try {
@@ -123,22 +158,27 @@ public class tableAcidGateway {
                 return true;
             }
         } catch (SQLException e) {
-            System.out.println("Failed to delete a row in the table!");
+            throw new DataException(e.getMessage());
         }
 
         return false;
     }
 
-    public void insertRow(long solute) {
+    /**
+     * Insert a row into the AcidTable
+     *
+     * @param solute The solute value to insert into the AcidTable
+     */
+    public void insertRow(long solute) throws DataException {
         String query = "INSERT INTO AcidTable VALUES (?)";
 
         try {
             PreparedStatement stmt = conn.prepareStatement(query);
             stmt.setLong(1, solute);
 
-            int n = stmt.executeUpdate();
+            stmt.executeUpdate();
         } catch (SQLException e) {
-            System.out.println("Error: Couldn't insert acid into table");
+            throw new DataException(e.getMessage());
         }
     }
 }

@@ -62,7 +62,7 @@ public class madeOfTableTest {
 
             assertNotNull(compoundID);
             assertEquals(4, compoundID.getCompoundID());
-        } catch (AssertionError e) {
+        } catch (AssertionError | DataException e) {
             e.printStackTrace();
         }
     }
@@ -74,7 +74,7 @@ public class madeOfTableTest {
 
             assertNotNull(compoundID);
             assertEquals(25, compoundID.getElementID());
-        } catch (AssertionError e) {
+        } catch (AssertionError | DataException e) {
             e.printStackTrace();
         }
     }
