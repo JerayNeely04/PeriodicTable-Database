@@ -44,7 +44,7 @@ public class SingleTableGateway {
         String dropStatement = "DROP TABLE IF EXISTS SingleTable";
         String createStatement =
                 "CREATE TABLE SingleTable (id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY, name VARCHAR(25), atomicNum INT, atomicMass DOUBLE," +
-                        " elementID BIGINT, compoundID BIGINT, solute BIGINT, dissolvedBy BIGINT, " +
+                        " elementID BIGINT NOT NULL, compoundID BIGINT NOT NULL, solute BIGINT, dissolvedBy BIGINT, " +
                         " dissolves BIGINT)";
 
         try {
@@ -76,7 +76,7 @@ public class SingleTableGateway {
             }
         } catch (SQLException e) {
             // throw exception later
-            System.out.println("Create chemical table failed");
+            System.out.println("Create chemical row failed");
         }
 
         return new SingleTableGateway(id);
@@ -98,7 +98,7 @@ public class SingleTableGateway {
 
         } catch (SQLException e) {
             // throw exception later
-            System.out.println("Create acid table failed");
+            System.out.println("Create acid row failed");
         }
 
         return new SingleTableGateway(id);
@@ -119,7 +119,7 @@ public class SingleTableGateway {
             }
         } catch (SQLException e) {
             // throw exception later
-            System.out.println("Create compound table failed");
+            System.out.println("Create compound row failed");
         }
         return new SingleTableGateway(id);
     }
@@ -139,7 +139,7 @@ public class SingleTableGateway {
 
         } catch (SQLException e) {
             // throw exception later
-            System.out.println("Create base table failed");
+            System.out.println("Create base row failed");
         }
 
         return new SingleTableGateway(id);
@@ -161,7 +161,7 @@ public class SingleTableGateway {
 
         } catch (SQLException e) {
             // throw exception later
-            System.out.println("Create base table failed");
+            System.out.println("Create element row failed");
         }
 
         return new SingleTableGateway(id);
@@ -184,12 +184,12 @@ public class SingleTableGateway {
 
         } catch (SQLException e) {
             // throw exception later
-            System.out.println("Create base table failed");
+            System.out.println("Create metal row failed");
         }
 
         return new SingleTableGateway(id);
     }
-    
+
     public void persist() {
         String query = "UPDATE SingleTable SET name = ?, " +
                 "atomicNum = ?, " +
