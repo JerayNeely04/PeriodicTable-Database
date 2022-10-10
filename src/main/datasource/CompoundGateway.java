@@ -143,9 +143,11 @@ public class CompoundGateway {
     //Table Data Gateway
 
     /**
-     * Creates a new compound in the table
+     * creates a new base table in the database
+     *
+     * @throws DataException the database exception
      */
-    public static void createTable() {
+    public static void createTable() throws DataException {
         Connection conn = DatabaseConnection.getInstance().getConnection();
         String createStatement = "CREATE TABLE CompoundTable (" +
                 "id BIGINT PRIMARY KEY, " +
@@ -153,8 +155,9 @@ public class CompoundGateway {
 
         try (PreparedStatement stmt = conn.prepareStatement(createStatement)) {
             stmt.execute();
+
         } catch (SQLException e) {
-            System.out.println("Could not create Compound table");
+            throw new DataException("Could not create compound table", e);
         }
     }
 

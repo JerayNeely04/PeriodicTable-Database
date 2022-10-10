@@ -193,25 +193,19 @@ public class ElementGateway {
     /**
      * creates a new element table in the database
      */
-    public static void createTable() {
+    public static void createTable() throws DataException {
         Connection conn = DatabaseConnection.getInstance().getConnection();
-        String dropStatement = "DROP TABLE IF EXISTS ElementTable";
         String createStatement = "CREATE TABLE ElementTable (" +
                 "id BIGINT PRIMARY KEY, " +
                 "name VARCHAR(40), " +
                 "atomicNum BIGINT, " +
                 "atomicMass DOUBLE)";
 
-        try {
-            PreparedStatement stmt;
-            stmt = conn.prepareStatement(dropStatement);
+        try (PreparedStatement stmt = conn.prepareStatement(createStatement)) {
             stmt.execute();
-            stmt.close();
 
-            stmt = conn.prepareStatement(createStatement);
-            stmt.execute();
         } catch (SQLException e) {
-            System.out.println("Could not create element table");
+           throw new DataException("Could not create element table", e);
         }
     }
 
