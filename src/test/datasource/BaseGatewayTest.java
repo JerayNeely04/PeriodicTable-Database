@@ -11,7 +11,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 public class BaseGatewayTest {
-    Connection conn = DatabaseConnection.getInstance().getConnection();
+    private Connection conn = DatabaseConnection.getInstance().getConnection();
 
     /**
      * Tests to make sure a base can be created
