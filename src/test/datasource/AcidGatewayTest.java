@@ -18,8 +18,7 @@ public class AcidGatewayTest {
         // Equals tests
         assertEquals(1, gateway.getId());
         assertEquals("hydrochloric", gateway.getName());
-        assertEquals("1", gateway.getSolute());
-
+        assertEquals(1, gateway.getSolute());
     }
 
     @Test
@@ -37,11 +36,11 @@ public class AcidGatewayTest {
         // Equals tests
         assertEquals(1, foundAcidGateway.getId());
         assertEquals("hydrochloric", foundAcidGateway.getName());
-        assertEquals("1", foundAcidGateway.getSolute());
+        assertEquals(1, foundAcidGateway.getSolute());
 
     }
 
-    @Test
+    @Test(expected = DataException.class)
     public void testDeleteAcid() throws DataException {
         // Reset the id key and element table
         KeyRowDataGateway.reset();
@@ -55,7 +54,8 @@ public class AcidGatewayTest {
         assertEquals(1, gateway.getSolute());
 
         // Deleted test
-        assertTrue(gateway.delete());
+        gateway.delete();
+        new AcidGateway(1);
     }
 
     @Test

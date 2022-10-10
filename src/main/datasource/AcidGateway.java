@@ -95,7 +95,7 @@ public class AcidGateway {
      * @throws DataException
      * @return
      */
-    public boolean delete() throws DataException {
+    public void delete() throws DataException {
         String query = "DELETE FROM AcidTable WHERE id = " + id;
 
         try {
@@ -105,7 +105,6 @@ public class AcidGateway {
         } catch (SQLException e) {
             throw new DataException("Acid row could not be deleted", e);
         }
-        return false;
     }
 
     /**
