@@ -147,18 +147,11 @@ public class CompoundGateway {
      */
     public static void createTable() {
         Connection conn = DatabaseConnection.getInstance().getConnection();
-        String dropStatement = "DROP TABLE IF EXISTS CompoundTable";
         String createStatement = "CREATE TABLE CompoundTable (" +
                 "id BIGINT PRIMARY KEY, " +
                 "name VARCHAR(40))";
 
-        try {
-            PreparedStatement stmt;
-            stmt = conn.prepareStatement(dropStatement);
-            stmt.execute();
-            stmt.close();
-
-            stmt = conn.prepareStatement(createStatement);
+        try (PreparedStatement stmt = conn.prepareStatement(createStatement)) {
             stmt.execute();
         } catch (SQLException e) {
             System.out.println("Could not create Compound table");

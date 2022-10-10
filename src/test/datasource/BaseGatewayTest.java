@@ -3,21 +3,24 @@ package datasource;
 import gatewayDTOs.BaseDTO;
 import org.junit.Test;
 
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.ArrayList;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 public class BaseGatewayTest {
+    Connection conn = DatabaseConnection.getInstance().getConnection();
+
     /**
      * Tests to make sure a base can be created
      * @throws DataException the database exception
      */
     @Test
     public void testCreateConstructor() throws DataException {
-        // Resets
+        // Reset ids in the id table
         KeyRowDataGateway.reset();
-        BaseGateway.createTable();
 
         // Create new base
         BaseGateway baseGateway = new BaseGateway("Lithium hydroxide", 1);
@@ -25,6 +28,12 @@ public class BaseGatewayTest {
         assertEquals(1, baseGateway.getId());
         assertEquals("Lithium hydroxide", baseGateway.getName());
         assertEquals(1, baseGateway.getSolute());
+
+        try {
+            conn.rollback();
+        } catch (SQLException e) {
+            throw new DataException("Database couldn't rollback", e);
+        }
     }
 
     /**
@@ -33,9 +42,8 @@ public class BaseGatewayTest {
      */
     @Test
     public void testFindConstructor() throws DataException {
-        // Resets
+        // Reset ids in the id table
         KeyRowDataGateway.reset();
-        BaseGateway.createTable();
 
         // Create new base
         new BaseGateway("Lithium hydroxide", 1);
@@ -47,6 +55,12 @@ public class BaseGatewayTest {
         assertEquals(1, gateway.getId());
         assertEquals("Lithium hydroxide", gateway.getName());
         assertEquals(1, gateway.getSolute());
+
+        try {
+            conn.rollback();
+        } catch (SQLException e) {
+            throw new DataException("Database couldn't rollback", e);
+        }
     }
 
     /**
@@ -55,9 +69,8 @@ public class BaseGatewayTest {
      */
     @Test(expected = DataException.class)
     public void testDeleteBase() throws DataException {
-        // Resets
+        // Reset ids in the id table
         KeyRowDataGateway.reset();
-        BaseGateway.createTable();
 
         // Create new base
         BaseGateway baseGateway = new BaseGateway("Lithium hydroxide", 1);
@@ -70,6 +83,12 @@ public class BaseGatewayTest {
         // Delete test
         baseGateway.delete();
         new BaseGateway(1);
+
+        try {
+            conn.rollback();
+        } catch (SQLException e) {
+            throw new DataException("Database couldn't rollback", e);
+        }
     }
 
     /**
@@ -78,9 +97,8 @@ public class BaseGatewayTest {
      */
     @Test
     public void testUpdateBase() throws DataException {
-        // Resets
+        // Reset ids in the id table
         KeyRowDataGateway.reset();
-        BaseGateway.createTable();
 
         // Create new base
         BaseGateway baseGateway = new BaseGateway("Lithium hydroxide", 1);
@@ -95,6 +113,12 @@ public class BaseGatewayTest {
         assertEquals(2, baseGateway.getSolute());
 
         assertTrue(baseGateway.update());
+
+        try {
+            conn.rollback();
+        } catch (SQLException e) {
+            throw new DataException("Database couldn't rollback", e);
+        }
     }
 
     /**
@@ -103,9 +127,8 @@ public class BaseGatewayTest {
      */
     @Test
     public void testTDGFindById() throws DataException {
-        // Resets
+        // Reset ids in the id table
         KeyRowDataGateway.reset();
-        BaseGateway.createTable();
 
         ArrayList<String> namesToCheck = new ArrayList<String>();
         namesToCheck.add("Lithium hydroxide");
@@ -127,6 +150,12 @@ public class BaseGatewayTest {
         for (int i = 0; i < namesToCheck.size(); i++) {
             assertEquals(namesToCheck.get(i), basesList.get(i).getName());
         }
+
+        try {
+            conn.rollback();
+        } catch (SQLException e) {
+            throw new DataException("Database couldn't rollback", e);
+        }
     }
 
     /**
@@ -135,10 +164,8 @@ public class BaseGatewayTest {
      */
     @Test(expected = DataException.class)
     public void testParentRowDeleted() throws DataException {
-        // Resets
+        // Reset ids in the id table
         KeyRowDataGateway.reset();
-        BaseGateway.createTable();
-        CompoundGateway.createTable();
 
         // Create compound and base
         CompoundGateway compoundGateway = new CompoundGateway("Water");
@@ -153,5 +180,11 @@ public class BaseGatewayTest {
 
         // Try to find the row in the base table
         new BaseGateway(2);
+
+        try {
+            conn.rollback();
+        } catch (SQLException e) {
+            throw new DataException("Database couldn't rollback", e);
+        }
     }
 }

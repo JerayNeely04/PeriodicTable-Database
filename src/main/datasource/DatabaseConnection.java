@@ -7,6 +7,7 @@ import java.sql.SQLException;
 public class DatabaseConnection {
     private static DatabaseConnection databaseSingleton;
     private Connection connection = null;
+    private Boolean SHOULD_COMMIT = false;
     private  static final String DATABASE = "swe400_42";
     public static final String DB_LOCATION = "jdbc:mysql://db.cs.ship.edu:3306/" + DATABASE + "?useTimezone=true&serverTimezone=UTC";
     public static final String LOGIN_NAME = "swe400_4";
@@ -44,6 +45,8 @@ public class DatabaseConnection {
             // connection
             try {
                 connection = DriverManager.getConnection(DB_LOCATION, LOGIN_NAME, PASSWORD);
+                connection.setAutoCommit(SHOULD_COMMIT);
+
                 return connection;
             } catch (SQLException e) {
                 System.out.println("Error getting connection: " + e.getMessage());

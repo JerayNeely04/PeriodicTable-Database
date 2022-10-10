@@ -20,6 +20,12 @@ public class ElementGateway {
      */
     public ElementGateway(String name, long atomicNum, double atomicMass) throws DataException {
         this.connection = DatabaseConnection.getInstance().getConnection();
+        try {
+            this.connection.setAutoCommit(false);
+        } catch (SQLException e) {
+            throw new DataException("Could not set auto commit to false", e);
+        }
+
         this.name = name;
         this.atomicNum = atomicNum;
         this.atomicMass = atomicMass;
@@ -34,6 +40,12 @@ public class ElementGateway {
      */
     public ElementGateway(long id) throws DataException {
         this.connection = DatabaseConnection.getInstance().getConnection();
+        try {
+            this.connection.setAutoCommit(false);
+        } catch (SQLException e) {
+            throw new DataException("Could not set auto commit to false", e);
+        }
+
         String query = "SELECT * FROM ElementTable WHERE id = " + id;
 
         try {
