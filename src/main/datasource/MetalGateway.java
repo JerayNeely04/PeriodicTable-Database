@@ -47,13 +47,8 @@ public class MetalGateway {
                 "atomicNum BIGINT, " +
                 "atomicMass DOUBLE)";
 
-        try{
-            PreparedStatement stmt;
-            stmt = conn.prepareStatement(dropStatement);
-            stmt.execute();
-            stmt.close();
+        try(PreparedStatement stmt = conn.prepareStatement(createStatement)){
 
-            stmt = conn.prepareStatement(createStatement);
             stmt.execute();
 
         }catch(SQLException e){
@@ -71,8 +66,8 @@ public class MetalGateway {
                 "atomicNum = ?, " +
                 "atomicMass = ?" +
                 "WHERE id = " + id;
-        try{
-            PreparedStatement stmt = connection.prepareStatement((query));
+        try(PreparedStatement stmt = connection.prepareStatement(query)){
+
             stmt.setString(1,name);
             stmt.setLong(2,atomicNum);
             stmt.setDouble(3,atomicMass);
@@ -97,8 +92,8 @@ public class MetalGateway {
     public boolean delete(){
         String query = "DELETE  FROM MetalTable WHERE id = ?";
 
-        try{
-            PreparedStatement stmt = connection.prepareStatement((query));
+        try(PreparedStatement stmt = connection.prepareStatement(query)){
+
             stmt.setLong(1,id);
 
             if(stmt.executeUpdate() > 0){
@@ -114,19 +109,20 @@ public class MetalGateway {
      * every entry in the element table
      * @return DTO containing the element data
      */
-    public ArrayList<MetalDTO> findAll()
+    public static ArrayList<MetalDTO> findAll()
     {
         Connection conn = DatabaseConnection.getInstance().getConnection();
         String Query = "SELECT * FROM MetalTable ORDER BY id";
         ArrayList<MetalDTO> metalList = new ArrayList<>();
-        try{
-            PreparedStatement stmt = conn.prepareStatement(Query);
+        try(PreparedStatement stmt = conn.prepareStatement(Query)){
+
             ResultSet results = stmt.executeQuery();
 
             while(results.next()){
                 MetalDTO metal = createMetalRecord(results);
                 metalList.add(metal);
             }
+            return metalList;
         } catch (SQLException e) {
             System.out.println("Could not fetch all metals");
         }
@@ -143,8 +139,8 @@ public class MetalGateway {
 
         String query = "SELECT * FROM MetalTable WHERE atomicNum = "+ atomicNum;
 
-        try{
-            PreparedStatement stmt = conn.prepareStatement(query);
+        try(PreparedStatement stmt = conn.prepareStatement(query)){
+
             ResultSet results = stmt.executeQuery();
             results.next();
 
@@ -174,17 +170,17 @@ public class MetalGateway {
      * @param name of the element
      * @return the element with the matching name
      */
-    public MetalDTO findByName(String name)
+    public static MetalDTO findByName(String name)
     {
         Connection conn = DatabaseConnection.getInstance().getConnection();
         String Query = "SELECT * FROM MetalTable WHERE name =" + name + "";
 
-        try{
-            PreparedStatement stmt;
-            stmt = conn.prepareStatement(Query);
+        try(PreparedStatement stmt = conn.prepareStatement(Query)){
+
             ResultSet results =stmt.executeQuery();
             results.next();
             return createMetalRecord(results);
+
         } catch (SQLException e) {
             System.out.println("No Metal with name " + name + " found");
         }
@@ -200,11 +196,11 @@ public class MetalGateway {
         String query = "INSERT INTO MetalTable (id,name,atomicNum,atomicMass) VALUES " +
                 "(?,?,?,?)";
 
-        try{
+        try(PreparedStatement stmt = conn.prepareStatement(query)){
             long id = KeyRowDataGateway.generateId();
             this.id = id;
 
-            PreparedStatement stmt = conn.prepareStatement(query);
+
             stmt.setLong(1,id);
             stmt.setString(2,name);
             stmt.setLong(3,atomicNum);
