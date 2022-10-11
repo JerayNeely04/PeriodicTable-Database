@@ -15,6 +15,12 @@ public class AcidGateway {
     private long solute;
     private final Connection connection;
 
+    /**
+     * creates a new base object and adds the entry into the database.
+     * @param name
+     * @param solute
+     * @throws DataException
+     */
     public AcidGateway(String name, long solute)throws DataException{
 
         this.connection = DatabaseConnection.getInstance().getConnection();
@@ -23,12 +29,17 @@ public class AcidGateway {
         this.createRow();
     }
 
+    /**
+     * fins an existing base in the base table
+     * @param id
+     * @throws DataException
+     */
     public AcidGateway(long id)throws DataException{
         this.connection = DatabaseConnection.getInstance().getConnection();
         String query = "SELECT * FROM AcidTable WHERE id = " + id;
 
-        try {
-            PreparedStatement stmt = this.connection.prepareStatement(query);
+        try(PreparedStatement stmt = this.connection.prepareStatement(query)) {
+
             ResultSet results = stmt.executeQuery();
             results.next();
 
@@ -49,10 +60,10 @@ public class AcidGateway {
 
         String query = "INSERT INTO AcidTable (id,name,solute) VALUES (?,?,?)";
 
-        try{
+        try(PreparedStatement stmt =connection.prepareStatement(query)){
             long id = KeyRowDataGateway.generateId();
             this.id = id;
-            PreparedStatement stmt = connection.prepareStatement(query);
+
             stmt.setLong(1, id);
             stmt.setString(2, name);
             stmt.setLong(3, solute);
@@ -75,8 +86,8 @@ public class AcidGateway {
                 "solute = ? " +
                 "WHERE id = " + id;
 
-        try {
-            PreparedStatement stmt = connection.prepareStatement(query);
+        try(PreparedStatement stmt = connection.prepareStatement(query)) {
+
             stmt.setString(1, name);
             stmt.setLong(2, solute);
 
@@ -98,8 +109,8 @@ public class AcidGateway {
     public void delete() throws DataException {
         String query = "DELETE FROM AcidTable WHERE id = " + id;
 
-        try {
-            PreparedStatement stmt = connection.prepareStatement(query);
+        try (PreparedStatement stmt = this.connection.prepareStatement(query)){
+
             stmt.executeUpdate();
 
         } catch (SQLException e) {
@@ -119,13 +130,7 @@ public class AcidGateway {
                 "name VARCHAR(40), " +
                 "solute BIGINT)";
 
-        try {
-            PreparedStatement stmt;
-            stmt = conn.prepareStatement(dropStatement);
-            stmt.execute();
-            stmt.close();
-
-            stmt = conn.prepareStatement(createStatement);
+        try(PreparedStatement stmt = conn.prepareStatement(createStatement)) {
             stmt.execute();
         } catch (SQLException e) {
             throw new DataException("Could not create Acid table", e);
@@ -134,7 +139,7 @@ public class AcidGateway {
 
     /**
      * find every entry that is within the table.
-     * @return the Acid DTO containing the data base.
+     * @return the Acid DTO containing the database.
      * @throws DataException
      */
         public static ArrayList<AcidDTO> findAll()throws DataException
@@ -143,8 +148,8 @@ public class AcidGateway {
         String Query = "SELECT * FROM AcidTable ORDER BY id";
 
         ArrayList<AcidDTO> AcidList = new ArrayList<>();
-        try{
-            PreparedStatement stmt = conn.prepareStatement(Query);
+        try(PreparedStatement stmt = conn.prepareStatement(Query)){
+
             ResultSet results = stmt.executeQuery();
 
             while(results.next()){
@@ -158,13 +163,19 @@ public class AcidGateway {
 
     }
 
+    /**
+     *try to retrieve all bases that are soluble by a valid solute Id
+     * @param solute
+     * @return the element row with the matching atomic number as a DTO
+     * @throws DataException
+     */
     public static ArrayList<AcidDTO> findBySolute(long solute)throws DataException{
         Connection conn = DatabaseConnection.getInstance().getConnection();
         String query = "SELECT * FROM AcidTable WHERE solute = " + solute;
         ArrayList<AcidDTO> AcidList = new ArrayList<>();
 
-        try {
-            PreparedStatement stmt = conn.prepareStatement(query);
+        try (PreparedStatement stmt = conn.prepareStatement(query)){
+
             ResultSet results = stmt.executeQuery();
 
             while (results.next()) {
@@ -181,13 +192,18 @@ public class AcidGateway {
 
     }
 
+    /**
+     *
+     * @param name of the element
+     * @return the element row with the matching name as a DTO
+     * @throws DataException
+     */
     public static AcidDTO findByName(String name) throws DataException{
         Connection conn = DatabaseConnection.getInstance().getConnection();
         String query = "SELECT * FROM AcidTable WHERE name = '" + name + "'";
 
-        try {
-            PreparedStatement stmt;
-            stmt = conn.prepareStatement(query);
+        try(PreparedStatement stmt = conn.prepareStatement(query)) {
+
             ResultSet results = stmt.executeQuery();
             results.next();
 
@@ -198,14 +214,19 @@ public class AcidGateway {
            throw new DataException("No Acid with name: " + name + " found.");
         }
 
-
     }
+
+    /**
+     * name of the element
+     * @param solute the solute value
+     * @throws DataException
+     */
     public static void deleteAllFromForeignReference(long solute)throws DataException{
         Connection conn = DatabaseConnection.getInstance().getConnection();
         String query = "DELETE FROM AcidTable WHERE solute = " + solute;
 
-        try {
-            PreparedStatement stmt = conn.prepareStatement(query);
+        try (PreparedStatement stmt = conn.prepareStatement(query)){
+
             stmt.executeUpdate();
 
         } catch (SQLException e) {
@@ -232,26 +253,50 @@ public class AcidGateway {
 
     }
 
+    /**
+     * sets the row id
+     * @param id
+     */
     public void setId(long id) {
         this.id = id;
     }
 
+    /**
+     * set the name of the acid
+     * @param name
+     */
     public void setName(String name) {
         this.name = name;
     }
 
+    /**
+     * return the bases solute
+     * @param solute
+     */
     public void setSolute(long solute) {
         this.solute = solute;
     }
 
+    /**
+     * gets the row id
+     * @return
+     */
     public long getId() {
         return id;
     }
 
+    /**
+     * gets the name of the acid
+     * @return
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * gets the value of the solute.
+     * @return
+     */
     public long getSolute() {
         return solute;
     }
