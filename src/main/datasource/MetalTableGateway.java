@@ -6,47 +6,63 @@ import gatewayDTOs.Metal;
 
 public class MetalTableGateway {
     private long dissolvedBy;
-    private final Connection connection;
-    public MetalTableGateway(long dissolvedBy)
-    {
-        this.connection = DatabaseConnection.getInstance().getConnection();
+    private final Connection conn;
+
+    /**
+     * The constructor for the Metal Table Gateway
+     * @param dissolvedBy
+     */
+    public MetalTableGateway(long dissolvedBy) throws DataException {
+        this.conn = DatabaseConnection.getInstance().getConnection();
         this.dissolvedBy = dissolvedBy;
         this.insertRow(dissolvedBy);
     }
-    public static void createTable() {
+
+    /**
+     * Creates the Metal table in the database
+     */
+    public static void createTable() throws DataException {
         Connection connection = DatabaseConnection.getInstance().getConnection();
-        String dropStatement = "DROP TABLE IF EXISTS MetalTable";
         String createStatement = "CREATE TABLE MetalTable (" +
                 "dissolvedBy BIGINT, " +
-                "FOREIGN KEY (dissolvedBy) REFERENCES acid(id) ON DELETE CASCADE" +
+                "FOREIGN KEY (dissolvedBy) REFERENCES AcidTable(solute) ON DELETE CASCADE" +
                 ")";
         try {
-            // drop old table
             PreparedStatement stmt;
-            stmt = connection.prepareStatement(dropStatement);
-            stmt.execute();
-            stmt.close();
-
-            // create new table
             stmt = connection.prepareStatement(createStatement);
             stmt.execute();
+            stmt.close();
         } catch (SQLException e) {
-            System.out.println("ERROR: cannot create Metal Table");
+            throw new DataException(e.getMessage());
         }
     }
+
+    /**
+     * getter for DissolvedBy
+     * @return dissolvedBy
+     */
     public long getDissolvedBy() { return dissolvedBy; }
-    public static Metal createMetal(ResultSet rs) {
+
+    /**
+     * Create the Metal DTO with information from ResultSet
+     * @param rs containing the info for the DTO
+     * @return the new DTO
+     */
+    public static Metal createMetal(ResultSet rs) throws DataException {
             try {
                 long dissolvedBy = rs.getLong("dissolvedBy");
+
                 return new Metal(dissolvedBy);
             } catch (SQLException e) {
-                // throw exception later
-                System.out.println("Create metal failed");
+                throw new DataException(e.getMessage());
             }
-            return null;
     }
 
-    public static ArrayList<Metal> findAll() {
+    /**
+     * Find all metal from the Metal Table
+     * @return an array list with all the DTO's of the Metal Table
+     */
+    public static ArrayList<Metal> findAll() throws DataException {
         Connection connection = DatabaseConnection.getInstance().getConnection();
         String query = "SELECT * FROM MetalTable";
         ArrayList<Metal> metalList = new ArrayList<>();
@@ -56,17 +72,23 @@ public class MetalTableGateway {
             ResultSet rs = stmt.executeQuery();
 
             while(rs.next()) {
-                Metal metal = createMentalRecord(rs);
+                Metal metal = createMetal(rs);
                 metalList.add(metal);
             }
+
             return metalList;
         } catch (SQLException e) {
-            System.out.println("Could not fetch all metal");
+            throw new DataException(e.getMessage());
         }
-        return null;
     }
 
-    public static Metal findDissolvedBy(long dissolvedBy) {
+    /**
+     * find constructor that uses the dissolvedBy to find the Metal
+     * @param dissolvedBy
+     * @return the new constructor with the specified dissolvedBy
+     * @throws DataException
+     */
+    public static Metal findDissolvedBy(long dissolvedBy) throws DataException {
         String query = "SELECT * FROM MetalTable WHERE dissolvedBy = " + dissolvedBy;
 
         try {
@@ -75,65 +97,65 @@ public class MetalTableGateway {
             ResultSet rs = stmt.executeQuery();
 
             if (rs.next()) {
-                return createMentalRecord(rs);
+                return createMetal(rs);
             }
             rs.close();
         } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-    public static Metal createMentalRecord(ResultSet results) {
-        try {
-            long dissolvedBy = results.getLong("dissolvedBy");
-
-            return new Metal(dissolvedBy);
-        } catch(SQLException e) {
-            System.out.println("Metal was not created");
+            throw new DataException(e.getMessage());
         }
         return null;
     }
 
-    public boolean delete() {
+    /**
+     * Delete the current row for the Metal table
+     * @return a boolean if one row is affected after we execute the query
+     * @throws DataException
+     */
+    public boolean delete() throws DataException {
         String query = "DELETE FROM MetalTable WHERE dissolvedBy = " + dissolvedBy;
         try {
-            PreparedStatement stmt = this.connection.prepareStatement(query);
+            PreparedStatement stmt = this.conn.prepareStatement(query);
 
             if (stmt.executeUpdate() > 0) {
                 return true;
             }
         } catch (SQLException e) {
-            System.out.println("Failed to delete a row in the table!");
+            throw new DataException(e.getMessage());
         }
         return false;
     }
-    public boolean persist() {
+
+    /**
+     * Updating the current Metal in the Metal Table
+     * @return true if changes were made
+     */
+    public boolean persist() throws DataException {
         String query = "UPDATE MetalTable SET dissolvedBy = ? WHERE dissolvedBy =" + dissolvedBy;
         try {
-            PreparedStatement stmt = this.connection.prepareStatement(query);
+            PreparedStatement stmt = this.conn.prepareStatement(query);
             stmt.setLong(1, this.dissolvedBy);
             if (stmt.executeUpdate() > 0) {
                 return true;
             }
         } catch (SQLException e) {
-            System.out.println("Data not persisted to the database.");
+            throw new DataException(e.getMessage());
         }
         return false;
     }
-    public void insertRow(long dissolvedBy) {
+
+    /**
+     * insert row into Metal Table
+     * @param dissolvedBy value insert into Metal Table
+     */
+    public void insertRow(long dissolvedBy) throws DataException {
         String query = "INSERT INTO MetalTable (dissolvedBy) VALUES (?)";
         try {
-            PreparedStatement stmt = connection.prepareStatement(query);
+            PreparedStatement stmt = conn.prepareStatement(query);
             stmt.setLong(1, dissolvedBy);
 
-            int n = stmt.executeUpdate();
-            if(n > 0) {
-                System.out.println("Insert SUCCEEDED with " + n + " affected rows");
-            } else {
-                System.out.println("Insert FAILED");
-            }
+            stmt.executeUpdate();
         } catch (SQLException e) {
-            System.out.println("Error: Couldn't insert metal into table");
+            throw new DataException(e.getMessage());
         }
     }
 }
