@@ -121,6 +121,21 @@ public class ChemicalTableGateway {
     }
 
     /**
+     *
+     */
+    public static Chemical findByName(String name) throws DataException {
+        String query = "SELECT * FROM ChemicalTable WHERE name = " + name;
+        try(PreparedStatement stmt = DatabaseConnection.getInstance().getConnection().prepareStatement(query)) {
+            ResultSet results = stmt.executeQuery();
+            results.next();
+
+            return new Chemical(results.getLong("id"), results.getString("name"));
+        } catch (SQLException e) {
+            throw new DataException("Failed to get chemical dto", e);
+        }
+    }
+
+    /**
      * Delete the current row for the chemical table.
      * @return a boolean if one row is affected after we execute the query.
      * @throws DataException SQL exception if we cannot delete from the table.

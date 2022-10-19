@@ -1,5 +1,10 @@
 package DomainModel;
 
+import datasource.DataException;
+import datasource.ChemicalTableGateway;
+import datasource.ElementTableGateway;
+import gatewayDTOs.Chemical;
+
 public class ElementMapper implements ElementMapperInterface {
 
     private Element myElement;
@@ -8,10 +13,10 @@ public class ElementMapper implements ElementMapperInterface {
      * Create a new element in the database, and store the resulting model object
      * into my instance variable
      */
-    public ElementMapper (String name, long atomicNumber, double atomicMass) {
-        ElementTableGateway.createElement(name, atomicNumber, atomicMass);
+    public ElementMapper (String name, long atomicNumber, double atomicMass) throws DataException {
         ChemicalTableGateway.createChemical(name);
-
+        long id = ChemicalTableGateway.findByName(name).getId();
+        ElementTableGateway.createElement(id, atomicNumber, atomicMass);
     }
 
     /**
