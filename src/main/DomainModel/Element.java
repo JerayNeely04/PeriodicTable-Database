@@ -1,6 +1,7 @@
 package DomainModel;
 
 public class Element {
+    private String name;
     private long atomicNumber;
     private double atomicMass;
 
@@ -9,10 +10,17 @@ public class Element {
      * @param atomicNumber is the primary key
      * @param atomicMass
      */
-    public Element(long atomicNumber, double atomicMass) {
+    public Element(String name, long atomicNumber, double atomicMass) {
+        this.name = name;
         this.atomicNumber = atomicNumber;
         this.atomicMass = atomicMass;
     }
+
+    /**
+     * Getter for the name
+     * @return the name of the element
+     */
+    public String getName() { return name; }
 
     /**
      * Getter for the Atomic number
@@ -23,26 +31,10 @@ public class Element {
     }
 
     /**
-     * Setter for the Atomic number
-     * @param atomicNumber
-     */
-    public void setAtomicNumber(long atomicNumber) {
-        this.atomicNumber = atomicNumber;
-    }
-
-    /**
      * Getter for thr atomic mass
      * @return the atomic mass of the element
      */
     public double getAtomicMass() {
         return atomicMass;
-    }
-
-    /**
-     * Setter for the atomic mass
-     * @param atomicMass
-     */
-    public void setAtomicMass(double atomicMass) {
-        this.atomicMass = atomicMass;
     }
 }
