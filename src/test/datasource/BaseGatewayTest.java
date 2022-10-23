@@ -1,6 +1,6 @@
 package datasource;
 
-import gatewayDTOs.Base;
+import gatewayDTOs.BaseDTO;
 import org.junit.Test;
 
 import java.sql.Connection;
@@ -35,7 +35,7 @@ public class BaseGatewayTest {
     {
         conn.setAutoCommit(false);
         BaseTableGateway baseGateway = new BaseTableGateway(1);
-        Base findBase = BaseTableGateway.findSolute(1);
+        BaseDTO findBase = BaseTableGateway.findSolute(1);
 
         assertNotNull(findBase);
         assertEquals(1, findBase.getSolute());
@@ -54,7 +54,7 @@ public class BaseGatewayTest {
         baseGateway.insertRow(3);
         baseGateway.insertRow(4);
 
-        ArrayList<Base> allBaseRecords = BaseTableGateway.findAll();
+        ArrayList<BaseDTO> allBaseRecords = BaseTableGateway.findAll();
 
         assertNotNull(allBaseRecords);
         assertEquals(4, allBaseRecords.size());
@@ -73,7 +73,7 @@ public class BaseGatewayTest {
         assertEquals(1, baseGateway.getSolute());
         baseGateway.persist();
 
-        Base findBase = BaseTableGateway.findSolute(1);
+        BaseDTO findBase = BaseTableGateway.findSolute(1);
 
         assertNotNull(findBase);
         assertEquals(1, findBase.getSolute());
@@ -89,7 +89,7 @@ public class BaseGatewayTest {
         conn.setAutoCommit(false);
 
         BaseTableGateway baseGateway = new BaseTableGateway(1);
-        Base findBase = BaseTableGateway.findSolute(1);
+        BaseDTO findBase = BaseTableGateway.findSolute(1);
         assertNotNull(findBase);
         assertEquals(1, findBase.getSolute());
 

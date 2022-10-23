@@ -1,6 +1,6 @@
 package datasource;
 
-import gatewayDTOs.Element;
+import gatewayDTOs.ElementDTO;
 import org.junit.Test;
 
 import java.sql.Connection;
@@ -22,8 +22,8 @@ public class ElementGatewayTest {
     public void testCreateElement() throws SQLException {
         conn.setAutoCommit(false);
 
-        Element Carbon = new Element(11, 6.2);
-        ElementTableGateway elementGateway = ElementTableGateway.createElement(11, 6.2);
+        ElementDTO Carbon = new ElementDTO(11, 6.2);
+        ElementTableGateway elementGateway = ElementTableGateway.createElement(1,11, 6.2);
 
         assertEquals(Carbon.getAtomicMass(), elementGateway.elementDTO.getAtomicMass(), 0.001);
         conn.rollback();
@@ -37,8 +37,8 @@ public class ElementGatewayTest {
     public void testPersistElement() throws SQLException {
         conn.setAutoCommit(false);
 
-        Element element = new Element(4, 3.3);
-        ElementTableGateway elementGateway = ElementTableGateway.createElement(4, 3.3);
+        ElementDTO element = new ElementDTO(4, 3.3);
+        ElementTableGateway elementGateway = ElementTableGateway.createElement(2,4, 3.3);
         assertEquals(element.getAtomicMass(), elementGateway.elementDTO.getAtomicMass(), 0.001);
 
         elementGateway.elementDTO.setAtomicMass(8.6);
@@ -54,8 +54,8 @@ public class ElementGatewayTest {
      */
     @Test
     public void testDeleteElement() throws DataException {
-        Element element = new Element(3, 1.8);
-        ElementTableGateway elementGateway = ElementTableGateway.createElement(3, 1.8);
+        ElementDTO element = new ElementDTO(3, 1.8);
+        ElementTableGateway elementGateway = ElementTableGateway.createElement(3,3, 1.8);
         assertTrue(elementGateway.delete());
     }
 
@@ -75,7 +75,7 @@ public class ElementGatewayTest {
      */
     @Test
     public void testFindAll() throws DataException {
-        ArrayList<Element> elements = ElementTableGateway.findAll();
+        ArrayList<ElementDTO> elements = ElementTableGateway.findAll();
         assertEquals(4, elements.size());           /* we have 4 rows in our database table by default */
     }
 }

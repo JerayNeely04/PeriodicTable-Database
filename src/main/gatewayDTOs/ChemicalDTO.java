@@ -3,7 +3,7 @@ package gatewayDTOs;
 /**
  * Chemical Dto for the Chemical gateway
  */
-public class Chemical {
+public class ChemicalDTO {
     private long id;
     private String name;
 
@@ -12,7 +12,7 @@ public class Chemical {
      * @param id is the primary key for the chemical Table
      * @param name name of the Chemical
      */
-    public Chemical(long id, String name) {
+    public ChemicalDTO(long id, String name) {
         this.id = id;
         this.name = name;
     }

@@ -3,14 +3,14 @@ package gatewayDTOs;
 /**
  * Metal Dto for the Metal Gateway
  */
-public class Metal {
+public class MetalDTO {
     private long dissolvedBy;
 
     /**
      * Metal Constructor
      * @param dissolvedBy
      */
-    public Metal(long dissolvedBy)
+    public MetalDTO(long dissolvedBy)
     {
         this.dissolvedBy = dissolvedBy;
     }

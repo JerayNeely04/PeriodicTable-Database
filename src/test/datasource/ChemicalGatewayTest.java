@@ -1,6 +1,6 @@
 package datasource;
 
-import gatewayDTOs.Chemical;
+import gatewayDTOs.ChemicalDTO;
 import org.junit.Test;
 
 import java.sql.Connection;
@@ -22,7 +22,7 @@ public class ChemicalGatewayTest {
     public void testCreateChemical() throws SQLException {
         conn.setAutoCommit(false);
 
-        Chemical Carbon = new Chemical(1, "Carbon");
+        ChemicalDTO Carbon = new ChemicalDTO(1, "Carbon");
         ChemicalTableGateway chemicalGateway = ChemicalTableGateway.createChemical("Carbon");
 
         assertEquals(Carbon.getName(), chemicalGateway.chemicalDTO.getName());
@@ -37,7 +37,7 @@ public class ChemicalGatewayTest {
     public void testPersistChemical() throws SQLException {
         conn.setAutoCommit(false);
 
-        Chemical chem = new Chemical(2, "Mercury");
+        ChemicalDTO chem = new ChemicalDTO(2, "Mercury");
         ChemicalTableGateway chemicalGateway = ChemicalTableGateway.createChemical("Mercury");
         assertEquals(chem.getName(), chemicalGateway.chemicalDTO.getName());
         chemicalGateway.chemicalDTO.setName("Lead");
@@ -54,7 +54,7 @@ public class ChemicalGatewayTest {
     @Test
     public void testDeleteChemical() throws SQLException {
         conn.setAutoCommit(false);
-        Chemical chem = new Chemical(3, "Mercury");
+        ChemicalDTO chem = new ChemicalDTO(3, "Mercury");
         ChemicalTableGateway chemicalGateway = ChemicalTableGateway.createChemical("Mercury");
         assertTrue(chemicalGateway.delete());
     }
@@ -75,7 +75,7 @@ public class ChemicalGatewayTest {
      */
     @Test
     public void testFindAll() throws DataException {
-        ArrayList<Chemical> chemicalsList = ChemicalTableGateway.findAll();
+        ArrayList<ChemicalDTO> chemicalsList = ChemicalTableGateway.findAll();
         assertEquals(11, chemicalsList.size());    /* We already have 11 rows in our database by default */
     }
 }

@@ -1,6 +1,6 @@
 package datasource;
 
-import gatewayDTOs.Base;
+import gatewayDTOs.BaseDTO;
 import java.sql.*;
 import java.util.ArrayList;
 
@@ -51,10 +51,10 @@ public class BaseTableGateway {
      * @param rs containing the info for the DTO
      * @return the new DTO
      */
-    public static Base createBase(ResultSet rs) throws DataException {
+    public static BaseDTO createBase(ResultSet rs) throws DataException {
         try {
             long solute = rs.getLong("solute");
-            return new Base(solute);
+            return new BaseDTO(solute);
         } catch (SQLException e) {
             throw new DataException(e.getMessage());
         }
@@ -64,17 +64,17 @@ public class BaseTableGateway {
      * Find all Base from the Base Table
      * @return an array list with all the DTO's of the Base Table
      */
-    public static ArrayList<Base> findAll() throws DataException {
+    public static ArrayList<BaseDTO> findAll() throws DataException {
         Connection connection = DatabaseConnection.getInstance().getConnection();
         String query = "SELECT * FROM BaseTable ORDER BY solute";
-        ArrayList<Base> baseList = new ArrayList<>();
+        ArrayList<BaseDTO> baseList = new ArrayList<>();
 
         try {
             PreparedStatement stmt = connection.prepareStatement(query);
             ResultSet rs = stmt.executeQuery();
 
             while(rs.next()) {
-                Base base = createBase(rs);
+                BaseDTO base = createBase(rs);
                 baseList.add(base);
             }
             return baseList;
@@ -89,7 +89,7 @@ public class BaseTableGateway {
      * @return the new constructor with the specified solute
      * @throws DataException
      */
-    public static Base findSolute(long solute) throws DataException {
+    public static BaseDTO findSolute(long solute) throws DataException {
         String query = "SELECT * FROM BaseTable WHERE solute = " + solute;
 
         try {

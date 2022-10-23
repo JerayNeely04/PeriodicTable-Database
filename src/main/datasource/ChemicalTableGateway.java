@@ -1,14 +1,13 @@
 package datasource;
 
-import gatewayDTOs.Chemical;
-import gatewayDTOs.Element;
+import gatewayDTOs.ChemicalDTO;
 
 import java.sql.*;
 import java.util.ArrayList;
 
 public class ChemicalTableGateway {
 
-    protected Chemical chemicalDTO;              /* I used this to act as a DTO and hold info for the current Chemical */
+    protected ChemicalDTO chemicalDTO;              /* I used this to act as a DTO and hold info for the current Chemical */
     private Connection connection = null;
 
     /**
@@ -24,7 +23,7 @@ public class ChemicalTableGateway {
             ResultSet results = stmt.executeQuery();
             results.next();
 
-            chemicalDTO = new Chemical(id,results.getString("name"));
+            chemicalDTO = new ChemicalDTO(id,results.getString("name"));
         } catch (SQLException e) {
             throw new DataException("Failed to create Chemical gateway!", e);
         }
@@ -123,13 +122,13 @@ public class ChemicalTableGateway {
     /**
      *
      */
-    public static Chemical findByName(String name) throws DataException {
-        String query = "SELECT * FROM ChemicalTable WHERE name = " + name;
+    public static ChemicalDTO findByName(String name) throws DataException {
+        String query = "SELECT * FROM ChemicalTable WHERE name = \"" + name + "\"";
         try(PreparedStatement stmt = DatabaseConnection.getInstance().getConnection().prepareStatement(query)) {
             ResultSet results = stmt.executeQuery();
             results.next();
 
-            return new Chemical(results.getLong("id"), results.getString("name"));
+            return new ChemicalDTO(results.getLong("id"), results.getString("name"));
         } catch (SQLException e) {
             throw new DataException("Failed to get chemical dto", e);
         }
@@ -156,16 +155,16 @@ public class ChemicalTableGateway {
      * @return an array list with all the DTO's of the Chemical table.
      * @throws DataException SQL exception if we cannot find all the chemicals.
      */
-    public static ArrayList<Chemical> findAll() throws DataException {
+    public static ArrayList<ChemicalDTO> findAll() throws DataException {
         Connection conn = DatabaseConnection.getInstance().getConnection();
         String query = "SELECT * FROM ChemicalTable ORDER BY id";
-        ArrayList<Chemical> chemicalsList = new ArrayList<>();
+        ArrayList<ChemicalDTO> chemicalsList = new ArrayList<>();
 
         try(PreparedStatement stmt = conn.prepareStatement(query)) {
             ResultSet results = stmt.executeQuery();
 
             while (results.next()) {
-                Chemical chemical = createChemicalRecord(results);
+                ChemicalDTO chemical = createChemicalRecord(results);
                 chemicalsList.add(chemical);
             }
             return chemicalsList;
@@ -180,11 +179,11 @@ public class ChemicalTableGateway {
      * @return new Chemical object.
      * @throws DataException SQL exception if we cannot create the Chemical record.
      */
-    private static Chemical createChemicalRecord(ResultSet results) throws DataException {
+    private static ChemicalDTO createChemicalRecord(ResultSet results) throws DataException {
         try {
             long id = results.getLong("id");
             String name = results.getString("name");
-            return new Chemical(id, name);
+            return new ChemicalDTO(id, name);
         } catch (SQLException e) {
             throw new DataException("Could not create a Chemical DTO!", e);
         }

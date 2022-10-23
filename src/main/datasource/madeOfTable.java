@@ -2,9 +2,7 @@ package datasource;
 
 import java.sql.*;
 import java.util.ArrayList;
-import gatewayDTOs.madeOf;
-
-import javax.xml.transform.Result;
+import gatewayDTOs.madeOfDTO;
 
 public class madeOfTable {
     private long compoundID;
@@ -39,12 +37,12 @@ public class madeOfTable {
      * @param rs ResultSet containing the information for the DTO
      * @return New DTO containing the info in the ResultSet
      */
-    public static madeOf createMadeOf(ResultSet rs) throws DataException {
+    public static madeOfDTO createMadeOf(ResultSet rs) throws DataException {
         try {
             long compoundID = rs.getLong("compoundID");
             long elementID = rs.getLong("elementID");
 
-            return new madeOf(compoundID, elementID);
+            return new madeOfDTO(compoundID, elementID);
         } catch (SQLException e) {
             throw new DataException(e.getMessage());
         }
@@ -57,9 +55,9 @@ public class madeOfTable {
      *         Return null is nothing is found or exception is thrown
      * @throws DataException - for when either the connection or the query failed
      */
-    public static ArrayList<madeOf> findAll() throws DataException {
+    public static ArrayList<madeOfDTO> findAll() throws DataException {
         Connection conn = DatabaseConnection.getInstance().getConnection();
-        ArrayList<madeOf> madeOfList = new ArrayList<>();
+        ArrayList<madeOfDTO> madeOfList = new ArrayList<>();
 
         try {
             String query = "SELECT * FROM madeOfTable";
@@ -67,7 +65,7 @@ public class madeOfTable {
             ResultSet rs = stmt.executeQuery();
 
             while (rs.next()) {
-                madeOf MadeOf = createMadeOf(rs);
+                madeOfDTO MadeOf = createMadeOf(rs);
                 madeOfList.add(MadeOf);
             }
 
@@ -84,7 +82,7 @@ public class madeOfTable {
      * @return ResultSet containing the row.
      *         Return null is nothing is found or exception is thrown
      */
-    public static madeOf findByCompoundID(long compoundID) throws DataException {
+    public static madeOfDTO findByCompoundID(long compoundID) throws DataException {
         try (Connection conn = DatabaseConnection.getInstance().getConnection()) {
             String query = "SELECT * FROM madeOfTable WHERE compoundID = " + compoundID;
             PreparedStatement stmt = conn.prepareStatement(query);
@@ -107,7 +105,7 @@ public class madeOfTable {
      * @return ResultSet containing the row.
      *         Return null is nothing is found or exception is thrown
      */
-    public static madeOf findByElementID(long elementID) throws DataException {
+    public static madeOfDTO findByElementID(long elementID) throws DataException {
         Connection conn = DatabaseConnection.getInstance().getConnection();
 
         try {

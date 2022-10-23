@@ -3,14 +3,14 @@ package gatewayDTOs;
 /**
  * Base Dto for the Base Gateway
  */
-public class Base {
+public class BaseDTO {
     private long solute;
 
     /**
      * Base constructor
      * @param solute
      */
-    public Base(long solute) {
+    public BaseDTO(long solute) {
         this.solute = solute;
     }
 

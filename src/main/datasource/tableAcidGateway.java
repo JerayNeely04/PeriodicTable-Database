@@ -2,7 +2,7 @@ package datasource;
 
 import java.sql.*;
 import java.util.ArrayList;
-import gatewayDTOs.Acid;
+import gatewayDTOs.AcidDTO;
 
 public class tableAcidGateway {
     private Connection conn = null;
@@ -57,11 +57,11 @@ public class tableAcidGateway {
      * @param rs   The ResultSet containing the info for the DTO
      * @return the new DTO
      */
-    public static Acid createAcid(ResultSet rs) throws DataException {
+    public static AcidDTO createAcid(ResultSet rs) throws DataException {
         try {
             long solute = rs.getLong("solute");
 
-            return new Acid(solute);
+            return new AcidDTO(solute);
         } catch (SQLException e) {
             throw new DataException(e.getMessage());
         }
@@ -72,17 +72,17 @@ public class tableAcidGateway {
      *
      * @return Array of all rows in the AcidTable
      */
-    public static ArrayList<Acid> findAll() throws DataException {
+    public static ArrayList<AcidDTO> findAll() throws DataException {
         Connection conn = DatabaseConnection.getInstance().getConnection();
         String query = "SELECT * FROM AcidTable ORDER BY solute";
-        ArrayList<Acid> acidsList = new ArrayList<>();
+        ArrayList<AcidDTO> acidsList = new ArrayList<>();
 
         try {
             PreparedStatement stmt = conn.prepareStatement(query);
             ResultSet results = stmt.executeQuery();
 
             while (results.next()) {
-                Acid acid = createAcid(results);
+                AcidDTO acid = createAcid(results);
                 acidsList.add(acid);
             }
 
@@ -99,7 +99,7 @@ public class tableAcidGateway {
      * @param solute The solute to find
      * @return Row(s) containing the solute value
      */
-    public static Acid findBySolute(long solute) throws DataException {
+    public static AcidDTO findBySolute(long solute) throws DataException {
         String query = "SELECT * FROM AcidTable WHERE solute = " + solute;
 
         try {

@@ -2,7 +2,7 @@ package datasource;
 
 import java.sql.*;
 import java.util.ArrayList;
-import gatewayDTOs.Metal;
+import gatewayDTOs.MetalDTO;
 
 public class MetalTableGateway {
     private long dissolvedBy;
@@ -48,11 +48,11 @@ public class MetalTableGateway {
      * @param rs containing the info for the DTO
      * @return the new DTO
      */
-    public static Metal createMetal(ResultSet rs) throws DataException {
+    public static MetalDTO createMetal(ResultSet rs) throws DataException {
             try {
                 long dissolvedBy = rs.getLong("dissolvedBy");
 
-                return new Metal(dissolvedBy);
+                return new MetalDTO(dissolvedBy);
             } catch (SQLException e) {
                 throw new DataException(e.getMessage());
             }
@@ -62,17 +62,17 @@ public class MetalTableGateway {
      * Find all metal from the Metal Table
      * @return an array list with all the DTO's of the Metal Table
      */
-    public static ArrayList<Metal> findAll() throws DataException {
+    public static ArrayList<MetalDTO> findAll() throws DataException {
         Connection connection = DatabaseConnection.getInstance().getConnection();
         String query = "SELECT * FROM MetalTable";
-        ArrayList<Metal> metalList = new ArrayList<>();
+        ArrayList<MetalDTO> metalList = new ArrayList<>();
 
         try {
             PreparedStatement stmt = connection.prepareStatement(query);
             ResultSet rs = stmt.executeQuery();
 
             while(rs.next()) {
-                Metal metal = createMetal(rs);
+                MetalDTO metal = createMetal(rs);
                 metalList.add(metal);
             }
 
@@ -88,7 +88,7 @@ public class MetalTableGateway {
      * @return the new constructor with the specified dissolvedBy
      * @throws DataException
      */
-    public static Metal findDissolvedBy(long dissolvedBy) throws DataException {
+    public static MetalDTO findDissolvedBy(long dissolvedBy) throws DataException {
         String query = "SELECT * FROM MetalTable WHERE dissolvedBy = " + dissolvedBy;
 
         try {

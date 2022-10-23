@@ -1,6 +1,6 @@
 package datasource;
 
-import gatewayDTOs.Metal;
+import gatewayDTOs.MetalDTO;
 import org.junit.Test;
 
 import java.sql.Connection;
@@ -37,7 +37,7 @@ public class MetalGatewayTest {
         conn.setAutoCommit(false);
 
         MetalTableGateway metalGateway = new MetalTableGateway(1);
-        Metal findMetal = MetalTableGateway.findDissolvedBy(1);
+        MetalDTO findMetal = MetalTableGateway.findDissolvedBy(1);
 
         assertNotNull(findMetal);
         assertEquals(1, findMetal.getDissolvedBy());
@@ -57,7 +57,7 @@ public class MetalGatewayTest {
         metalGateway.insertRow(8);
         metalGateway.insertRow(10);
 
-        ArrayList<Metal> allMetalRecords = MetalTableGateway.findAll();
+        ArrayList<MetalDTO> allMetalRecords = MetalTableGateway.findAll();
 
         assertNotNull(allMetalRecords);
         assertEquals(4, allMetalRecords.size());
@@ -74,7 +74,7 @@ public class MetalGatewayTest {
         assertEquals(1, metalGateway.getDissolvedBy());
         metalGateway.persist();
 
-        Metal findMetal = MetalTableGateway.findDissolvedBy(1);
+        MetalDTO findMetal = MetalTableGateway.findDissolvedBy(1);
 
         assertNotNull(findMetal);
         assertEquals(1, findMetal.getDissolvedBy());
@@ -88,7 +88,7 @@ public class MetalGatewayTest {
     @Test
     public void testDeleteMetal() throws SQLException {
         MetalTableGateway metalGateway = new MetalTableGateway(1);
-        Metal findMetal = MetalTableGateway.findDissolvedBy(1);
+        MetalDTO findMetal = MetalTableGateway.findDissolvedBy(1);
         assertNotNull(findMetal);
         assertEquals(1, findMetal.getDissolvedBy());
 

@@ -1,6 +1,6 @@
 package gatewayDTOs;
 
-public class Acid {
+public class AcidDTO {
     private long solute;
 
     /**
@@ -8,7 +8,7 @@ public class Acid {
      *
      * @param solute Value for solute in DTO
      */
-    public Acid(long solute) {
+    public AcidDTO(long solute) {
         this.solute = solute;
     }
 

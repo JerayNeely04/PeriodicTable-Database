@@ -1,6 +1,6 @@
 package gatewayDTOs;
 
-public class madeOf {
+public class madeOfDTO {
     private long compoundID;
     private long elementID;
 
@@ -10,7 +10,7 @@ public class madeOf {
      * @param compoundID   compoundID in DTO
      * @param elementID    elementID in DTO
      */
-    public madeOf(long compoundID, long elementID) {
+    public madeOfDTO(long compoundID, long elementID) {
         this.compoundID = compoundID;
         this.elementID = elementID;
     }

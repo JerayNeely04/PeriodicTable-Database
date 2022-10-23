@@ -1,8 +1,11 @@
-package DomainModel;
+package DomainModel.Mapper;
 
+import DomainModel.Element;
+import DomainModel.ElementMapperInterface;
 import datasource.DataException;
 import datasource.ChemicalTableGateway;
 import datasource.ElementTableGateway;
+import gatewayDTOs.ElementDTO;
 
 public class ElementMapper implements ElementMapperInterface {
 
@@ -13,7 +16,6 @@ public class ElementMapper implements ElementMapperInterface {
      * into my instance variable
      */
     public ElementMapper (String name, long atomicNumber, double atomicMass) throws DataException {
-        ChemicalTableGateway.createChemical(name);
         long id = ChemicalTableGateway.findByName(name).getId();
         ElementTableGateway.createElement(id, atomicNumber, atomicMass);
 
@@ -24,8 +26,11 @@ public class ElementMapper implements ElementMapperInterface {
      * Constructor for objects that exist in the db
      * @param name
      */
-    public ElementMapper (String name) {
-        myElement = ElementTableGateway.findById(name);
+    public ElementMapper (String name) throws DataException {
+        long id = ChemicalTableGateway.findByName(name).getId();
+        ElementDTO element = ElementTableGateway.findById(id);
+
+        myElement = new Element(name, element.getAtomicNumber(), element.getAtomicMass());
     }
 
     @Override

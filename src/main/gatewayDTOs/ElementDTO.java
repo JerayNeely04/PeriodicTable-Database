@@ -3,7 +3,7 @@ package gatewayDTOs;
 /**
  * Element DTO for the Element gateway
  */
-public class Element {
+public class ElementDTO {
     private long atomicNumber;
     private double atomicMass;
 
@@ -12,7 +12,7 @@ public class Element {
      * @param atomicNumber is the primary key
      * @param atomicMass
      */
-    public Element(long atomicNumber, double atomicMass) {
+    public ElementDTO(long atomicNumber, double atomicMass) {
         this.atomicNumber = atomicNumber;
         this.atomicMass = atomicMass;
     }
