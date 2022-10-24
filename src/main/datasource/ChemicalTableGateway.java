@@ -123,7 +123,7 @@ public class ChemicalTableGateway {
      *
      */
     public static ChemicalDTO findByName(String name) throws DataException {
-        String query = "SELECT * FROM ChemicalTable WHERE name = \"" + name + "\"";
+        String query = "SELECT * FROM ChemicalTable WHERE name = '" + name + "'";
         try(PreparedStatement stmt = DatabaseConnection.getInstance().getConnection().prepareStatement(query)) {
             ResultSet results = stmt.executeQuery();
             results.next();

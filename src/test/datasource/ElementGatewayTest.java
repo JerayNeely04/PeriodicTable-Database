@@ -20,13 +20,13 @@ public class ElementGatewayTest {
      */
     @Test
     public void testCreateElement() throws SQLException {
-        conn.setAutoCommit(false);
+        //conn.setAutoCommit(false);
 
         ElementDTO Carbon = new ElementDTO(11, 6.2);
-        ElementTableGateway elementGateway = ElementTableGateway.createElement(1,11, 6.2);
+        ElementTableGateway elementGateway = ElementTableGateway.createElement(11, 6.2, 1);
 
         assertEquals(Carbon.getAtomicMass(), elementGateway.elementDTO.getAtomicMass(), 0.001);
-        conn.rollback();
+        //conn.rollback();
     }
 
     /**
@@ -38,7 +38,7 @@ public class ElementGatewayTest {
         conn.setAutoCommit(false);
 
         ElementDTO element = new ElementDTO(4, 3.3);
-        ElementTableGateway elementGateway = ElementTableGateway.createElement(2,4, 3.3);
+        ElementTableGateway elementGateway = ElementTableGateway.createElement(4, 3.3, 2);
         assertEquals(element.getAtomicMass(), elementGateway.elementDTO.getAtomicMass(), 0.001);
 
         elementGateway.elementDTO.setAtomicMass(8.6);
@@ -55,7 +55,7 @@ public class ElementGatewayTest {
     @Test
     public void testDeleteElement() throws DataException {
         ElementDTO element = new ElementDTO(3, 1.8);
-        ElementTableGateway elementGateway = ElementTableGateway.createElement(3,3, 1.8);
+        ElementTableGateway elementGateway = ElementTableGateway.createElement(3, 1.8, 3);
         assertTrue(elementGateway.delete());
     }
 

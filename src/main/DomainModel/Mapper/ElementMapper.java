@@ -17,7 +17,7 @@ public class ElementMapper implements ElementMapperInterface {
      */
     public ElementMapper (String name, long atomicNumber, double atomicMass) throws DataException {
         long id = ChemicalTableGateway.findByName(name).getId();
-        ElementTableGateway.createElement(id, atomicNumber, atomicMass);
+        ElementTableGateway.createElement(atomicNumber, atomicMass, id);
 
         myElement = new Element(name, atomicNumber, atomicMass);
     }
@@ -33,6 +33,9 @@ public class ElementMapper implements ElementMapperInterface {
         myElement = new Element(name, element.getAtomicNumber(), element.getAtomicMass());
     }
 
+    /**
+     * @return Element mapper object
+     */
     @Override
     public Element getMyElement() {
         return myElement;

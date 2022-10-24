@@ -27,7 +27,6 @@ public class ElementTableGateway {
         } catch (SQLException e) {
             throw new DataException("Failed to Select Element gateway!", e);
         }
-
     }
 
     /**
@@ -57,18 +56,16 @@ public class ElementTableGateway {
      * @return the new constructor with the atomic number of the created element.
      * @throws DataException SQL Exception if we cannot create an Element.
      */
-    public static ElementTableGateway createElement(long id, long atomicNumber, double atomicMass) throws DataException {
+    public static ElementTableGateway createElement(long atomicNumber, double atomicMass, long id) throws DataException {
         String query = "INSERT INTO ElementTable VALUES (?,?,?)";
+        Connection conn = DatabaseConnection.getInstance().getConnection();
 
-        try {
-            Connection conn = DatabaseConnection.getInstance().getConnection();
-            PreparedStatement stmt = conn.prepareStatement(query);
-            stmt.setLong(1, id);
-            stmt.setLong(2, atomicNumber);
-            stmt.setDouble(3, atomicMass);
+        try (PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setLong(1, atomicNumber);
+            stmt.setDouble(2, atomicMass);
+            stmt.setLong(3, id);
 
             stmt.executeUpdate();
-            stmt.close();
         } catch (SQLException e) {
             throw new DataException("Cannot crate an Element in the Element Table!", e);
         }

@@ -20,13 +20,13 @@ public class ChemicalGatewayTest {
      */
     @Test
     public void testCreateChemical() throws SQLException {
-        conn.setAutoCommit(false);
+        //conn.setAutoCommit(false);
 
         ChemicalDTO Carbon = new ChemicalDTO(1, "Carbon");
         ChemicalTableGateway chemicalGateway = ChemicalTableGateway.createChemical("Carbon");
 
         assertEquals(Carbon.getName(), chemicalGateway.chemicalDTO.getName());
-        conn.rollback();
+        //conn.rollback();
     }
 
     /**
