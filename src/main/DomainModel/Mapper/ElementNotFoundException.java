@@ -1,4 +1,9 @@
 package DomainModel.Mapper;
 
-public class ElementNotFoundException {
+import java.sql.SQLException;
+
+public class ElementNotFoundException extends SQLException {
+    public ElementNotFoundException(String e) {
+        System.out.println(e);
+    }
 }

@@ -37,4 +37,9 @@ public class Element {
     public double getAtomicMass() {
         return atomicMass;
     }
+
+    public int getPeriod() {
+        // map the atomic number to the period
+        return 0;
+    }
 }

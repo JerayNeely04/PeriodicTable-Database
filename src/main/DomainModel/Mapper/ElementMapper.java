@@ -15,7 +15,7 @@ public class ElementMapper implements ElementMapperInterface {
      * Create a new element in the database, and store the resulting model object
      * into my instance variable
      */
-    public ElementMapper (String name, long atomicNumber, double atomicMass) throws DataException {
+    public ElementMapper (String name, long atomicNumber, double atomicMass) throws ElementNotFoundException, DataException {
         long id = ChemicalTableGateway.findByName(name).getId();
         ElementTableGateway.createElement(atomicNumber, atomicMass, id);
 
@@ -26,7 +26,7 @@ public class ElementMapper implements ElementMapperInterface {
      * Constructor for objects that exist in the db
      * @param name
      */
-    public ElementMapper (String name) throws DataException {
+    public ElementMapper (String name) throws ElementNotFoundException, DataException {
         long id = ChemicalTableGateway.findByName(name).getId();
         ElementDTO element = ElementTableGateway.findById(id);
 
