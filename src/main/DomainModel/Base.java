@@ -1,9 +1,9 @@
-package gatewayDTOs;
+package DomainModel;
 
 /**
  * Base Dto for the Base Gateway
  */
-public class BaseDTO {
+public class Base {
     private long id;
     private long solute;
 
@@ -11,7 +11,7 @@ public class BaseDTO {
      * Base constructor
      * @param solute
      */
-    public BaseDTO(long id, long solute)
+    public Base(long id, long solute)
     {
         this.id = id;
         this.solute = solute;
