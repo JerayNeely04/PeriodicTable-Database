@@ -32,6 +32,4 @@ public class ChemicalDTO {
         return name;
     }
 
-    //TODO: REMOVE
-    public void setName(String newName) { name = newName; }
 }

@@ -1,5 +1,6 @@
 package datasource;
 
+import DomainModel.Mapper.ChemicalNotFoundException;
 import DomainModel.Mapper.ElementNotFoundException;
 import gatewayDTOs.ElementDTO;
 
@@ -7,8 +8,9 @@ import java.sql.*;
 import java.util.ArrayList;
 
 public class ElementTableGateway {
-
-    public ElementDTO elementDTO;               /* I used this to act as a DTO and hold info for the current Element */
+    private long id;
+    private long atomicNumber;
+    private double atomicMass;
     private Connection connection = null;
 
     /**
@@ -24,7 +26,9 @@ public class ElementTableGateway {
             ResultSet results = stmt.executeQuery();
             results.next();
 
-            elementDTO = new ElementDTO(id, results.getLong("atomicNumber"), results.getDouble("atomicMass"));
+            this.id = id;
+            atomicNumber = results.getLong("atomicNumber");
+            atomicMass = results.getDouble("atomicMass");
         } catch (SQLException e) {
             throw new ElementNotFoundException("Failed to Select Element gateway!", e);
         }
@@ -78,11 +82,11 @@ public class ElementTableGateway {
      * @throws DataException SQL Exception if we failed to update to the element table.
      */
     public void persist() throws DataException {
-        String query = "UPDATE ElementTable SET atomicMass = ?, atomicNumber = ? WHERE id = " + elementDTO.getId();
+        String query = "UPDATE ElementTable SET atomicMass = ?, atomicNumber = ? WHERE id = " + id;
 
         try(PreparedStatement stmt = this.connection.prepareStatement(query)) {
-            stmt.setDouble(1, elementDTO.getAtomicMass());
-            stmt.setLong(2, elementDTO.getAtomicNumber());
+            stmt.setDouble(1, atomicMass);
+            stmt.setLong(2, atomicNumber);
             stmt.executeUpdate();
         } catch (SQLException e) {
             throw new DataException("Data not persisted to the Element table!", e);
@@ -95,7 +99,7 @@ public class ElementTableGateway {
      * @throws DataException SQL exception if we cannot delete from the table
      */
     public boolean delete() throws DataException {
-        String query = "DELETE FROM ElementTable WHERE atomicNumber = " + elementDTO.getAtomicNumber();
+        String query = "DELETE FROM ElementTable WHERE id = " + id;
         try(PreparedStatement stmt = this.connection.prepareStatement(query)) {
             int rowsAffected = stmt.executeUpdate();
             return rowsAffected > 0;
@@ -111,8 +115,18 @@ public class ElementTableGateway {
      * @return the new constructor with the specified atomicNumber
      * @throws DataException SQL exception if cannot find the element
      */
-    public static ElementTableGateway findByAtomicNumber(long atomicNum) throws DataException, ElementNotFoundException {
-        return new ElementTableGateway(atomicNum);
+    public static ElementDTO findByAtomicNumber(long atomicNum) throws DataException, ElementNotFoundException {
+        String query = "SELECT * FROM ElementTable WHERE atomicNumber = " + atomicNum;
+        try(PreparedStatement stmt = DatabaseConnection.getInstance().getConnection().prepareStatement(query)) {
+            ResultSet results = stmt.executeQuery();
+            results.next();
+
+            return new ElementDTO(results.getLong("id"), atomicNum, results.getDouble("atomicMass"));
+        } catch (ChemicalNotFoundException e) {
+            throw new ElementNotFoundException("Failed to find element", e);
+        } catch (SQLException e) {
+            throw new DataException("SQL failed for find element", e);
+        }
     }
 
     /**
@@ -122,7 +136,7 @@ public class ElementTableGateway {
      */
     public static ArrayList<ElementDTO> findAll() throws DataException {
         Connection conn = DatabaseConnection.getInstance().getConnection();
-        String query = "SELECT * FROM ElementTable ORDER BY atomicNumber";
+        String query = "SELECT * FROM ElementTable ORDER BY id";
         ArrayList<ElementDTO> elementsList = new ArrayList<>();
 
         try(PreparedStatement stmt = conn.prepareStatement(query)) {
@@ -189,5 +203,27 @@ public class ElementTableGateway {
         } catch (SQLException e) {
             throw new ElementNotFoundException("Cannot find ID in Element table!", e);
         }
+    }
+
+    public long getId() {
+        return id;
+    }
+    public long getAtomicNumber() {
+        return atomicNumber;
+    }
+    public double getAtomicMass() {
+        return atomicMass;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public void setAtomicNumber(long atomicNumber) {
+        this.atomicNumber = atomicNumber;
+    }
+
+    public void setAtomicMass(double atomicMass) {
+        this.atomicMass = atomicMass;
     }
 }

@@ -9,7 +9,9 @@ import java.util.ArrayList;
 
 public class ChemicalTableGateway {
 
-    public ChemicalDTO chemicalDTO;              /* I used this to act as a DTO and hold info for the current Chemical */
+    private long id;
+    private String name;
+
     private Connection connection = null;
 
     /**
@@ -25,7 +27,8 @@ public class ChemicalTableGateway {
             ResultSet results = stmt.executeQuery();
             results.next();
 
-            chemicalDTO = new ChemicalDTO(id,results.getString("name"));
+            this.id = id;
+            name = results.getString("name");
         } catch (SQLException e) {
             throw new ChemicalNotFoundException("Failed to create Chemical gateway!", e);
         }
@@ -101,10 +104,10 @@ public class ChemicalTableGateway {
      * @throws DataException SQL Exception if we failed to update to the chemical table.
      */
     public void persist() throws DataException {
-        String query = "UPDATE ChemicalTable SET name = ? WHERE id = " + chemicalDTO.getId();
+        String query = "UPDATE ChemicalTable SET name = ? WHERE id = " + id;
 
         try(PreparedStatement stmt = this.connection.prepareStatement(query)) {
-            stmt.setString(1, chemicalDTO.getName());
+            stmt.setString(1, name);
             stmt.executeUpdate();
         } catch (SQLException e) {
             throw new DataException("Data not persisted to the chemical table!", e);
@@ -144,7 +147,7 @@ public class ChemicalTableGateway {
      * @throws DataException SQL exception if we cannot delete from the table.
      */
     public boolean delete() throws DataException {
-        String query = "DELETE FROM ChemicalTable WHERE id = " + chemicalDTO.getId();
+        String query = "DELETE FROM ChemicalTable WHERE id = " + id;
         try(PreparedStatement stmt = this.connection.prepareStatement(query)) {
             int rowsAffected = stmt.executeUpdate();
             return rowsAffected > 0;
@@ -191,5 +194,21 @@ public class ChemicalTableGateway {
         } catch (SQLException e) {
             throw new DataException("Could not create a Chemical DTO!", e);
         }
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }

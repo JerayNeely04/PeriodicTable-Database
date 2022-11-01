@@ -3,6 +3,8 @@ package datasource;
 import DomainModel.Mapper.ChemicalNotFoundException;
 import gatewayDTOs.ChemicalDTO;
 import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -15,38 +17,47 @@ public class ChemicalGatewayTest {
 
     private Connection conn = DatabaseConnection.getInstance().getConnection();
 
+    @AfterEach
+    public void rollback() throws SQLException {
+        conn.rollback();
+    }
+
+    @BeforeEach
+    public void setAutoCommitToFalse() throws SQLException {
+        conn.setAutoCommit(false);
+    }
+
     /**
      * Testing if we can create a chemical in the Chemical table.
      * @throws SQLException if we cannot create the chemical.
      */
     @Test
     public void testCreateChemical() throws SQLException {
-        //conn.setAutoCommit(false);
+        conn.setAutoCommit(false);
 
         ChemicalDTO Carbon = new ChemicalDTO(1, "Carbon");
         ChemicalTableGateway chemicalGateway = ChemicalTableGateway.createChemical("Carbon");
 
-        assertEquals(Carbon.getName(), chemicalGateway.chemicalDTO.getName());
-        //conn.rollback();
+        assertEquals(Carbon.getName(), chemicalGateway.getName());
+        conn.rollback();
     }
 
-//    /**
-//     * Testing the update method.
-//     * @throws SQLException SQL Exception if we cannot update to the database.
-//     */
-//    @Test
-//    public void testPersistChemical() throws SQLException {
-//        conn.setAutoCommit(false);
-//
-//        ChemicalDTO chem = new ChemicalDTO(2, "Mercury");
-//        ChemicalTableGateway chemicalGateway = ChemicalTableGateway.createChemical("Mercury");
-//        assertEquals(chem.getName(), chemicalGateway.chemicalDTO.getName());
-//        chemicalGateway.chemicalDTO.setName("Lead");
-//        chem.setName("Lead");
-//        chemicalGateway.persist();
-//
-//        assertEquals(chem.getName(), chemicalGateway.chemicalDTO.getName());
-//    }
+    /**
+     * Testing the update method.
+     * @throws SQLException SQL Exception if we cannot update to the database.
+     */
+    @Test
+    public void testPersistChemical() throws SQLException {
+        conn.setAutoCommit(false);
+
+        ChemicalDTO chem = new ChemicalDTO(2, "Mercury");
+        ChemicalTableGateway chemicalGateway = ChemicalTableGateway.createChemical("Mercury");
+        assertEquals(chem.getName(), chemicalGateway.getName());
+        chemicalGateway.setName("Lead");
+        chemicalGateway.persist();
+
+        assertEquals("Lead", chemicalGateway.getName());
+    }
 
     /**
      * Testing the delete method.
@@ -65,9 +76,10 @@ public class ChemicalGatewayTest {
      * @throws DataException SQL exception if we cannot find a Chemical.
      */
     @Test
-    public void testFindByID() throws ChemicalNotFoundException {
-        ChemicalTableGateway chemicalTableGateway = ChemicalTableGateway.findById(2);
-        assertEquals("Lead", chemicalTableGateway.chemicalDTO.getName());
+    public void testFindByName() throws ChemicalNotFoundException, DataException {
+        ChemicalTableGateway gateway = ChemicalTableGateway.createChemical("Carbon");
+        ChemicalDTO chemical = ChemicalTableGateway.findByName("Carbon");
+        assertEquals("Carbon", chemical.getName());
     }
 
     /**
@@ -77,6 +89,6 @@ public class ChemicalGatewayTest {
     @Test
     public void testFindAll() throws DataException {
         ArrayList<ChemicalDTO> chemicalsList = ChemicalTableGateway.findAll();
-        assertEquals(11, chemicalsList.size());    /* We already have 11 rows in our database by default */
+        assertEquals(0, chemicalsList.size());    /* We have a rollback() after each test so it should be no record in the table */
     }
 }

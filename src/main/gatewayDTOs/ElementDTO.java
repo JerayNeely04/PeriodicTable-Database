@@ -44,16 +44,4 @@ public class ElementDTO {
         return id;
     }
 
-    //TODO: REMOVE
-    public void setAtomicNumber(long atomicNumber) {
-        this.atomicNumber = atomicNumber;
-    }
-
-    public void setAtomicMass(double atomicMass) {
-        this.atomicMass = atomicMass;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
 }

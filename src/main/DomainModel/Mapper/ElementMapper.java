@@ -59,13 +59,13 @@ public class ElementMapper implements ElementMapperInterface {
         try {
             // Update the chemical row
             ChemicalTableGateway chemicalGateway = new ChemicalTableGateway(id);
-            chemicalGateway.chemicalDTO.setName(name);
+            chemicalGateway.setName(name);
             chemicalGateway.persist();
 
             // Update the element row
             ElementTableGateway gateway = new ElementTableGateway(id);
-            gateway.elementDTO.setAtomicNumber(atomicNumber);
-            gateway.elementDTO.setAtomicMass(atomicMass);
+            gateway.setAtomicNumber(atomicNumber);
+            gateway.setAtomicMass(atomicMass);
             gateway.persist();
 
         } catch (ChemicalNotFoundException e) {
@@ -75,8 +75,8 @@ public class ElementMapper implements ElementMapperInterface {
                 ElementTableGateway gateway = new ElementTableGateway(id);
 
                 // cannot have setters in the DTO, need set methods for the RDG
-                gateway.elementDTO.setAtomicNumber(atomicNumber);
-                gateway.elementDTO.setAtomicMass(atomicMass);
+                gateway.setAtomicNumber(atomicNumber);
+                gateway.setAtomicMass(atomicMass);
                 // set name
 
                 gateway.persist();
@@ -114,7 +114,7 @@ public class ElementMapper implements ElementMapperInterface {
                 long atomicNumber = currentDTO.getAtomicNumber();
 
                 ChemicalTableGateway gateway = ChemicalTableGateway.findById(id);
-                String name = gateway.chemicalDTO.getName();
+                String name = gateway.getName();
 
                 elements[i] = new Element(id, name, atomicNumber, atomicMass);
             } catch (ChemicalNotFoundException e) {
@@ -137,7 +137,7 @@ public class ElementMapper implements ElementMapperInterface {
                 long atomicNumber = currentDTO.getAtomicNumber();
 
                 ChemicalTableGateway gateway = ChemicalTableGateway.findById(id);
-                String name = gateway.chemicalDTO.getName();
+                String name = gateway.getName();
 
                 elements[i] = new Element(id, name, atomicNumber, atomicMass);
             } catch (ChemicalNotFoundException e) {
