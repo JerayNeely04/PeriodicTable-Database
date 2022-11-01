@@ -7,6 +7,8 @@ import datasource.ChemicalTableGateway;
 import datasource.ElementTableGateway;
 import gatewayDTOs.ElementDTO;
 
+import java.util.ArrayList;
+
 public class ElementMapper implements ElementMapperInterface {
 
     private Element element;
@@ -53,7 +55,7 @@ public class ElementMapper implements ElementMapperInterface {
      * @param id the id of the row
      * @throws DataException the general data exception
      */
-    public static void persist(long id, String name, long atomicNumber, double atomicMass) throws DataException {
+    public static void persist(long id, String name, long atomicNumber, double atomicMass) throws DataException, ElementNotFoundException {
         try {
             // Update the chemical row
             ChemicalTableGateway chemicalGateway = new ChemicalTableGateway(id);
@@ -67,15 +69,83 @@ public class ElementMapper implements ElementMapperInterface {
             gateway.persist();
 
         } catch (ChemicalNotFoundException e) {
-            // If the chemical wasn't found this is using the concrete pattern
-            // implementation:
-            ElementTableGateway gateway = new ElementTableGateway(id);
+            try {
+                // If the chemical wasn't found this is using the concrete pattern
+                // implementation:
+                ElementTableGateway gateway = new ElementTableGateway(id);
 
-            // cannot have setters in the DTO, need set methods for the RDG
-            gateway.elementDTO.setAtomicNumber(atomicNumber);
-            gateway.elementDTO.setAtomicMass(atomicMass);
-            gateway.persist();
+                // cannot have setters in the DTO, need set methods for the RDG
+                gateway.elementDTO.setAtomicNumber(atomicNumber);
+                gateway.elementDTO.setAtomicMass(atomicMass);
+                // set name
+
+                gateway.persist();
+            } catch (ElementNotFoundException ex) {
+                // try to update single table
+                throw new ElementNotFoundException("Could not persist element data.", e);
+            }
+        } catch (ElementNotFoundException e) {
+            throw new ElementNotFoundException("Could not persist element data.", e);
         }
+    }
+
+    public static void delete(String name) throws ChemicalNotFoundException, DataException {
+        try {
+            long id = ChemicalTableGateway.findByName(name).getId();
+            ChemicalTableGateway gateway = new ChemicalTableGateway(id);
+            gateway.delete();
+
+        } catch(ChemicalNotFoundException e) {
+//            long id = ElementTableGateway.findByName(name).getId();
+//            ElementTableGateway gateway = new ElementTableGateway(id);
+//            gateway.delete();
+        }
+    }
+
+    public static Element[] getElementsBetween(int startAtomicNum, int endAtomicNum) throws DataException, ElementNotFoundException {
+        ArrayList<ElementDTO> elementDTOs = ElementTableGateway.findAllBetween(startAtomicNum, endAtomicNum);
+        Element[] elements = new Element[elementDTOs.size()];
+
+        for(int i = 0; i < elementDTOs.size(); i++) {
+            try {
+                ElementDTO currentDTO = elementDTOs.get(i);
+                long id = currentDTO.getId();
+                double atomicMass = currentDTO.getAtomicMass();
+                long atomicNumber = currentDTO.getAtomicNumber();
+
+                ChemicalTableGateway gateway = ChemicalTableGateway.findById(id);
+                String name = gateway.chemicalDTO.getName();
+
+                elements[i] = new Element(id, name, atomicNumber, atomicMass);
+            } catch (ChemicalNotFoundException e) {
+                throw new ElementNotFoundException("Element could not be mapped", e);
+            }
+        }
+
+        return elements;
+    }
+
+    public static Element[] getAllElements() throws DataException, ElementNotFoundException {
+        ArrayList<ElementDTO> elementDTOs = ElementTableGateway.findAll();
+        Element[] elements = new Element[elementDTOs.size()];
+
+        for(int i = 0; i < elementDTOs.size(); i++) {
+            try {
+                ElementDTO currentDTO = elementDTOs.get(i);
+                long id = currentDTO.getId();
+                double atomicMass = currentDTO.getAtomicMass();
+                long atomicNumber = currentDTO.getAtomicNumber();
+
+                ChemicalTableGateway gateway = ChemicalTableGateway.findById(id);
+                String name = gateway.chemicalDTO.getName();
+
+                elements[i] = new Element(id, name, atomicNumber, atomicMass);
+            } catch (ChemicalNotFoundException e) {
+                throw new ElementNotFoundException("Element could not be mapped", e);
+            }
+        }
+
+        return elements;
     }
 
     /**

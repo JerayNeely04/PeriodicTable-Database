@@ -16,7 +16,7 @@ public class ElementTableGateway {
      * @param id the primary key of the Element table
      * @throws DataException SQL exception if we failed to SELECT FROM the Element Table!
      */
-    public ElementTableGateway(long id) throws DataException {
+    public ElementTableGateway(long id) throws ElementNotFoundException {
         connection = DatabaseConnection.getInstance().getConnection();
         String query = "SELECT * FROM ElementTable WHERE id = " + id;
 
@@ -26,7 +26,7 @@ public class ElementTableGateway {
 
             elementDTO = new ElementDTO(id, results.getLong("atomicNumber"), results.getDouble("atomicMass"));
         } catch (SQLException e) {
-            throw new DataException("Failed to Select Element gateway!", e);
+            throw new ElementNotFoundException("Failed to Select Element gateway!", e);
         }
     }
 
@@ -57,7 +57,7 @@ public class ElementTableGateway {
      * @return the new constructor with the atomic number of the created element.
      * @throws DataException SQL Exception if we cannot create an Element.
      */
-    public static ElementTableGateway createElement(long id, long atomicNumber, double atomicMass) throws DataException {
+    public static ElementTableGateway createElement(long id, long atomicNumber, double atomicMass) throws DataException, ElementNotFoundException {
         String query = "INSERT INTO ElementTable VALUES (?,?,?)";
         Connection conn = DatabaseConnection.getInstance().getConnection();
 
@@ -111,7 +111,7 @@ public class ElementTableGateway {
      * @return the new constructor with the specified atomicNumber
      * @throws DataException SQL exception if cannot find the element
      */
-    public static ElementTableGateway findByAtomicNumber(long atomicNum) throws DataException {
+    public static ElementTableGateway findByAtomicNumber(long atomicNum) throws DataException, ElementNotFoundException {
         return new ElementTableGateway(atomicNum);
     }
 
@@ -123,6 +123,25 @@ public class ElementTableGateway {
     public static ArrayList<ElementDTO> findAll() throws DataException {
         Connection conn = DatabaseConnection.getInstance().getConnection();
         String query = "SELECT * FROM ElementTable ORDER BY atomicNumber";
+        ArrayList<ElementDTO> elementsList = new ArrayList<>();
+
+        try(PreparedStatement stmt = conn.prepareStatement(query)) {
+            ResultSet results = stmt.executeQuery();
+
+            while (results.next()) {
+                ElementDTO element = createElementRecord(results);
+                elementsList.add(element);
+            }
+            return elementsList;
+        } catch (SQLException e)
+        {
+            throw new DataException("Could not fetch all elements for the Class Table!", e);
+        }
+    }
+
+    public static ArrayList<ElementDTO> findAllBetween(int startAtomicNum, int endAtomicNum) throws DataException {
+        Connection conn = DatabaseConnection.getInstance().getConnection();
+        String query = "SELECT * FROM ElementTable WHERE atomicNumber BETWEEN " + startAtomicNum + " AND " + endAtomicNum;
         ArrayList<ElementDTO> elementsList = new ArrayList<>();
 
         try(PreparedStatement stmt = conn.prepareStatement(query)) {

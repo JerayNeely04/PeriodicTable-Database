@@ -1,6 +1,7 @@
 package DomainModel;
 
 import DomainModel.Mapper.ElementMapper;
+import DomainModel.Mapper.ElementNotFoundException;
 import datasource.DataException;
 
 public class Element {
@@ -24,7 +25,11 @@ public class Element {
         this.atomicMass = atomicMass;
     }
 
-    public void persist() throws DataException {
+    public void delete() {
+
+    }
+
+    public void persist() throws DataException, ElementNotFoundException {
         ElementMapper.persist(id, name, atomicNumber, atomicMass);
     }
 
@@ -33,8 +38,23 @@ public class Element {
      * @return the period the element is in
      */
     public int getPeriod() {
-        // map the atomic number to the period
-        return 0;
+        int period = 0;
+
+        if (atomicNumber <= 2) {
+            period = 1;
+        } else if (atomicNumber <= 10) {
+            period = 2;
+        } else if (atomicNumber <= 18) {
+            period = 3;
+        } else if (atomicNumber <= 36) {
+            period = 4;
+        } else if (atomicNumber <= 54) {
+            period = 5;
+        } else if (atomicNumber <= 86) {
+            period = 6;
+        }
+
+        return period;
     }
 
     /**

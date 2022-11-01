@@ -1,25 +1,26 @@
 package DomainModel.Controller;
 
 import DomainModel.Element;
+import DomainModel.Mapper.ChemicalNotFoundException;
 import DomainModel.Mapper.ElementMapper;
 import DomainModel.Mapper.ElementNotFoundException;
 import datasource.DataException;
+import gatewayDTOs.ElementDTO;
+
+import java.util.ArrayList;
 
 public class ElementController
 {
-    public static void delete(String oxygen)
-    {
+    public static void delete(String name) throws ChemicalNotFoundException, DataException {
+        ElementMapper.delete(name);
     }
 
-    public static Element[] getElementsBetween(int firstAtomicNumber,
-                                               int lastAtomicNumber)
-    {
-        return null;
+    public static Element[] getElementsBetween(int firstAtomicNumber, int lastAtomicNumber) throws DataException, ElementNotFoundException {
+        return ElementMapper.getElementsBetween(firstAtomicNumber, lastAtomicNumber);
     }
 
-    public static Element[] getAllElements()
-    {
-        return null;
+    public static Element[] getAllElements() throws DataException, ElementNotFoundException {
+        return ElementMapper.getAllElements();
     }
 
     public Element getMyElement()
@@ -51,7 +52,7 @@ public class ElementController
         myElement.setName(newName);
     }
 
-    public void persist() throws DataException {
+    public void persist() throws DataException, ElementNotFoundException {
         myElement.persist();
     }
 }
