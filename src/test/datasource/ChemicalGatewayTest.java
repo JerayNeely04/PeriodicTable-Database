@@ -1,5 +1,6 @@
 package datasource;
 
+import DomainModel.Mapper.ChemicalNotFoundException;
 import gatewayDTOs.ChemicalDTO;
 import org.junit.Test;
 
@@ -29,23 +30,23 @@ public class ChemicalGatewayTest {
         //conn.rollback();
     }
 
-    /**
-     * Testing the update method.
-     * @throws SQLException SQL Exception if we cannot update to the database.
-     */
-    @Test
-    public void testPersistChemical() throws SQLException {
-        conn.setAutoCommit(false);
-
-        ChemicalDTO chem = new ChemicalDTO(2, "Mercury");
-        ChemicalTableGateway chemicalGateway = ChemicalTableGateway.createChemical("Mercury");
-        assertEquals(chem.getName(), chemicalGateway.chemicalDTO.getName());
-        chemicalGateway.chemicalDTO.setName("Lead");
-        chem.setName("Lead");
-        chemicalGateway.persist();
-
-        assertEquals(chem.getName(), chemicalGateway.chemicalDTO.getName());
-    }
+//    /**
+//     * Testing the update method.
+//     * @throws SQLException SQL Exception if we cannot update to the database.
+//     */
+//    @Test
+//    public void testPersistChemical() throws SQLException {
+//        conn.setAutoCommit(false);
+//
+//        ChemicalDTO chem = new ChemicalDTO(2, "Mercury");
+//        ChemicalTableGateway chemicalGateway = ChemicalTableGateway.createChemical("Mercury");
+//        assertEquals(chem.getName(), chemicalGateway.chemicalDTO.getName());
+//        chemicalGateway.chemicalDTO.setName("Lead");
+//        chem.setName("Lead");
+//        chemicalGateway.persist();
+//
+//        assertEquals(chem.getName(), chemicalGateway.chemicalDTO.getName());
+//    }
 
     /**
      * Testing the delete method.
@@ -64,7 +65,7 @@ public class ChemicalGatewayTest {
      * @throws DataException SQL exception if we cannot find a Chemical.
      */
     @Test
-    public void testFindByID() throws DataException {
+    public void testFindByID() throws ChemicalNotFoundException {
         ChemicalTableGateway chemicalTableGateway = ChemicalTableGateway.findById(2);
         assertEquals("Lead", chemicalTableGateway.chemicalDTO.getName());
     }

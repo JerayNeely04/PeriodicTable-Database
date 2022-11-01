@@ -8,6 +8,7 @@ import datasource.DataException;
 import datasource.DatabaseConnection;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.sql.Connection;
@@ -29,10 +30,15 @@ public class ElementControllerTest
         conn.rollback();
     }
 
+    @BeforeEach
+    public void setAutoCommitToFalse() throws SQLException {
+        conn.setAutoCommit(false);
+    }
+
     @Test
-    public void canGetExistingElement() throws DataException, ElementNotFoundException {
+    public void canGetExistingElement() throws SQLException {
         // put the object I'm getting into the database
-        new ElementMapper("Oxygen", 8, 15.99);
+        new ElementMapper("Oxygen", 8, 15.999);
 
         // Create an ElementController for the element
         ElementController controller = new ElementController("Oxygen");
@@ -43,15 +49,13 @@ public class ElementControllerTest
 
 
     @Test
-    public void exceptionOnMissingElement()
-    {
+    public void exceptionOnMissingElement() throws SQLException {
         assertThrows(ElementNotFoundException.class, () ->
                 new ElementMapper("NOTHING"));
     }
 
     @Test
-    public void canCreateElement()
-    {
+    public void canCreateElement() throws DataException, ElementNotFoundException {
         ElementController controller = new ElementController("Oxygen", 8, 15.9);
 
         // Make sure everything is in the controller
@@ -62,7 +66,7 @@ public class ElementControllerTest
     @Test
     public void canUpdateAtomicNumber() throws ElementNotFoundException, DataException {
         // put the object I'm getting into the database
-        new ElementMapper("Oxygen", 8, 15.99);
+        new ElementMapper("Oxygen", 8, 15.999);
 
         // Create an ElementController for the element
         ElementController controller = new ElementController("Oxygen");
@@ -80,7 +84,7 @@ public class ElementControllerTest
     @Test
     public void canUpdateAtomicWeight() throws ElementNotFoundException, DataException {
         // put the object I'm getting into the database
-        new ElementMapper("Oxygen", 8, 15.99);
+        new ElementMapper("Oxygen", 8, 15.999);
 
         // Create an ElementController for the element
         ElementController controller = new ElementController("Oxygen");
@@ -98,7 +102,7 @@ public class ElementControllerTest
     @Test
     public void canUpdateName() throws DataException, ElementNotFoundException {
         // put the object I'm getting into the database
-        new ElementMapper("Oxygen", 8, 15.99);
+        new ElementMapper("Oxygen", 8, 15.999);
 
         // Create an ElementController for the element
         ElementController controller = new ElementController("Oxygen");
@@ -116,7 +120,7 @@ public class ElementControllerTest
     @Test
     public void canUpdateAndPersistName() throws ElementNotFoundException, DataException {
         // put the object I'm getting into the database
-        new ElementMapper("Oxygen", 8, 15.99);
+        new ElementMapper("Oxygen", 8, 15.999);
 
         // Create an ElementController for the element
         ElementController controller = new ElementController("Oxygen");
@@ -283,8 +287,6 @@ public class ElementControllerTest
         }
         catch (ElementNotFoundException e)
         {
-            // no worries - we are hoping to see this.
-        } catch (DataException e) {
             // no worries - we are hoping to see this.
         }
     }

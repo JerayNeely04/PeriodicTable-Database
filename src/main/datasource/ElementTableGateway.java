@@ -1,5 +1,6 @@
 package datasource;
 
+import DomainModel.Mapper.ElementNotFoundException;
 import gatewayDTOs.ElementDTO;
 
 import java.sql.*;
@@ -7,23 +8,23 @@ import java.util.ArrayList;
 
 public class ElementTableGateway {
 
-    protected ElementDTO elementDTO;               /* I used this to act as a DTO and hold info for the current Element */
+    public ElementDTO elementDTO;               /* I used this to act as a DTO and hold info for the current Element */
     private Connection connection = null;
 
     /**
      * The constructor for the Element table Gateway
-     * @param atomicNumber the primary key of the Element table
+     * @param id the primary key of the Element table
      * @throws DataException SQL exception if we failed to SELECT FROM the Element Table!
      */
-    public ElementTableGateway(long atomicNumber) throws DataException {
+    public ElementTableGateway(long id) throws DataException {
         connection = DatabaseConnection.getInstance().getConnection();
-        String query = "SELECT * FROM ElementTable WHERE atomicNumber = " + atomicNumber;
+        String query = "SELECT * FROM ElementTable WHERE id = " + id;
 
         try (PreparedStatement stmt = this.connection.prepareStatement(query)){
             ResultSet results = stmt.executeQuery();
             results.next();
 
-            elementDTO = new ElementDTO(atomicNumber,results.getDouble("atomicMass"));
+            elementDTO = new ElementDTO(id, results.getLong("atomicNumber"), results.getDouble("atomicMass"));
         } catch (SQLException e) {
             throw new DataException("Failed to Select Element gateway!", e);
         }
@@ -56,7 +57,7 @@ public class ElementTableGateway {
      * @return the new constructor with the atomic number of the created element.
      * @throws DataException SQL Exception if we cannot create an Element.
      */
-    public static ElementTableGateway createElement(long atomicNumber, double atomicMass, long id) throws DataException {
+    public static ElementTableGateway createElement(long id, long atomicNumber, double atomicMass) throws DataException {
         String query = "INSERT INTO ElementTable VALUES (?,?,?)";
         Connection conn = DatabaseConnection.getInstance().getConnection();
 
@@ -69,7 +70,7 @@ public class ElementTableGateway {
         } catch (SQLException e) {
             throw new DataException("Cannot crate an Element in the Element Table!", e);
         }
-        return new ElementTableGateway(atomicNumber);
+        return new ElementTableGateway(id);
     }
 
     /**
@@ -77,10 +78,11 @@ public class ElementTableGateway {
      * @throws DataException SQL Exception if we failed to update to the element table.
      */
     public void persist() throws DataException {
-        String query = "UPDATE ElementTable SET atomicMass = ? WHERE atomicNumber = " + elementDTO.getAtomicNumber();
+        String query = "UPDATE ElementTable SET atomicMass = ?, atomicNumber = ? WHERE id = " + elementDTO.getId();
 
         try(PreparedStatement stmt = this.connection.prepareStatement(query)) {
             stmt.setDouble(1, elementDTO.getAtomicMass());
+            stmt.setLong(2, elementDTO.getAtomicNumber());
             stmt.executeUpdate();
         } catch (SQLException e) {
             throw new DataException("Data not persisted to the Element table!", e);
@@ -145,17 +147,18 @@ public class ElementTableGateway {
      */
     private static ElementDTO createElementRecord(ResultSet results) throws DataException {
         try {
+            long id = results.getLong("id");
             long atomicNum = results.getLong("atomicNumber");
             double atomicMass = results.getDouble("atomicMass");
 
-            return new ElementDTO(atomicNum, atomicMass);
+            return new ElementDTO(id, atomicNum, atomicMass);
         } catch (SQLException e)
         {
             throw new DataException("Could not create element DTO!", e);
         }
     }
 
-    public static ElementDTO findById(long id) throws DataException {
+    public static ElementDTO findById(long id) throws ElementNotFoundException {
         String query = "SELECT * FROM ElementTable WHERE id = " + id;
         Connection conn = DatabaseConnection.getInstance().getConnection();
 
@@ -163,9 +166,9 @@ public class ElementTableGateway {
             ResultSet results = stmt.executeQuery();
             results.next();
 
-            return new ElementDTO(results.getLong("atomicNumber"),results.getDouble("atomicMass"));
+            return new ElementDTO(id, results.getLong("atomicNumber"), results.getDouble("atomicMass"));
         } catch (SQLException e) {
-            throw new DataException("Cannot find ID in Element table!", e);
+            throw new ElementNotFoundException("Cannot find ID in Element table!", e);
         }
     }
 }

@@ -6,13 +6,15 @@ package gatewayDTOs;
 public class ElementDTO {
     private long atomicNumber;
     private double atomicMass;
+    private long id;
 
     /**
      * Constructor for the Element DTO
      * @param atomicNumber is the primary key
      * @param atomicMass
      */
-    public ElementDTO(long atomicNumber, double atomicMass) {
+    public ElementDTO(long id, long atomicNumber, double atomicMass) {
+        this.id = id;
         this.atomicNumber = atomicNumber;
         this.atomicMass = atomicMass;
     }
@@ -26,14 +28,6 @@ public class ElementDTO {
     }
 
     /**
-     * Setter for the Atomic number
-     * @param atomicNumber
-     */
-    public void setAtomicNumber(long atomicNumber) {
-        this.atomicNumber = atomicNumber;
-    }
-
-    /**
      * Getter for thr atomic mass
      * @return the atomic mass of the element
      */
@@ -42,10 +36,24 @@ public class ElementDTO {
     }
 
     /**
-     * Setter for the atomic mass
-     * @param atomicMass
+     * Getter for the id
+     * @return the element rows id
      */
+    public long getId()
+    {
+        return id;
+    }
+
+    //TODO: REMOVE
+    public void setAtomicNumber(long atomicNumber) {
+        this.atomicNumber = atomicNumber;
+    }
+
     public void setAtomicMass(double atomicMass) {
         this.atomicMass = atomicMass;
+    }
+
+    public void setId(long id) {
+        this.id = id;
     }
 }

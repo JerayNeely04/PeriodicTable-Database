@@ -3,6 +3,7 @@ package datasource;
 import java.sql.*;
 import java.util.ArrayList;
 
+import DomainModel.Mapper.ChemicalNotFoundException;
 import DomainModel.Metal;
 import gatewayDTOs.ChemicalDTO;
 import gatewayDTOs.MetalDTO;
@@ -157,7 +158,7 @@ public class MetalTableGateway {
         }
     }
 
-    public static ChemicalTableGateway findById(long id) throws DataException {
+    public static ChemicalTableGateway findById(long id) throws ChemicalNotFoundException {
         return new ChemicalTableGateway(id);
     }
 

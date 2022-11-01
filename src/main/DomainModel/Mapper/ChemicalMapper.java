@@ -9,13 +9,13 @@ import gatewayDTOs.ChemicalDTO;
 public class ChemicalMapper implements ChemicalMapperInterface {
     private Chemical myChemical;
 
-    public ChemicalMapper(long id, String name) throws DataException {
+    public ChemicalMapper(long id, String name) throws ChemicalNotFoundException, DataException {
         ChemicalTableGateway.createChemical(name);
         id = ChemicalTableGateway.findByName(name).getId();
         myChemical = new Chemical(id, name);
     }
 
-    public ChemicalMapper(String name) throws DataException {
+    public ChemicalMapper(String name) throws DataException, ChemicalNotFoundException {
         ChemicalDTO chemical = ChemicalTableGateway.findByName(name);
         myChemical = new Chemical(chemical.getId(), chemical.getName());
     }

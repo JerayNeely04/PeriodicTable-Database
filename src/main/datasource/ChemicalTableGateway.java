@@ -1,5 +1,7 @@
 package datasource;
 
+import DomainModel.Mapper.ChemicalNotFoundException;
+import DomainModel.Mapper.ElementNotFoundException;
 import gatewayDTOs.ChemicalDTO;
 
 import java.sql.*;
@@ -7,7 +9,7 @@ import java.util.ArrayList;
 
 public class ChemicalTableGateway {
 
-    protected ChemicalDTO chemicalDTO;              /* I used this to act as a DTO and hold info for the current Chemical */
+    public ChemicalDTO chemicalDTO;              /* I used this to act as a DTO and hold info for the current Chemical */
     private Connection connection = null;
 
     /**
@@ -15,7 +17,7 @@ public class ChemicalTableGateway {
      * @param id the primary key of the Element table
      * @throws DataException SQL exception if we failed to SELECT FROM the Chemical Table!
      */
-    public ChemicalTableGateway(long id) throws DataException {
+    public ChemicalTableGateway(long id) throws ChemicalNotFoundException {
         connection = DatabaseConnection.getInstance().getConnection();
         String query = "SELECT * FROM ChemicalTable WHERE id = " + id;
 
@@ -25,7 +27,7 @@ public class ChemicalTableGateway {
 
             chemicalDTO = new ChemicalDTO(id,results.getString("name"));
         } catch (SQLException e) {
-            throw new DataException("Failed to create Chemical gateway!", e);
+            throw new ChemicalNotFoundException("Failed to create Chemical gateway!", e);
         }
 
     }
@@ -57,7 +59,7 @@ public class ChemicalTableGateway {
      * @return the new constructor with the generated id of the created chemical.
      * @throws DataException SQL Exception if we cannot create a Chemical.
      */
-    public static ChemicalTableGateway createChemical(String name) throws DataException {
+    public static ChemicalTableGateway createChemical(String name) throws DataException, ChemicalNotFoundException {
         String query = "INSERT INTO ChemicalTable (name) VALUES (?)";
         long id = 0;
 
@@ -115,22 +117,24 @@ public class ChemicalTableGateway {
      * @return the new constructor with the specified id.
      * @throws DataException SQL exception if cannot find the chemical.
      */
-    public static ChemicalTableGateway findById(long id) throws DataException {
+    public static ChemicalTableGateway findById(long id) throws ChemicalNotFoundException {
         return new ChemicalTableGateway(id);
     }
 
     /**
      *
      */
-    public static ChemicalDTO findByName(String name) throws DataException {
+    public static ChemicalDTO findByName(String name) throws ChemicalNotFoundException, DataException {
         String query = "SELECT * FROM ChemicalTable WHERE name = '" + name + "'";
         try(PreparedStatement stmt = DatabaseConnection.getInstance().getConnection().prepareStatement(query)) {
             ResultSet results = stmt.executeQuery();
             results.next();
 
             return new ChemicalDTO(results.getLong("id"), results.getString("name"));
+        } catch (ChemicalNotFoundException e) {
+            throw new ChemicalNotFoundException("Failed to find chemical", e);
         } catch (SQLException e) {
-            throw new DataException("Failed to get chemical dto", e);
+            throw new DataException("SQL failed for find chemical", e);
         }
     }
 

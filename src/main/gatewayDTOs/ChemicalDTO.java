@@ -32,19 +32,6 @@ public class ChemicalDTO {
         return name;
     }
 
-    /**
-     * Setter for the ID
-     * @param id
-     */
-    public void setId(long id) {
-        this.id = id;
-    }
-
-    /**
-     * Setter for the name of the chemical
-     * @param name
-     */
-    public void setName(String name) {
-        this.name = name;
-    }
+    //TODO: REMOVE
+    public void setName(String newName) { name = newName; }
 }
