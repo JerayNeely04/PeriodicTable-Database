@@ -157,14 +157,13 @@ public class ElementControllerTest
     }
 
     @Test
-    public void canRetrieveARange() throws DataException, ElementNotFoundException {
+    public void canRetrieveARange() throws ElementNotFoundException {
         fillDBWithSequentialRecords(15, 32);
 
         final int rangeStart = 20;
         final int rangeEnd = 26;
         final int expectedQuantity = rangeEnd - rangeStart + 1;
-        Element[] resultElements = ElementController.getElementsBetween(rangeStart,
-                rangeEnd);
+        Element[] resultElements = ElementController.getElementsBetween(rangeStart, rangeEnd);
         assertNotNull(resultElements);
         assertEquals(rangeEnd - rangeStart + 1, resultElements.length);
         for (int i = 0; i < expectedQuantity; i++)
@@ -172,8 +171,7 @@ public class ElementControllerTest
             assertTrue(isBetween(resultElements[i], rangeStart, rangeEnd));
             // if each one's name is not equal to the next one's name, we
             // probably didn't retrieve the same element a bunch of times
-            assertNotEquals(resultElements[i].getName(),
-                    resultElements[(i + 1) % expectedQuantity].getName());
+            assertNotEquals(resultElements[i].getName(), resultElements[(i + 1) % expectedQuantity].getName());
         }
     }
 

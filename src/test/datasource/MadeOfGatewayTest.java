@@ -1,6 +1,7 @@
 package datasource;
 
 import gatewayDTOs.MadeOfDTO;
+import model.mapper.CompoundNotFoundException;
 import org.junit.Test;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -16,7 +17,7 @@ public class MadeOfGatewayTest {
      * @throws DataException
      */
     @Test
-    public void testCreateMadeOfRow() throws DataException {
+    public void testCreateMadeOfRow() throws DataException, CompoundNotFoundException {
         new ElementGateway("Nitrogen", 7, 14.0067);
         new CompoundGateway("Carbon Dioxide");
 
@@ -64,7 +65,7 @@ public class MadeOfGatewayTest {
      * @throws DataException
      */
     @Test
-    public void testFindCompoundID() throws DataException {
+    public void testFindCompoundID() throws DataException, CompoundNotFoundException {
         new ElementGateway("Nitrogen", 7, 14.0067);
         new CompoundGateway("Carbon Dioxide");
 
@@ -86,7 +87,7 @@ public class MadeOfGatewayTest {
      * @throws DataException
      */
     @Test
-    public void testFindElementID() throws DataException {
+    public void testFindElementID() throws DataException, CompoundNotFoundException {
         new ElementGateway("Nitrogen", 7, 14.0067);
         new CompoundGateway("Carbon Dioxide");
 

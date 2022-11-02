@@ -1,6 +1,7 @@
 package datasource;
 
 import gatewayDTOs.BaseDTO;
+import model.mapper.CompoundNotFoundException;
 import org.junit.Test;
 
 import java.sql.Connection;
@@ -163,7 +164,7 @@ public class BaseGatewayTest {
      * @throws DataException the database exception
      */
     @Test(expected = DataException.class)
-    public void testParentRowDeleted() throws DataException {
+    public void testParentRowDeleted() throws DataException, CompoundNotFoundException {
         // Reset ids in the id table
         KeyRowDataGateway.reset();
 

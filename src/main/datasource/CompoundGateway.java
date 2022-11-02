@@ -1,6 +1,7 @@
 package datasource;
 
 import gatewayDTOs.CompoundDTO;
+import model.mapper.CompoundNotFoundException;
 
 import java.sql.Connection;
 
@@ -18,7 +19,7 @@ public class CompoundGateway {
      *
      * @param name the name
      */
-    public CompoundGateway(String name) throws DataException {
+    public CompoundGateway(String name) throws CompoundNotFoundException {
         this.connection = DatabaseConnection.getInstance().getConnection();
         this.name = name;
 
@@ -53,7 +54,7 @@ public class CompoundGateway {
      *
      * @param name, the name of the element
      */
-    private void createRow(String name) throws DataException {
+    private void createRow(String name) throws CompoundNotFoundException {
 
         String query = "INSERT INTO CompoundTable (id, name) VALUES (?, ?)";
 
@@ -67,8 +68,7 @@ public class CompoundGateway {
             stmt.executeUpdate();
 
         } catch (SQLException e) {
-            // throw exception later
-            System.out.println("Create compound row failed");
+            throw new CompoundNotFoundException("Create compound row failed");
         }
     }
 
@@ -192,7 +192,7 @@ public class CompoundGateway {
      * @param name, name od the element
      * @return the compound row that has a matching name as a DTO
      */
-    public static CompoundDTO findByName(String name) {
+    public static CompoundDTO findByName(String name) throws CompoundNotFoundException {
         Connection conn = DatabaseConnection.getInstance().getConnection();
         String query = "SELECT * FROM CompoundTable WHERE name = '" + name + "'";
 
@@ -205,10 +205,8 @@ public class CompoundGateway {
             return createCompoundRecord(results);
 
         } catch (SQLException e) {
-            System.out.println("No element with name: " + name + " found.");
+            throw new CompoundNotFoundException("No compound with name: " + name + " found.", e);
         }
-
-        return null;
     }
 
     public static CompoundDTO findByAtomicNumber(long id) {
@@ -235,18 +233,15 @@ public class CompoundGateway {
      * @param results, the results given back from the query
      * @return, returns the compound DTO
      */
-    private static CompoundDTO createCompoundRecord(ResultSet results) {
+    private static CompoundDTO createCompoundRecord(ResultSet results) throws CompoundNotFoundException {
         try {
             long id = results.getLong("id");
             String name = results.getString("name");
 
             return new CompoundDTO(id, name);
         } catch (SQLException e) {
-            System.out.println("Could not create compound DTO");
+            throw new CompoundNotFoundException("Could not create compound DTO");
         }
-
-        return null;
     }
-
 }
 

@@ -41,8 +41,7 @@ public class CompoundControllerTest
     }
 
     @Test
-    public void canGetExistingCompound() throws CompoundNotFoundException
-    {
+    public void canGetExistingCompound() throws CompoundNotFoundException, DataException {
         // put the object I'm getting into the database
         CompoundMapper.createCompound("Water");
 

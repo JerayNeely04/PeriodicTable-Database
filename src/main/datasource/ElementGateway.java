@@ -266,7 +266,7 @@ public class ElementGateway {
      */
     public static ArrayList<ElementDTO> getAllBetween(int startAtomicNum, int endAtomicNum) throws ElementNotFoundException {
         Connection conn = DatabaseConnection.getInstance().getConnection();
-        String query = "SELECT * FROM ElementTable WHERE atomicNumber BETWEEN " + startAtomicNum + " AND " + endAtomicNum;
+        String query = "SELECT * FROM ElementTable WHERE atomicNum BETWEEN " + startAtomicNum + " AND " + endAtomicNum;
         ArrayList<ElementDTO> elementsList = new ArrayList<>();
 
         try(PreparedStatement stmt = conn.prepareStatement(query)) {
@@ -303,10 +303,8 @@ public class ElementGateway {
 
         } catch (SQLException e)
         {
-            System.out.println("No element with name: " + name + " found.");
+            throw new ElementNotFoundException("Could not find " + name + " in Element table", e);
         }
-
-        return null;
     }
 
     /**
@@ -314,8 +312,7 @@ public class ElementGateway {
      * @param results the results given back from the query
      * @return the element DTO
      */
-    private static ElementDTO createElementRecord(ResultSet results)
-    {
+    private static ElementDTO createElementRecord(ResultSet results) throws ElementNotFoundException {
         try {
             long id = results.getLong("id");
             String name = results.getString("name");
@@ -325,9 +322,7 @@ public class ElementGateway {
             return new ElementDTO(id, name, atomicNum, atomicMass);
         } catch (SQLException e)
         {
-            System.out.println("Could not create element DTO");
+            throw new ElementNotFoundException("Could not create the Element DTO", e);
         }
-
-        return null;
     }
 }

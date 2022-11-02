@@ -1,6 +1,7 @@
 package datasource;
 
 import gatewayDTOs.CompoundDTO;
+import model.mapper.CompoundNotFoundException;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -11,7 +12,7 @@ import static org.junit.Assert.assertTrue;
 public class CompoundGatewayTest {
 
     @Test
-    public void testCreateConstructor() throws DataException {
+    public void testCreateConstructor() throws DataException, CompoundNotFoundException {
         // Reset the id key and element table
         KeyRowDataGateway.reset();
         CompoundGateway.createTable();
@@ -25,7 +26,7 @@ public class CompoundGatewayTest {
     }
 
     @Test
-    public void testFindConstructor() throws DataException {
+    public void testFindConstructor() throws DataException, CompoundNotFoundException {
         // Reset the id key and element table
         KeyRowDataGateway.reset();
         CompoundGateway.createTable();
@@ -43,7 +44,7 @@ public class CompoundGatewayTest {
     }
 
     @Test(expected = DataException.class)
-    public void testDeleteElement() throws DataException {
+    public void testDeleteElement() throws DataException, CompoundNotFoundException {
         // Reset the id key and element table
         KeyRowDataGateway.reset();
         CompoundGateway.createTable();
@@ -61,7 +62,7 @@ public class CompoundGatewayTest {
     }
 
     @Test
-    public void testUpdatingElement() throws DataException {
+    public void testUpdatingElement() throws DataException, CompoundNotFoundException {
         // Reset the id key and element table
         KeyRowDataGateway.reset();
         CompoundGateway.createTable();
@@ -81,7 +82,7 @@ public class CompoundGatewayTest {
     }
 
     @Test
-    public void testCorrectID() throws DataException {
+    public void testCorrectID() throws DataException, CompoundNotFoundException {
         // Reset the id key and element table
         KeyRowDataGateway.reset();
         CompoundGateway.createTable();
@@ -96,7 +97,7 @@ public class CompoundGatewayTest {
     }
 
     @Test
-    public void testFindingAnElementByName() throws DataException {
+    public void testFindingAnElementByName() throws DataException, CompoundNotFoundException {
         // Reset the id key and element table
         KeyRowDataGateway.reset();
         CompoundGateway.createTable();
@@ -114,8 +115,7 @@ public class CompoundGatewayTest {
     }
 
     @Test
-    public void testGettingAllRows() throws DataException
-    {
+    public void testGettingAllRows() throws DataException, CompoundNotFoundException {
         // Reset the id key and element table
         KeyRowDataGateway.reset();
         CompoundGateway.createTable();
