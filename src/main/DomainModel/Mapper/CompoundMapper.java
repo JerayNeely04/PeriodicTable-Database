@@ -10,10 +10,6 @@ import java.util.ArrayList;
 public class CompoundMapper {
     private Compound myCompound;
 
-    public CompoundMapper(long id, String name) {
-
-    }
-
     public CompoundMapper(String name) throws CompoundNotFoundException {
 
     }

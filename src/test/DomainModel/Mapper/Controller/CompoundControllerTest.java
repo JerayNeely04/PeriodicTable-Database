@@ -4,9 +4,13 @@ import DomainModel.Controller.CompoundController;
 import DomainModel.Controller.ElementController;
 import DomainModel.Mapper.*;
 import datasource.DataException;
+import datasource.DatabaseConnection;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -18,14 +22,21 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 public class CompoundControllerTest
 {
+    private final Connection conn = DatabaseConnection.getInstance().getConnection();
     public static final String WATER = "Water";
     public static final int HYDROGEN_ATOMIC_MASS = 2;
     public static final double OXYGEN_ATOMIC_MASS = 15.9;
     private final String[] WATER_ELEMENT_NAMES={"Hydrogen","Hydrogen","Oxygen"};
+
+
     @AfterEach
-    public void rollback()
-    {
-        // make the database roll back the changes this test made
+    public void rollback() throws SQLException {
+        conn.rollback();
+    }
+
+    @BeforeEach
+    public void setAutoCommitToFalse() throws SQLException {
+        conn.setAutoCommit(false);
     }
 
     @Test

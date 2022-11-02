@@ -18,7 +18,7 @@ public class madeOfTable {
                     "CREATE TABLE madeOfTable ("
                             + "compoundID BIGINT NOT NULL,"
                             + "elementID BIGINT NOT NULL,"
-                            + "FOREIGN KEY (elementID) REFERENCES ElementTable(atomicNumber) ON DELETE CASCADE,"
+                            + "FOREIGN KEY (elementID) REFERENCES ElementTable(id) ON DELETE CASCADE,"
                             + "FOREIGN KEY (compoundID) REFERENCES ChemicalTable(id) ON DELETE CASCADE"
                             + ")";
             PreparedStatement stmt;
