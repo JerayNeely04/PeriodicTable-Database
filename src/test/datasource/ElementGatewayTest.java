@@ -1,6 +1,7 @@
 package datasource;
 
 import gatewayDTOs.ElementDTO;
+import model.mapper.ElementNotFoundException;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -9,6 +10,11 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 public class ElementGatewayTest {
+//    @Test
+//    public void d() throws DataException {
+//        ElementGateway.createTable();
+//    }
+
     /**
      * Tests an element row can be created
      */
@@ -32,7 +38,7 @@ public class ElementGatewayTest {
      * Tests to make sure the RD gateway can find a row in the table by id
      */
     @Test
-    public void testFindConstructor() throws DataException {
+    public void testFindConstructor() throws DataException, ElementNotFoundException {
         // Reset the id key and element table
         KeyRowDataGateway.reset();
         ElementGateway.createTable();
@@ -145,7 +151,7 @@ public class ElementGatewayTest {
      * Tests to make sure an element row can be found by name
      */
     @Test
-    public void testFindingAnElementByName() throws DataException {
+    public void testFindingAnElementByName() throws DataException, ElementNotFoundException {
         // Reset the id key and element table
         KeyRowDataGateway.reset();
         ElementGateway.createTable();

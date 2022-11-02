@@ -1,5 +1,6 @@
 package datasource;
 import gatewayDTOs.ElementDTO;
+import model.mapper.ElementNotFoundException;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -20,11 +21,6 @@ public class ElementGateway {
      */
     public ElementGateway(String name, long atomicNum, double atomicMass) throws DataException {
         this.connection = DatabaseConnection.getInstance().getConnection();
-        try {
-            this.connection.setAutoCommit(false);
-        } catch (SQLException e) {
-            throw new DataException("Could not set auto commit to false", e);
-        }
 
         this.name = name;
         this.atomicNum = atomicNum;
@@ -38,12 +34,12 @@ public class ElementGateway {
      * @param id the id to search for
      * @throws DataException
      */
-    public ElementGateway(long id) throws DataException {
+    public ElementGateway(long id) throws ElementNotFoundException {
         this.connection = DatabaseConnection.getInstance().getConnection();
         try {
             this.connection.setAutoCommit(false);
         } catch (SQLException e) {
-            throw new DataException("Could not set auto commit to false", e);
+            throw new ElementNotFoundException("Could not set auto commit to false", e);
         }
 
         String query = "SELECT * FROM ElementTable WHERE id = " + id;
@@ -59,7 +55,7 @@ public class ElementGateway {
             this.atomicMass = results.getDouble("atomicMass");
 
         } catch (SQLException e) {
-            throw new DataException("Could not find element with ID: " + id, e);
+            throw new ElementNotFoundException("Could not find element with ID: " + id, e);
         }
     }
 
@@ -184,7 +180,7 @@ public class ElementGateway {
      * changes the elements atomic mass
      * @param atomicMass the new atomic mass
      */
-    public void setAtomicMass(long atomicMass) {
+    public void setAtomicMass(double atomicMass) {
         this.atomicMass = atomicMass;
     }
 
@@ -216,7 +212,7 @@ public class ElementGateway {
     public static ArrayList<ElementDTO> findAll()
     {
         Connection conn = DatabaseConnection.getInstance().getConnection();
-        String query = "SELECT * FROM Element Table ORDER BY id";
+        String query = "SELECT * FROM ElementTable ORDER BY id";
         ArrayList<ElementDTO> elementsList = new ArrayList<>();
 
         try {
@@ -262,10 +258,37 @@ public class ElementGateway {
     }
 
     /**
+     *
+     * @param startAtomicNum
+     * @param endAtomicNum
+     * @return
+     * @throws DataException
+     */
+    public static ArrayList<ElementDTO> getAllBetween(int startAtomicNum, int endAtomicNum) throws ElementNotFoundException {
+        Connection conn = DatabaseConnection.getInstance().getConnection();
+        String query = "SELECT * FROM ElementTable WHERE atomicNumber BETWEEN " + startAtomicNum + " AND " + endAtomicNum;
+        ArrayList<ElementDTO> elementsList = new ArrayList<>();
+
+        try(PreparedStatement stmt = conn.prepareStatement(query)) {
+            ResultSet results = stmt.executeQuery();
+
+            while (results.next()) {
+                ElementDTO element = createElementRecord(results);
+                elementsList.add(element);
+            }
+            return elementsList;
+        } catch (SQLException e)
+        {
+            throw new ElementNotFoundException("Could not fetch all elements for the Class Table!", e);
+        }
+    }
+
+
+    /**
      * @param name of the element
      * @return the element row with the matching name as a DTO
      */
-    public static ElementDTO findByName(String name)
+    public static ElementDTO findByName(String name) throws ElementNotFoundException
     {
         Connection conn = DatabaseConnection.getInstance().getConnection();
         String query = "SELECT * FROM ElementTable WHERE name = '" + name + "'";
