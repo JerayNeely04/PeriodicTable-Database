@@ -52,6 +52,8 @@ public class Element {
             period = 5;
         } else if (atomicNumber <= 86) {
             period = 6;
+        } else {
+            period = 7;
         }
 
         return period;

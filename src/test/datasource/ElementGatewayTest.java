@@ -1,5 +1,6 @@
 package datasource;
 
+import DomainModel.Mapper.ChemicalNotFoundException;
 import DomainModel.Mapper.ElementNotFoundException;
 import gatewayDTOs.ElementDTO;
 import org.junit.Test;
@@ -34,7 +35,8 @@ public class ElementGatewayTest {
     @Test
     public void testCreateElement() throws SQLException {
         ElementDTO Carbon = new ElementDTO (11, 6, 6.2);
-        ElementTableGateway elementGateway = ElementTableGateway.createElement(11, 6,6.2);
+        ChemicalTableGateway chemicalGateway = ChemicalTableGateway.createChemical("Oxygen");
+        ElementTableGateway elementGateway = ElementTableGateway.createElement(691, 6,6.2);
 
         assertEquals(Carbon.getAtomicMass(), elementGateway.getAtomicMass(), 0.001);
     }
@@ -46,7 +48,8 @@ public class ElementGatewayTest {
     @Test
     public void testPersistElement() throws SQLException {
         ElementDTO element = new ElementDTO(4, 3,3.3);
-        ElementTableGateway elementGateway = ElementTableGateway.createElement(4, 3,3.3);
+        ChemicalTableGateway chemicalGateway = ChemicalTableGateway.createChemical("Oxygen");
+        ElementTableGateway elementGateway = ElementTableGateway.createElement(692, 3,3.3);
         assertEquals(element.getAtomicMass(), elementGateway.getAtomicMass(), 0.001);
 
         elementGateway.setAtomicMass(8.6);
@@ -60,9 +63,10 @@ public class ElementGatewayTest {
      * @throws DataException SQL Exception if we cannot delete from the database.
      */
     @Test
-    public void testDeleteElement() throws DataException, ElementNotFoundException {
+    public void testDeleteElement() throws DataException, ElementNotFoundException, ChemicalNotFoundException {
         ElementDTO element = new ElementDTO(3, 1,1.8);
-        ElementTableGateway elementGateway = ElementTableGateway.createElement(3, 1, 1.8);
+        ChemicalTableGateway chemicalGateway = ChemicalTableGateway.createChemical("Oxygen");
+        ElementTableGateway elementGateway = ElementTableGateway.createElement(693, 1, 1.8);
         assertTrue(elementGateway.delete());
     }
 

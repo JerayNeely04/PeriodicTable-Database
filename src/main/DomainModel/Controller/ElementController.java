@@ -8,6 +8,7 @@ import datasource.DataException;
 import gatewayDTOs.ElementDTO;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class ElementController
 {
@@ -54,5 +55,9 @@ public class ElementController
 
     public void persist() throws DataException, ElementNotFoundException {
         myElement.persist();
+    }
+
+    public List<String> getCompoundsContaining() {
+        return null;
     }
 }
