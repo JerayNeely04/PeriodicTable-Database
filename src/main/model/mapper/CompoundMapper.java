@@ -3,8 +3,10 @@ package model.mapper;
 import datasource.CompoundGateway;
 import datasource.DataException;
 import datasource.ElementGateway;
+import datasource.MadeOfGateway;
 import gatewayDTOs.CompoundDTO;
 import gatewayDTOs.ElementDTO;
+import gatewayDTOs.MadeOfDTO;
 import model.Compound;
 import model.Element;
 
@@ -14,12 +16,18 @@ public class CompoundMapper {
     private Compound myCompound;
 
 
-    public CompoundMapper(String name) throws CompoundNotFoundException {
+    public CompoundMapper(String name) throws CompoundNotFoundException, DataException, ElementNotFoundException {
         try {
             CompoundDTO compoundDTO = CompoundGateway.findByName(name);
             long id = compoundDTO.getId();
 
             myCompound = new Compound(id, name);
+            ArrayList<MadeOfDTO> elements = MadeOfGateway.findByCompoundID(id);
+            for (MadeOfDTO e:elements) {
+                long elementID = e.getElementID();
+                ElementGateway gateway = new ElementGateway(elementID);
+               myCompound.addElement(gateway.getName());
+            }
         } catch (CompoundNotFoundException e) {
             throw new CompoundNotFoundException("Compound: " + name + " could not mapped", e);
         }
@@ -51,6 +59,12 @@ public class CompoundMapper {
         CompoundDTO compound =  CompoundGateway.findByName(name);
         CompoundGateway gateway = new CompoundGateway(compound.getId());
         gateway.delete();
+    }
+
+    public static void addElement(long id, String name) throws ElementNotFoundException, DataException {
+
+        ElementDTO element = ElementGateway.findByName(name);
+        MadeOfGateway gateway = new MadeOfGateway(id, element.getId());
     }
 
     public Compound getMyCompound() {

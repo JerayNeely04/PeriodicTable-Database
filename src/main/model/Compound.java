@@ -18,8 +18,12 @@ public class Compound {
         this.name = name;
     }
 
-    public void addElement(String name) {
+    public void addElement(String name)  {
         elements.add(name);
+    }
+
+    public void addElementToMadeOf(String name) throws ElementNotFoundException, DataException {
+        CompoundMapper.addElement(id, name);
     }
 
     public void setName(String newName) {
@@ -39,7 +43,5 @@ public class Compound {
         return CompoundMapper.getAtomicMass(elements);
     }
 
-    public void persist() {
-    }
 }
 

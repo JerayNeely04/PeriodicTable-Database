@@ -41,7 +41,7 @@ public class CompoundControllerTest
     }
 
     @Test
-    public void canGetExistingCompound() throws CompoundNotFoundException, DataException {
+    public void canGetExistingCompound() throws CompoundNotFoundException, DataException, ElementNotFoundException {
         // put the object I'm getting into the database
         CompoundMapper.createCompound("Water");
 
@@ -52,7 +52,7 @@ public class CompoundControllerTest
     }
 
     @Test
-    public void canCreateCompound() throws CompoundNotFoundException {
+    public void canCreateCompound() throws CompoundNotFoundException, DataException, ElementNotFoundException {
         CompoundController.createCompound("Water");
 
         assertEquals("Water", new CompoundController("Water").getMyCompound().getName());
@@ -66,7 +66,7 @@ public class CompoundControllerTest
     }
 
     @Test
-    public void canUpdateName() throws CompoundNotFoundException {
+    public void canUpdateName() throws CompoundNotFoundException, DataException, ElementNotFoundException {
         // put the object I'm getting into the database
         CompoundMapper.createCompound("Sulfuric Acid");
 
@@ -91,7 +91,7 @@ public class CompoundControllerTest
             fail("It appears " + name + " is in the DB when the tests think " +
                     "it shouldn't be");
         }
-        catch (CompoundNotFoundException e)
+        catch (CompoundNotFoundException | DataException | ElementNotFoundException e)
         {
             // no worries - we are hoping to see this.
         }
@@ -108,7 +108,7 @@ public class CompoundControllerTest
     }
 
     @Test
-    public void canAddAndRetrieveOneElement() throws ElementNotFoundException, CompoundNotFoundException {
+    public void canAddAndRetrieveOneElement() throws ElementNotFoundException, CompoundNotFoundException, DataException {
         CompoundMapper.createCompound("Water");
         new ElementMapper("Hydrogen",1, 2);
 
@@ -121,7 +121,7 @@ public class CompoundControllerTest
     }
 
     @Test
-    public void canAddAndRetrieveMultipleElement() throws ElementNotFoundException, CompoundNotFoundException {
+    public void canAddAndRetrieveMultipleElement() throws ElementNotFoundException, CompoundNotFoundException, DataException {
         buildWater();
 
         CompoundController controller = new CompoundController(WATER);
@@ -131,7 +131,7 @@ public class CompoundControllerTest
         checkElementListMatchesNames(elements, WATER_ELEMENT_NAMES);
     }
 
-    private void buildWater() throws ElementNotFoundException, CompoundNotFoundException {
+    private void buildWater() throws ElementNotFoundException, CompoundNotFoundException, DataException {
         CompoundMapper.createCompound(WATER);
         new ElementMapper("Hydrogen",1, HYDROGEN_ATOMIC_MASS);
         new ElementMapper("Oxygen",8, OXYGEN_ATOMIC_MASS);
@@ -145,8 +145,7 @@ public class CompoundControllerTest
     }
 
     @Test
-    public void exceptionOnAddNonexistingElement()
-            throws ElementNotFoundException, CompoundNotFoundException {
+    public void exceptionOnAddNonexistingElement() throws ElementNotFoundException, CompoundNotFoundException, DataException {
         CompoundMapper.createCompound("Water");
 
         CompoundController controller = new CompoundController("Water");

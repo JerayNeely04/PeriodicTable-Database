@@ -1,12 +1,16 @@
 package model.mapper;
 
+import datasource.CompoundGateway;
 import datasource.DataException;
 import datasource.ElementGateway;
+import datasource.MadeOfGateway;
 import gatewayDTOs.ElementDTO;
+import gatewayDTOs.MadeOfDTO;
 import model.Element;
 import model.ElementMapperInterface;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class ElementMapper implements ElementMapperInterface {
 
@@ -121,6 +125,16 @@ public class ElementMapper implements ElementMapperInterface {
         }
 
         return elements;
+    }
+
+    public static List<String> getCompoundsContaining(long id) throws DataException, CompoundNotFoundException {
+        ArrayList<MadeOfDTO> compounds = MadeOfGateway.findByElementID(id);
+        ArrayList<String> namesOfCompounds = new ArrayList<String>();
+        for (MadeOfDTO compound: compounds) {
+            CompoundGateway gateway = new CompoundGateway(compound.getCompoundID());
+            namesOfCompounds.add(gateway.getName());
+        }
+        return namesOfCompounds;
     }
 
     /**

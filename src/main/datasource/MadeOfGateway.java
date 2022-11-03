@@ -3,6 +3,7 @@ package datasource;
 import java.sql.*;
 import java.util.ArrayList;
 
+import gatewayDTOs.ElementDTO;
 import gatewayDTOs.MadeOfDTO;
 
 public class MadeOfGateway {
@@ -76,21 +77,25 @@ public class MadeOfGateway {
      * @return ResultSet containing the row.
      * Return null is nothing is found or exception is thrown
      */
-    public static MadeOfDTO findByCompoundID(long compoundID) throws DataException {
+    public static ArrayList<MadeOfDTO> findByCompoundID(long compoundID) throws DataException {
         Connection conn = DatabaseConnection.getInstance().getConnection();
         String query = "SELECT * FROM MadeOfTable WHERE compoundID = " + compoundID;
 
-        try (PreparedStatement stmt = conn.prepareStatement(query)) {
-            ResultSet rs = stmt.executeQuery();
+        ArrayList<MadeOfDTO> elementsList = new ArrayList<>();
 
-            if (rs.next()) {
-                return createMadeOfDTO(rs);
+        try {
+            PreparedStatement stmt = conn.prepareStatement(query);
+            ResultSet results = stmt.executeQuery();
+
+            while (results.next()) {
+                MadeOfDTO element = createMadeOfDTO(results);
+                elementsList.add(element);
             }
+
+            return elementsList;
         } catch (SQLException e) {
             throw new DataException("Could not find row by compound ID", e);
         }
-
-        return null;
     }
 
     /**
@@ -100,21 +105,25 @@ public class MadeOfGateway {
      * @return ResultSet containing the row.
      * Return null is nothing is found or exception is thrown
      */
-    public static MadeOfDTO findByElementID(long elementID) throws DataException {
+    public static ArrayList<MadeOfDTO> findByElementID(long elementID) throws DataException {
         Connection conn = DatabaseConnection.getInstance().getConnection();
         String query = "SELECT * FROM MadeOfTable WHERE elementID = " + elementID;
 
-        try (PreparedStatement stmt = conn.prepareStatement(query)) {
-            ResultSet rs = stmt.executeQuery();
+        ArrayList<MadeOfDTO> compounds = new ArrayList<>();
 
-            if (rs.next()) {
-                return createMadeOfDTO(rs);
+        try {
+            PreparedStatement stmt = conn.prepareStatement(query);
+            ResultSet results = stmt.executeQuery();
+
+            while (results.next()) {
+                MadeOfDTO element = createMadeOfDTO(results);
+                compounds.add(element);
             }
+
+            return compounds;
         } catch (SQLException e) {
             throw new DataException("Could not find MadeOf row by elementID", e);
         }
-
-        return null;
     }
 
     /**

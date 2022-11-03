@@ -25,11 +25,11 @@ public class CompoundController
     }
 
     private Compound myCompound;
-    public CompoundController(String name) throws CompoundNotFoundException {
+    public CompoundController(String name) throws CompoundNotFoundException, DataException, ElementNotFoundException {
         myCompound = new CompoundMapper(name).getMyCompound();
     }
 
-    public CompoundController(String name, int atomicNumber, double atomicMass) throws CompoundNotFoundException {
+    public CompoundController(String name, int atomicNumber, double atomicMass) throws CompoundNotFoundException, DataException, ElementNotFoundException {
         myCompound = new CompoundMapper(name).getMyCompound();
     }
 
@@ -38,12 +38,10 @@ public class CompoundController
         myCompound.setName(newName);
     }
 
-    public void persist() throws DataException, ElementNotFoundException {
-        myCompound.persist();
-    }
 
-    public void addElement(String name) {
+    public void addElement(String name) throws ElementNotFoundException, DataException {
         myCompound.addElement(name);
+        myCompound.addElementToMadeOf(name);
     }
 
     public List<String> getElements() {

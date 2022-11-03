@@ -218,7 +218,7 @@ public class ElementControllerTest
 
     @Test
     public void canGetAllCompoundsContainingElement()
-            throws ElementNotFoundException, CompoundNotFoundException {
+            throws ElementNotFoundException, CompoundNotFoundException, DataException {
         new ElementMapper("Hydrogen", 1, 2.1);
         new ElementMapper("Oxygen", 8, 15.99);
         new ElementMapper("Sodium", 11, 22.990);
@@ -230,8 +230,7 @@ public class ElementControllerTest
         waterController.addElement("Oxygen");
 
         CompoundMapper.createCompound("Sodium Hydroxide");
-        CompoundController h2SController = new CompoundController("Hydrogen " +
-                "Sulfide");
+        CompoundController h2SController = new CompoundController("Sodium Hydroxide");
         h2SController.addElement("Hydrogen");
         h2SController.addElement("Oxygen");
         h2SController.addElement("Sodium");

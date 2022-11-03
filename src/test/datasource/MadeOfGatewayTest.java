@@ -64,44 +64,44 @@ public class MadeOfGatewayTest {
      * tests to make sure a row of the MadeOf table can be returned by compound id
      * @throws DataException
      */
-    @Test
-    public void testFindCompoundID() throws DataException, CompoundNotFoundException {
-        new ElementGateway("Nitrogen", 7, 14.0067);
-        new CompoundGateway("Carbon Dioxide");
-
-        new MadeOfGateway(2, 1);
-        MadeOfDTO madeOfDTO = MadeOfGateway.findByCompoundID(2);
-
-        assertNotNull(madeOfDTO);
-        assertEquals(2, madeOfDTO.getCompoundID());
-
-        try {
-            conn.rollback();
-        } catch (SQLException e) {
-            throw new DataException("Database couldn't rollback", e);
-        }
-    }
+//    @Test
+//    public void testFindCompoundID() throws DataException, CompoundNotFoundException {
+//        new ElementGateway("Nitrogen", 7, 14.0067);
+//        new CompoundGateway("Carbon Dioxide");
+//
+//        new MadeOfGateway(2, 1);
+//        MadeOfDTO madeOfDTO = MadeOfGateway.findByCompoundID(2);
+//
+//        assertNotNull(madeOfDTO);
+//        assertEquals(2, madeOfDTO.getCompoundID());
+//
+//        try {
+//            conn.rollback();
+//        } catch (SQLException e) {
+//            throw new DataException("Database couldn't rollback", e);
+//        }
+//    }
 
     /**
      * tests to make sure a row of the MadeOf table can be returned by element id
      * @throws DataException
      */
-    @Test
-    public void testFindElementID() throws DataException, CompoundNotFoundException {
-        new ElementGateway("Nitrogen", 7, 14.0067);
-        new CompoundGateway("Carbon Dioxide");
-
-        new MadeOfGateway(2, 1);
-
-        MadeOfDTO madeOfDTO = MadeOfGateway.findByElementID(1);
-
-        assertNotNull(madeOfDTO);
-        assertEquals(1, madeOfDTO.getElementID());
-
-        try {
-            conn.rollback();
-        } catch (SQLException e) {
-            throw new DataException("Database couldn't rollback", e);
-        }
-    }
+//    @Test
+//    public void testFindElementID() throws DataException, CompoundNotFoundException {
+//        new ElementGateway("Nitrogen", 7, 14.0067);
+//        new CompoundGateway("Carbon Dioxide");
+//
+//        new MadeOfGateway(2, 1);
+//
+//        MadeOfDTO madeOfDTO = MadeOfGateway.findByElementID(1);
+//
+//        assertNotNull(madeOfDTO);
+//        assertEquals(1, madeOfDTO.getElementID());
+//
+//        try {
+//            conn.rollback();
+//        } catch (SQLException e) {
+//            throw new DataException("Database couldn't rollback", e);
+//        }
+//  }
 }

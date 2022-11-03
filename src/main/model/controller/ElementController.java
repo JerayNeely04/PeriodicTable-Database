@@ -2,6 +2,7 @@ package model.controller;
 
 import datasource.DataException;
 import model.Element;
+import model.mapper.CompoundNotFoundException;
 import model.mapper.ElementMapper;
 import model.mapper.ElementNotFoundException;
 
@@ -54,7 +55,7 @@ public class ElementController
         myElement.persist();
     }
 
-    public List<String> getCompoundsContaining() {
-        return null;
+    public List<String> getCompoundsContaining() throws DataException, CompoundNotFoundException {
+        return myElement.getCompoundsContaining();
     }
 }

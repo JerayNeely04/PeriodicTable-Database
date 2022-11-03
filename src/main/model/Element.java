@@ -1,8 +1,11 @@
 package model;
 
 import datasource.DataException;
+import model.mapper.CompoundNotFoundException;
 import model.mapper.ElementMapper;
 import model.mapper.ElementNotFoundException;
+
+import java.util.List;
 
 public class Element {
     private long id;
@@ -109,6 +112,10 @@ public class Element {
      */
     public void setAtomicMass(double newAtomicMass) {
         atomicMass = newAtomicMass;
+    }
+
+    public List<String> getCompoundsContaining() throws DataException, CompoundNotFoundException {
+        return ElementMapper.getCompoundsContaining(id);
     }
 }
 
