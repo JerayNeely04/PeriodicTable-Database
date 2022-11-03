@@ -32,7 +32,7 @@ public class CompoundGateway {
      * @param id, id that you are searching for
      * @throws DataException
      */
-    public CompoundGateway(long id) throws DataException {
+    public CompoundGateway(long id) throws CompoundNotFoundException {
         this.connection = DatabaseConnection.getInstance().getConnection();
         String query = "Select * from CompoundTable WHERE id = " + id;
 
@@ -45,7 +45,7 @@ public class CompoundGateway {
             this.name = results.getString("name");
 
         } catch (SQLException e) {
-            throw new DataException("Could not find compound with ID: " + id, e);
+            throw new CompoundNotFoundException("Could not find compound with ID: " + id, e);
         }
     }
 

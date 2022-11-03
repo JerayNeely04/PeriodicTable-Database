@@ -80,7 +80,7 @@ public class CompoundControllerTest
         assertEquals("Sulfuric Base",controller.getMyCompound().getName());
 
         // Make sure it did not go all the way to the database
-        checkThatCompoundIsNotInDB("Sulfuric Acid");
+        checkThatCompoundIsNotInDB("Sulfuric Base");
     }
 
     private void checkThatCompoundIsNotInDB(String name)
@@ -121,8 +121,7 @@ public class CompoundControllerTest
     }
 
     @Test
-    public void canAddAndRetrieveMultipleElement()
-            throws ElementNotFoundException, CompoundNotFoundException {
+    public void canAddAndRetrieveMultipleElement() throws ElementNotFoundException, CompoundNotFoundException {
         buildWater();
 
         CompoundController controller = new CompoundController(WATER);

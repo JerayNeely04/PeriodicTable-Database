@@ -47,7 +47,10 @@ public class CompoundMapper {
         return totalMass;
     }
 
-    public static void delete(String name) {
+    public static void delete(String name) throws CompoundNotFoundException, DataException {
+        CompoundDTO compound =  CompoundGateway.findByName(name);
+        CompoundGateway gateway = new CompoundGateway(compound.getId());
+        gateway.delete();
     }
 
     public Compound getMyCompound() {

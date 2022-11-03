@@ -16,7 +16,7 @@ public class CompoundController
     }
 
     public static void createCompound(String name) throws CompoundNotFoundException {
-        new CompoundMapper(name);
+        CompoundMapper.createCompound(name);
     }
 
     public Compound getMyCompound()
