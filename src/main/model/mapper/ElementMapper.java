@@ -41,17 +41,12 @@ public class ElementMapper implements ElementMapperInterface {
      * @throws ElementNotFoundException exception thrown if the element could not be mapped
      */
     public ElementMapper (String name) throws ElementNotFoundException {
-        try {
-            ElementDTO elementDTO = ElementGateway.findByName(name);
-            long id = elementDTO.getId();
-            long atomicNumber = elementDTO.getAtomicNum();
-            double atomicMass = elementDTO.getAtomicMass();
+        ElementDTO elementDTO = ElementGateway.findByName(name);
+        long id = elementDTO.getId();
+        long atomicNumber = elementDTO.getAtomicNum();
+        double atomicMass = elementDTO.getAtomicMass();
 
-            element = new Element(id, name, atomicNumber, atomicMass);
-
-        } catch (ElementNotFoundException e) {
-            throw new ElementNotFoundException("Element: " + name + " could not mapped", e);
-        }
+        element = new Element(id, name, atomicNumber, atomicMass);
     }
 
     /**
@@ -59,19 +54,19 @@ public class ElementMapper implements ElementMapperInterface {
      * @param id the id of the row
      * @throws DataException the general data exception
      */
-    public static void persist(long id, String name, long atomicNumber, double atomicMass) throws DataException, ElementNotFoundException {
-        try {
-            ElementGateway gateway = new ElementGateway(id);
-            gateway.setName(name);
-            gateway.setAtomicNum(atomicNumber);
-            gateway.setAtomicMass(atomicMass);
-            gateway.update();
-
-        } catch (ElementNotFoundException e) {
-            throw new ElementNotFoundException("Could not persist element data.", e);
-        }
+    public static void persist(long id, String name, long atomicNumber, double atomicMass) throws ElementNotFoundException {
+        ElementGateway gateway = new ElementGateway(id);
+        gateway.setName(name);
+        gateway.setAtomicNum(atomicNumber);
+        gateway.setAtomicMass(atomicMass);
+        gateway.update();
     }
 
+    /**
+     * Uses the element gateway to delete a row
+     * @param name the name of the element to delete
+     * @throws ElementNotFoundException
+     */
     public static void delete(String name) throws ElementNotFoundException {
         try {
             ElementDTO elementDTO = ElementGateway.findByName(name);
@@ -86,10 +81,10 @@ public class ElementMapper implements ElementMapperInterface {
     }
 
     /**
-     *
-     * @param startAtomicNum
-     * @param endAtomicNum
-     * @return
+     * Uses the element gateway to return all elements between two atomic numbers
+     * @param startAtomicNum the starting atomic number
+     * @param endAtomicNum the ending atomic number
+     * @return the list of element objects between the two atomic numbers
      * @throws ElementNotFoundException
      */
     public static Element[] getElementsBetween(int startAtomicNum, int endAtomicNum) throws ElementNotFoundException {
@@ -98,8 +93,7 @@ public class ElementMapper implements ElementMapperInterface {
     }
 
     /**
-     *
-     * @return
+     * @return all elements in the database using the element gateway
      */
     public static Element[] getAllElements() {
         ArrayList<ElementDTO> elementDTOs = ElementGateway.findAll();
@@ -107,9 +101,9 @@ public class ElementMapper implements ElementMapperInterface {
     }
 
     /**
-     *
-     * @param elementDTOs
-     * @return
+     * Maps a list of element objects using a list of element DTOs
+     * @param elementDTOs the list of DTOs to map
+     * @return the list of element objects
      */
     private static Element[] getElements(ArrayList<ElementDTO> elementDTOs) {
         Element[] elements = new Element[elementDTOs.size()];
@@ -127,12 +121,24 @@ public class ElementMapper implements ElementMapperInterface {
         return elements;
     }
 
-    public static List<String> getCompoundsContaining(long id) throws DataException, CompoundNotFoundException {
-        ArrayList<MadeOfDTO> compounds = MadeOfGateway.findByElementID(id);
+    /**
+     * @param elementID the id of the element to check against
+     * @return the list of all compounds containing an element
+     * @throws DataException
+     * @throws CompoundNotFoundException
+     */
+    public static List<String> getCompoundsContaining(long elementID) throws DataException, CompoundNotFoundException {
+        ArrayList<MadeOfDTO> compounds = MadeOfGateway.findByElementID(elementID);
         ArrayList<String> namesOfCompounds = new ArrayList<String>();
+
         for (MadeOfDTO compound: compounds) {
-            CompoundGateway gateway = new CompoundGateway(compound.getCompoundID());
-            namesOfCompounds.add(gateway.getName());
+            long compoundID = compound.getCompoundID();
+            CompoundGateway gateway = new CompoundGateway(compoundID);
+            String compoundName = gateway.getName();
+
+            if(!namesOfCompounds.contains(compoundName)) {
+                namesOfCompounds.add(gateway.getName());
+            }
         }
         return namesOfCompounds;
     }

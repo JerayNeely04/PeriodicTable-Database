@@ -15,32 +15,42 @@ import java.util.ArrayList;
 public class CompoundMapper {
     private Compound myCompound;
 
-
+    /**
+     * Finds a compound in the database and maps it to a new compound object
+     * @param name the name of the compound to find
+     * @throws CompoundNotFoundException
+     * @throws DataException
+     * @throws ElementNotFoundException
+     */
     public CompoundMapper(String name) throws CompoundNotFoundException, DataException, ElementNotFoundException {
-        try {
-            CompoundDTO compoundDTO = CompoundGateway.findByName(name);
-            long id = compoundDTO.getId();
+        CompoundDTO compoundDTO = CompoundGateway.findByName(name);
+        long id = compoundDTO.getId();
 
-            myCompound = new Compound(id, name);
-            ArrayList<MadeOfDTO> elements = MadeOfGateway.findByCompoundID(id);
-            for (MadeOfDTO e:elements) {
-                long elementID = e.getElementID();
-                ElementGateway gateway = new ElementGateway(elementID);
-               myCompound.addElement(gateway.getName());
-            }
-        } catch (CompoundNotFoundException e) {
-            throw new CompoundNotFoundException("Compound: " + name + " could not mapped", e);
+        myCompound = new Compound(id, name);
+        ArrayList<MadeOfDTO> elements = MadeOfGateway.findByCompoundID(id);
+        for (MadeOfDTO e:elements) {
+            long elementID = e.getElementID();
+            ElementGateway gateway = new ElementGateway(elementID);
+            myCompound.addElement(gateway.getName());
         }
     }
 
+    /**
+     * Creates a new compound in the database
+     * @param name of the compound to create
+     * @throws CompoundNotFoundException
+     */
     public static void createCompound(String name) throws CompoundNotFoundException {
-        try {
-            CompoundGateway gateway = new CompoundGateway(name);
-        } catch (CompoundNotFoundException e) {
-            throw new CompoundNotFoundException("Cannot create compound");
-        }
+        new CompoundGateway(name);
     }
 
+    /**
+     * Gets the total atomic mass of a compound using all of its element components
+     * @param elements the list of elements that make up the compound
+     * @return the total atomic mass of the compound
+     * @throws DataException
+     * @throws ElementNotFoundException
+     */
     public static double getAtomicMass(ArrayList<String> elements) throws DataException, ElementNotFoundException {
         double totalMass = 0.0;
 
@@ -61,10 +71,10 @@ public class CompoundMapper {
         gateway.delete();
     }
 
-    public static void addElement(long id, String name) throws ElementNotFoundException, DataException {
-
-        ElementDTO element = ElementGateway.findByName(name);
-        MadeOfGateway gateway = new MadeOfGateway(id, element.getId());
+    public static void addElement(long compoundId, String elementName) throws ElementNotFoundException, DataException {
+        ElementDTO element = ElementGateway.findByName(elementName);
+        long elementToAddID = element.getId();
+        new MadeOfGateway(compoundId, elementToAddID);
     }
 
     public Compound getMyCompound() {
