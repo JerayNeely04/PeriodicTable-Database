@@ -77,6 +77,7 @@ public class CompoundMapper {
         new MadeOfGateway(compoundId, elementToAddID);
     }
 
+
     public Compound getMyCompound() {
         return myCompound;
     }

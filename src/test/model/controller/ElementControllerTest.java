@@ -97,7 +97,7 @@ public class ElementControllerTest
     }
 
     @Test
-    public void canUpdateName() throws ElementNotFoundException {
+    public void canUpdateName() throws ElementNotFoundException, DataException {
         // put the object I'm getting into the database
         new ElementMapper("Oxygen", 8, 15.999);
 

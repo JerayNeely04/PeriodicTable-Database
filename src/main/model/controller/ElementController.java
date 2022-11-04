@@ -46,8 +46,7 @@ public class ElementController
         myElement.setAtomicMass(newAtomicMass);
     }
 
-    public void setName(String newName)
-    {
+    public void setName(String newName) {
         myElement.setName(newName);
     }
 

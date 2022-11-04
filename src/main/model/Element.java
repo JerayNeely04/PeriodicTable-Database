@@ -1,6 +1,7 @@
 package model;
 
 import datasource.DataException;
+import model.mapper.CompoundMapper;
 import model.mapper.CompoundNotFoundException;
 import model.mapper.ElementMapper;
 import model.mapper.ElementNotFoundException;
