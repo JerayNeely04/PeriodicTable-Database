@@ -44,7 +44,7 @@ public class CompoundController
         myCompound.addElementToMadeOf(name);
     }
 
-    public List<String> getElements() {
+    public List<String> getElements() throws DataException, ElementNotFoundException {
         return myCompound.getAllElements();
     }
 

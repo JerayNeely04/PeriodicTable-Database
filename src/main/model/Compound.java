@@ -35,8 +35,8 @@ public class Compound {
         return name;
     }
 
-    public List<String> getAllElements() {
-        return elements;
+    public List<String> getAllElements() throws DataException, ElementNotFoundException {
+        return CompoundMapper.getAllElements(id);
     }
 
     public double getAtomicMass() throws DataException, ElementNotFoundException {

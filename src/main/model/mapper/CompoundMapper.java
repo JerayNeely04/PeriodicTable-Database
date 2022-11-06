@@ -11,6 +11,7 @@ import model.Compound;
 import model.Element;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class CompoundMapper {
     private Compound myCompound;
@@ -75,6 +76,16 @@ public class CompoundMapper {
         ElementDTO element = ElementGateway.findByName(elementName);
         long elementToAddID = element.getId();
         new MadeOfGateway(compoundId, elementToAddID);
+    }
+
+    public static List<String> getAllElements(long id) throws DataException, ElementNotFoundException {
+        ArrayList<MadeOfDTO> elementsDTOs = MadeOfGateway.findByCompoundID(id);
+        List<String> elements = new ArrayList<>();
+        for (MadeOfDTO element: elementsDTOs) {
+            ElementGateway gateway = new ElementGateway(element.getElementID());
+            elements.add(gateway.getName());
+        }
+        return elements;
     }
 
 
