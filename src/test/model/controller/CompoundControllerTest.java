@@ -164,7 +164,9 @@ public class CompoundControllerTest
         controller.addElement("Hydrogen");
 
         // change the name of the element
-        (new ElementController("Hydrogen")).setName("Bad Hydrogen");
+        ElementController Hydrogen = new ElementController("Hydrogen");
+        Hydrogen.setName("Bad Hydrogen");
+        Hydrogen.persist();
 
         // Make sure we are related to the renamed element
         List<String> elements = controller.getElements();

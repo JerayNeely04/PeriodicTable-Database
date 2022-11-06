@@ -33,8 +33,8 @@ public class MadeOfGateway {
                 "CREATE TABLE MadeOfTable ("
                         + "compoundID BIGINT NOT NULL,"
                         + "elementID BIGINT NOT NULL,"
-                        + "FOREIGN KEY (elementID) REFERENCES ElementTable(id) ON DELETE CASCADE,"
-                        + "FOREIGN KEY (compoundID) REFERENCES CompoundTable(id) ON DELETE CASCADE)";
+                        + "FOREIGN KEY (elementID) REFERENCES ElementTable(id) ON DELETE CASCADE ON UPDATE CASCADE,"
+                        + "FOREIGN KEY (compoundID) REFERENCES CompoundTable(id) ON DELETE CASCADE ON UPDATE CASCADE)";
 
         try (PreparedStatement stmt = conn.prepareStatement(query)) {
             stmt.execute();
