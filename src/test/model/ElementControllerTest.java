@@ -1,8 +1,11 @@
-package model.controller;
+package model;
 
 import datasource.DataException;
 import datasource.DatabaseConnection;
+import datasource.MadeOfTableGateway;
 import model.Element;
+import model.controller.CompoundController;
+import model.controller.ElementController;
 import model.mapper.CompoundMapper;
 import model.mapper.CompoundNotFoundException;
 import model.mapper.ElementMapper;
@@ -28,7 +31,7 @@ public class ElementControllerTest
     }
 
     @Test
-    public void canGetExistingElement() throws ElementNotFoundException {
+    public void canGetExistingElement() throws ElementNotFoundException, DataException {
         // put the object I'm getting into the database
         new ElementMapper("Oxygen", 8, 15.99);
 
@@ -57,8 +60,7 @@ public class ElementControllerTest
     }
 
     @Test
-    public void canUpdateAtomicNumber() throws ElementNotFoundException
-    {
+    public void canUpdateAtomicNumber() throws ElementNotFoundException, DataException {
         // put the object I'm getting into the database
         new ElementMapper("Oxygen", 8, 15.999);
 
@@ -77,8 +79,7 @@ public class ElementControllerTest
     }
 
     @Test
-    public void canUpdateAtomicWeight() throws ElementNotFoundException
-    {
+    public void canUpdateAtomicWeight() throws ElementNotFoundException, DataException {
         // put the object I'm getting into the database
         new ElementMapper("Oxygen", 8, 15.999);
 
@@ -155,7 +156,7 @@ public class ElementControllerTest
     }
 
     @Test
-    public void canDelete() throws ElementNotFoundException {
+    public void canDelete() throws ElementNotFoundException, DataException {
         // put the object I'm deleting into the database
         new ElementMapper("Oxygen", 8, 15.99);
         ElementController.delete("Oxygen");
@@ -164,7 +165,7 @@ public class ElementControllerTest
     }
 
     @Test
-    public void canRetrieveARange() throws ElementNotFoundException {
+    public void canRetrieveARange() throws ElementNotFoundException, DataException {
         fillDBWithSequentialRecords(15, 32);
 
         final int rangeStart = 20;
@@ -186,7 +187,7 @@ public class ElementControllerTest
     }
 
     @Test
-    public void canRetrieveAll() throws ElementNotFoundException {
+    public void canRetrieveAll() throws ElementNotFoundException, DataException {
         fillDBWithSequentialRecords(42, 67);
         int numRecords = 67 - 42 + 1;
         Element[] resultElements = ElementController.getAllElements();

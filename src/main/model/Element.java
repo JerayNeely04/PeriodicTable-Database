@@ -1,11 +1,8 @@
 package model;
 
 import datasource.DataException;
-import datasource.MadeOfGateway;
-import model.mapper.CompoundMapper;
 import model.mapper.CompoundNotFoundException;
 import model.mapper.ElementMapper;
-import model.mapper.ElementNotFoundException;
 
 import java.util.List;
 
@@ -34,7 +31,7 @@ public class Element {
 
     }
 
-    public void persist() throws DataException, ElementNotFoundException {
+    public void persist() throws DataException {
         ElementMapper.persist(id, name, atomicNumber, atomicMass);
     }
 

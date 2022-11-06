@@ -1,11 +1,10 @@
 package model.mapper;
 
-import datasource.CompoundGateway;
+import GatewayDTO.ElementDTO;
+import GatewayDTO.madeOfDTO;
 import datasource.DataException;
-import datasource.ElementGateway;
-import datasource.MadeOfGateway;
-import gatewayDTOs.ElementDTO;
-import gatewayDTOs.MadeOfDTO;
+import datasource.MadeOfTableGateway;
+import datasource.SingleTableGateway;
 import model.Element;
 import model.ElementMapperInterface;
 
@@ -22,12 +21,12 @@ public class ElementMapper implements ElementMapperInterface {
      * @param name the name of the element
      * @param atomicNumber the elements atomic number
      * @param atomicMass the elements atomic mass
-     * @throws ElementNotFoundException exception thrown if the element could not be mapped
+     * @throws DataException exception thrown if the element could not be mapped
      */
-    public ElementMapper (String name, long atomicNumber, double atomicMass) throws ElementNotFoundException {
+    public ElementMapper(String name, long atomicNumber, double atomicMass) throws ElementNotFoundException {
         try {
-            ElementGateway gateway = new ElementGateway(name, atomicNumber, atomicMass);
-            long id = gateway.getId();
+            SingleTableGateway elementGateway = SingleTableGateway.createElement(name, atomicNumber, atomicMass);
+            long id = elementGateway.getId();
             element = new Element(id, name, atomicNumber, atomicMass);
 
         } catch (DataException e) {
@@ -38,15 +37,20 @@ public class ElementMapper implements ElementMapperInterface {
     /**
      * Constructor for objects that exist in the db
      * @param name the name of the element
-     * @throws ElementNotFoundException exception thrown if the element could not be mapped
+     * @throws DataException exception thrown if the element could not be mapped
      */
-    public ElementMapper (String name) throws ElementNotFoundException {
-        ElementDTO elementDTO = ElementGateway.findByName(name);
-        long id = elementDTO.getId();
-        long atomicNumber = elementDTO.getAtomicNum();
-        double atomicMass = elementDTO.getAtomicMass();
+    public ElementMapper(String name) throws ElementNotFoundException {
+        try {
+            SingleTableGateway elementGateway = new SingleTableGateway(name);
 
-        element = new Element(id, name, atomicNumber, atomicMass);
+            long id = elementGateway.getId();
+            long atomicNumber = elementGateway.getAtomicNum();
+            double atomicMass = elementGateway.getAtomicMass();
+
+            element = new Element(id, name, atomicNumber, atomicMass);
+        } catch (DataException e) {
+            throw new ElementNotFoundException("Could not map element", e);
+        }
     }
 
     /**
@@ -54,30 +58,22 @@ public class ElementMapper implements ElementMapperInterface {
      * @param id the id of the row
      * @throws DataException the general data exception
      */
-    public static void persist(long id, String name, long atomicNumber, double atomicMass) throws ElementNotFoundException {
-        ElementGateway gateway = new ElementGateway(id);
+    public static void persist(long id, String name, long atomicNumber, double atomicMass) throws DataException {
+        SingleTableGateway gateway = new SingleTableGateway(id);
         gateway.setName(name);
         gateway.setAtomicNum(atomicNumber);
         gateway.setAtomicMass(atomicMass);
-        gateway.update();
+        gateway.persist();
     }
 
     /**
      * Uses the element gateway to delete a row
      * @param name the name of the element to delete
-     * @throws ElementNotFoundException
+     * @throws DataException
      */
-    public static void delete(String name) throws ElementNotFoundException {
-        try {
-            ElementDTO elementDTO = ElementGateway.findByName(name);
-            long id = elementDTO.getId();
-
-            ElementGateway gateway = new ElementGateway(id);
-            gateway.delete();
-
-        } catch(ElementNotFoundException e) {
-            throw new ElementNotFoundException("Could not delete element row.", e);
-        }
+    public static void delete(String name) throws DataException {
+        SingleTableGateway gateway = new SingleTableGateway(name);
+        gateway.delete();
     }
 
     /**
@@ -87,16 +83,16 @@ public class ElementMapper implements ElementMapperInterface {
      * @return the list of element objects between the two atomic numbers
      * @throws ElementNotFoundException
      */
-    public static Element[] getElementsBetween(int startAtomicNum, int endAtomicNum) throws ElementNotFoundException {
-        ArrayList<ElementDTO> elementDTOs = ElementGateway.getAllBetween(startAtomicNum, endAtomicNum);
+    public static Element[] getElementsBetween(int startAtomicNum, int endAtomicNum) throws DataException {
+        ArrayList<ElementDTO> elementDTOs = SingleTableGateway.getAllBetween(startAtomicNum, endAtomicNum);
         return getElements(elementDTOs);
     }
 
     /**
      * @return all elements in the database using the element gateway
      */
-    public static Element[] getAllElements() {
-        ArrayList<ElementDTO> elementDTOs = ElementGateway.findAll();
+    public static Element[] getAllElements() throws DataException {
+        ArrayList<ElementDTO> elementDTOs = SingleTableGateway.getAllElements();
         return getElements(elementDTOs);
     }
 
@@ -128,12 +124,12 @@ public class ElementMapper implements ElementMapperInterface {
      * @throws CompoundNotFoundException
      */
     public static List<String> getCompoundsContaining(long elementID) throws DataException, CompoundNotFoundException {
-        ArrayList<MadeOfDTO> compounds = MadeOfGateway.findByElementID(elementID);
+        ArrayList<madeOfDTO> compounds = MadeOfTableGateway.findByElementID(elementID);
         ArrayList<String> namesOfCompounds = new ArrayList<String>();
 
-        for (MadeOfDTO compound: compounds) {
+        for (madeOfDTO compound: compounds) {
             long compoundID = compound.getCompoundID();
-            CompoundGateway gateway = new CompoundGateway(compoundID);
+            SingleTableGateway gateway = new SingleTableGateway(compoundID);
             String compoundName = gateway.getName();
 
             if(!namesOfCompounds.contains(compoundName)) {

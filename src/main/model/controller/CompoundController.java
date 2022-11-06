@@ -15,7 +15,7 @@ public class CompoundController
         CompoundMapper.delete(name);
     }
 
-    public static void createCompound(String name) throws CompoundNotFoundException {
+    public static void createCompound(String name) throws DataException {
         CompoundMapper.createCompound(name);
     }
 

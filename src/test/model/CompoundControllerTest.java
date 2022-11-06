@@ -1,7 +1,9 @@
-package model.controller;
+package model;
 
 import datasource.DataException;
 import datasource.DatabaseConnection;
+import model.controller.CompoundController;
+import model.controller.ElementController;
 import model.mapper.CompoundMapper;
 import model.mapper.CompoundNotFoundException;
 import model.mapper.ElementMapper;

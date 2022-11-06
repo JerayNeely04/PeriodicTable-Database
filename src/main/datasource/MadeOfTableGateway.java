@@ -1,48 +1,45 @@
 package datasource;
 
-import GatewayDTO.madeOfDTO;
-
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
+
+import GatewayDTO.madeOfDTO;
 
 public class MadeOfTableGateway {
     private long compoundID;
     private long elementID;
 
     /**
-     * Creates the madeOfTable in the database
+     * creates a new MadeOf row
+     *
+     * @param compoundID the compound id
+     * @param elementID  the element id
+     * @throws DataException the database exception
      */
-    public static void createTable() throws DataException {
+    public MadeOfTableGateway(long compoundID, long elementID) throws DataException {
+        this.compoundID = compoundID;
+        this.elementID = elementID;
 
-        try (Connection conn = DatabaseConnection.getInstance().getConnection()) {
-            String query =
-                    "CREATE TABLE madeOfTable ("
-                            + "compoundID BIGINT,"
-                            + "elementID BIGINT,"
-                            + "FOREIGN KEY (elementID) REFERENCES SingleTable(elementID) ON DELETE CASCADE,"
-                            + "FOREIGN KEY (compoundID) REFERENCES SingleTable(compoundID) ON DELETE CASCADE"
-                            + ")";
-            PreparedStatement stmt;
-
-            stmt = conn.prepareStatement(query);
-            stmt.execute();
-            stmt.close();
-        } catch (SQLException e) {
-            throw new DataException(e.getMessage());
-        }
+        this.createRow(compoundID, elementID);
     }
 
-    public static madeOfDTO createMadeOf(ResultSet rs) throws DataException {
-        try {
-            long compoundID = rs.getLong("compoundID");
-            long elementID = rs.getLong("elementID");
+    /**
+     * Creates the madeOfTable in the database
+     */
+    public static void createTable() throws SQLException {
+        Connection conn = DatabaseConnection.getInstance().getConnection();
+        String query =
+                "CREATE TABLE madeOfTable ("
+                        + "compoundID BIGINT NOT NULL,"
+                        + "elementID BIGINT NOT NULL,"
+                        + "FOREIGN KEY (elementID) REFERENCES SingleTable(elementID) ON DELETE CASCADE ON UPDATE CASCADE,"
+                        + "FOREIGN KEY (compoundID) REFERENCES SingleTable(compoundID) ON DELETE CASCADE ON UPDATE CASCADE)";
 
-            return new madeOfDTO(compoundID, elementID);
+        try (PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.execute();
+
         } catch (SQLException e) {
-            throw new DataException(e.getMessage());
+            throw new DataException("Could not create MadeOf table", e);
         }
     }
 
@@ -50,26 +47,25 @@ public class MadeOfTableGateway {
      * Find all the records in the madeOfTable
      *
      * @return resultSet from the rows in the table
-     *         Return null is nothing is found or exception is thrown
+     * Return null is nothing is found or exception is thrown
      * @throws SQLException - for when either the connection or the query failed
      */
     public static ArrayList<madeOfDTO> findAll() throws DataException {
         Connection conn = DatabaseConnection.getInstance().getConnection();
-        ArrayList<madeOfDTO> madeOfList = new ArrayList<>();
+        String query = "SELECT * FROM madeOfTable";
 
-        try {
-            String query = "SELECT * FROM madeOfTable";
-            PreparedStatement stmt = conn.prepareStatement(query);
+        try (PreparedStatement stmt = conn.prepareStatement(query)) {
+            ArrayList<madeOfDTO> madeOfList = new ArrayList<>();
             ResultSet rs = stmt.executeQuery();
 
             while (rs.next()) {
-                madeOfDTO madeOf = createMadeOf(rs);
-                madeOfList.add(madeOf);
+                madeOfDTO MadeOf = createMadeOfDTO(rs);
+                madeOfList.add(MadeOf);
             }
-
             return madeOfList;
+
         } catch (SQLException e) {
-            throw new DataException(e.getMessage());
+            throw new DataException("Could not fetch all MadeOf rows", e);
         }
     }
 
@@ -78,21 +74,27 @@ public class MadeOfTableGateway {
      *
      * @param compoundID The compoundID to be found
      * @return ResultSet containing the row.
-     *         Return null is nothing is found or exception is thrown
+     * Return null is nothing is found or exception is thrown
      */
-    public static madeOfDTO findByCompoundID(long compoundID) throws DataException {
-        try (Connection conn = DatabaseConnection.getInstance().getConnection()) {
-            String query = "SELECT * FROM madeOfTable WHERE compoundID = " + compoundID;
-            PreparedStatement stmt = conn.prepareStatement(query);
-            ResultSet rs = stmt.executeQuery();
+    public static ArrayList<madeOfDTO> findByCompoundID(long compoundID) throws DataException {
+        Connection conn = DatabaseConnection.getInstance().getConnection();
+        String query = "SELECT * FROM madeOfTable WHERE compoundID = " + compoundID;
 
-            if (rs.next()) {
-                return createMadeOf(rs);
+        ArrayList<madeOfDTO> elementsList = new ArrayList<>();
+
+        try {
+            PreparedStatement stmt = conn.prepareStatement(query);
+            ResultSet results = stmt.executeQuery();
+
+            while (results.next()) {
+                madeOfDTO element = createMadeOfDTO(results);
+                elementsList.add(element);
             }
+
+            return elementsList;
         } catch (SQLException e) {
-            throw new DataException(e.getMessage());
+            throw new DataException("Could not find row by compound ID", e);
         }
-        return null;
     }
 
     /**
@@ -100,29 +102,27 @@ public class MadeOfTableGateway {
      *
      * @param elementID The elementID to be found
      * @return ResultSet containing the row.
-     *         Return null is nothing is found or exception is thrown
+     * Return null is nothing is found or exception is thrown
      */
-    public static madeOfDTO findByElementID(long elementID) throws DataException {
+    public static ArrayList<madeOfDTO> findByElementID(long elementID) throws DataException {
         Connection conn = DatabaseConnection.getInstance().getConnection();
+        String query = "SELECT * FROM madeOfTable WHERE elementID = " + elementID;
 
-        // TODO: If there are two rows with the specific elementID,
-        //  how do we determine which one we want?
-        //  Currently, this function is returning whatever the first row is
-        //  that matches the elementID
+        ArrayList<madeOfDTO> compounds = new ArrayList<>();
 
         try {
-            String query = "SELECT * FROM madeOfTable WHERE elementID = " + elementID;
             PreparedStatement stmt = conn.prepareStatement(query);
-            ResultSet rs = stmt.executeQuery();
+            ResultSet results = stmt.executeQuery();
 
-            if (rs.next()) {
-                return createMadeOf(rs);
+            while (results.next()) {
+                madeOfDTO element = createMadeOfDTO(results);
+                compounds.add(element);
             }
-        } catch (SQLException e) {
-            throw new DataException(e.getMessage());
-        }
 
-        return null;
+            return compounds;
+        } catch (SQLException e) {
+            throw new DataException("Could not find MadeOf row by elementID", e);
+        }
     }
 
     /**
@@ -130,23 +130,41 @@ public class MadeOfTableGateway {
      *
      * @param compoundID The compoundID to insert
      *                   CompoundID must exist in ChemicalTable to succeed
-     * @param elementID The elementID to insert
-     *                  ElementID must exist in the ElementTable to succeed
+     * @param elementID  The elementID to insert
+     *                   ElementID must exist in the ElementTable to succeed
      */
-    public void insertRow(long compoundID, long elementID) throws DataException {
+    public void createRow(long compoundID, long elementID) throws DataException {
         Connection conn = DatabaseConnection.getInstance().getConnection();
         String query = "INSERT INTO madeOfTable VALUES (?, ?)";
 
-        try {
-            PreparedStatement stmt = conn.prepareStatement(query);
-
+        try (PreparedStatement stmt = conn.prepareStatement(query)) {
             stmt.setLong(1, compoundID);
             stmt.setLong(2, elementID);
 
             stmt.executeUpdate();
+
         } catch (SQLException e) {
-            throw new DataException(e.getMessage());
+            throw new DataException("Could not insert row into MadeOf table", e);
         }
+    }
+
+    /**
+     * Creates a new DTO for a MadeOf row
+     *
+     * @param rs the result set containing the MadeOf rows data
+     * @return new MadeOf DTO
+     */
+    public static madeOfDTO createMadeOfDTO(ResultSet rs) {
+        try {
+            long compoundID = rs.getLong("compoundID");
+            long elementID = rs.getLong("elementID");
+
+            return new madeOfDTO(compoundID, elementID);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return null;
     }
 
     /**

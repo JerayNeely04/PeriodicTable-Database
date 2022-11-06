@@ -10,15 +10,15 @@ import java.util.List;
 
 public class ElementController
 {
-    public static void delete(String name) throws ElementNotFoundException {
+    public static void delete(String name) throws ElementNotFoundException, DataException {
         ElementMapper.delete(name);
     }
 
-    public static Element[] getElementsBetween(int firstAtomicNumber, int lastAtomicNumber) throws ElementNotFoundException {
+    public static Element[] getElementsBetween(int firstAtomicNumber, int lastAtomicNumber) throws DataException {
         return ElementMapper.getElementsBetween(firstAtomicNumber, lastAtomicNumber);
     }
 
-    public static Element[] getAllElements() {
+    public static Element[] getAllElements() throws DataException {
         return ElementMapper.getAllElements();
     }
 
@@ -28,7 +28,7 @@ public class ElementController
     }
 
     private Element myElement;
-    public ElementController(String name) throws ElementNotFoundException {
+    public ElementController(String name) throws ElementNotFoundException, DataException {
         myElement = new ElementMapper(name).getMyElement();
     }
 

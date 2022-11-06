@@ -1,11 +1,14 @@
 package datasource;
 
+import GatewayDTO.ElementDTO;
+
 import java.sql.*;
+import java.util.ArrayList;
 
 public class SingleTableGateway {
     private long id;
     private String name;
-    private int atomicNum;
+    private long atomicNum;
     private double atomicMass;
     private long elementID;
     private long compoundID;
@@ -26,6 +29,31 @@ public class SingleTableGateway {
 
             this.id = id;
             this.name = results.getString("name");
+            this.atomicNum = results.getInt("atomicNum");
+            this.atomicMass = results.getDouble("atomicMass");
+            this.elementID = results.getLong("elementID");
+            this.compoundID = results.getLong("compoundID");
+            this.solute = results.getLong("solute");
+            this.dissolvedBy = results.getLong("dissolvedBy");
+            this.dissolves = results.getLong("dissolves");
+
+        } catch (SQLException e) {
+            throw new DataException(e.getMessage());
+        }
+    }
+
+    // Find constructor for name
+    public SingleTableGateway(String name) throws DataException {
+        this.connection = DatabaseConnection.getInstance().getConnection();
+        String query = "SELECT * FROM SingleTable WHERE name = '" + name + "'";
+
+        try {
+            PreparedStatement stmt = this.connection.prepareStatement(query);
+            ResultSet results = stmt.executeQuery();
+            results.next();
+
+            this.name = name;
+            this.id = results.getLong("id");
             this.atomicNum = results.getInt("atomicNum");
             this.atomicMass = results.getDouble("atomicMass");
             this.elementID = results.getLong("elementID");
@@ -102,22 +130,21 @@ public class SingleTableGateway {
         return new SingleTableGateway(id);
     }
 
-    public static SingleTableGateway createCompound(String name, long compoundID, long elementID) throws DataException {
-        String query = new String("INSERT INTO SingleTable (name, compoundID, elementID) VALUES (?, ?, ?)");
+    public static SingleTableGateway createCompound(String name) throws DataException {
+        String query = new String("INSERT INTO SingleTable (name) VALUES (?)");
         Connection conn = DatabaseConnection.getInstance().getConnection();
         long id = 0;
 
         try {
             PreparedStatement stmt = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
             stmt.setString(1, name);
-            stmt.setLong(2, compoundID);
-            stmt.setLong(3, elementID);
             if (stmt.executeUpdate() > 0) {
                 id = getIDFromDatabase(stmt);
             }
         } catch (SQLException e) {
             throw new DataException(e.getMessage());
         }
+
         return new SingleTableGateway(id);
     }
 
@@ -141,7 +168,7 @@ public class SingleTableGateway {
         return new SingleTableGateway(id);
     }
 
-    public static SingleTableGateway createElement(String name, int atomicNum, double atomicMass) throws DataException {
+    public static SingleTableGateway createElement(String name, long atomicNum, double atomicMass) throws DataException {
         String query = new String("INSERT INTO SingleTable (name, atomicNum, atomicMass) VALUES (?, ?, ?)");
         Connection conn = DatabaseConnection.getInstance().getConnection();
         long id = 0;
@@ -149,7 +176,7 @@ public class SingleTableGateway {
         try {
             PreparedStatement stmt = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
             stmt.setString(1, name);
-            stmt.setInt(2, atomicNum);
+            stmt.setLong(2, atomicNum);
             stmt.setDouble(3, atomicMass);
             if (stmt.executeUpdate() > 0) {
                 id = getIDFromDatabase(stmt);
@@ -196,7 +223,7 @@ public class SingleTableGateway {
 
         try (PreparedStatement stmt = this.connection.prepareStatement(query)){
             stmt.setString(1, this.name);
-            stmt.setInt(2, this.atomicNum);
+            stmt.setLong(2, this.atomicNum);
             stmt.setDouble(3, this.atomicMass);
             stmt.setLong(4, this.solute);
             stmt.setLong(5, this.compoundID);
@@ -248,11 +275,11 @@ public class SingleTableGateway {
         this.name = name;
     }
 
-    public int getAtomicNum() {
+    public long getAtomicNum() {
         return atomicNum;
     }
 
-    public void setAtomicNum(int atomicNum) {
+    public void setAtomicNum(long atomicNum) {
         this.atomicNum = atomicNum;
     }
 
@@ -302,5 +329,54 @@ public class SingleTableGateway {
 
     public void setDissolves(long dissolves) {
         this.dissolves = dissolves;
+    }
+
+    /** TDG **/
+    public static ArrayList<ElementDTO> getAllBetween(int startAtomicNum, int endAtomicNum) throws DataException {
+        Connection conn = DatabaseConnection.getInstance().getConnection();
+        String query = "SELECT * FROM SingleTable WHERE atomicNum BETWEEN " + startAtomicNum + " AND " + endAtomicNum;
+        return getElementDTOs(conn, query);
+    }
+
+    public static ArrayList<ElementDTO> getAllElements() throws DataException {
+        Connection conn = DatabaseConnection.getInstance().getConnection();
+        String query = "SELECT * FROM SingleTable WHERE atomicNum IS NOT NULL AND atomicMass IS NOT NULL";
+        return getElementDTOs(conn, query);
+    }
+
+    private static ArrayList<ElementDTO> getElementDTOs(Connection conn, String query) throws DataException {
+        ArrayList<ElementDTO> elementsList = new ArrayList<>();
+
+        try(PreparedStatement stmt = conn.prepareStatement(query)) {
+            ResultSet results = stmt.executeQuery();
+
+            while (results.next()) {
+                ElementDTO element = createElementRecord(results);
+                elementsList.add(element);
+            }
+            return elementsList;
+        } catch (SQLException e)
+        {
+            throw new DataException("Could not fetch all elements for the Class Table!", e);
+        }
+    }
+
+    /**
+     * creates a new element DTO using a queries results
+     * @param results the results given back from the query
+     * @return the element DTO
+     */
+    private static ElementDTO createElementRecord(ResultSet results) throws DataException {
+        try {
+            long id = results.getLong("id");
+            String name = results.getString("name");
+            long atomicNum = results.getLong("atomicNum");
+            double atomicMass = results.getDouble("atomicMass");
+
+            return new ElementDTO(id, name, atomicNum, atomicMass);
+        } catch (SQLException e)
+        {
+            throw new DataException("Could not create the Element DTO", e);
+        }
     }
 }
