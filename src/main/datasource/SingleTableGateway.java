@@ -130,17 +130,24 @@ public class SingleTableGateway {
         return new SingleTableGateway(id);
     }
 
-    public static SingleTableGateway createCompound(String name) throws DataException {
-        String query = new String("INSERT INTO SingleTable (name) VALUES (?)");
+    public static SingleTableGateway createCompound(String nameToInsert) throws DataException {
+        String query1 = "INSERT INTO SingleTable (name) VALUES (?)";
+        String query2 = "UPDATE SingleTable SET compoundID = ? WHERE id = ?";
         Connection conn = DatabaseConnection.getInstance().getConnection();
         long id = 0;
 
         try {
-            PreparedStatement stmt = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
-            stmt.setString(1, name);
-            if (stmt.executeUpdate() > 0) {
-                id = getIDFromDatabase(stmt);
-            }
+            PreparedStatement stmt = conn.prepareStatement(query1, Statement.RETURN_GENERATED_KEYS);
+            stmt.setString(1, nameToInsert);
+            stmt.executeUpdate();
+            id = getIDFromDatabase(stmt);
+
+            stmt = conn.prepareStatement(query2);
+            stmt.setLong(1, id);
+            stmt.setLong(2, id);
+            stmt.executeUpdate();
+            stmt.close();
+
         } catch (SQLException e) {
             throw new DataException(e.getMessage());
         }
@@ -168,19 +175,25 @@ public class SingleTableGateway {
         return new SingleTableGateway(id);
     }
 
-    public static SingleTableGateway createElement(String name, long atomicNum, double atomicMass) throws DataException {
-        String query = new String("INSERT INTO SingleTable (name, atomicNum, atomicMass) VALUES (?, ?, ?)");
+    public static SingleTableGateway createElement(String nameToInsert, long atomicNum, double atomicMass) throws DataException {
+        String query1 = "INSERT INTO SingleTable (name, atomicNum, atomicMass) VALUES (?, ?, ?)";
+        String query2 = "UPDATE SingleTable SET elementID = ? WHERE id = ?";
         Connection conn = DatabaseConnection.getInstance().getConnection();
         long id = 0;
 
         try {
-            PreparedStatement stmt = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
-            stmt.setString(1, name);
+            PreparedStatement stmt = conn.prepareStatement(query1, Statement.RETURN_GENERATED_KEYS);
+            stmt.setString(1, nameToInsert);
             stmt.setLong(2, atomicNum);
             stmt.setDouble(3, atomicMass);
-            if (stmt.executeUpdate() > 0) {
-                id = getIDFromDatabase(stmt);
-            }
+            stmt.executeUpdate();
+            id = getIDFromDatabase(stmt);
+
+            stmt = conn.prepareStatement(query2);
+            stmt.setLong(1, id);
+            stmt.setLong(2, id);
+            stmt.executeUpdate();
+            stmt.close();
 
         } catch (SQLException e) {
             throw new DataException(e.getMessage());

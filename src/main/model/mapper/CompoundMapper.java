@@ -21,15 +21,19 @@ public class CompoundMapper {
      * @throws ElementNotFoundException
      */
     public CompoundMapper(String name) throws CompoundNotFoundException, DataException, ElementNotFoundException {
-        SingleTableGateway gateway = new SingleTableGateway(name);
-        long id = gateway.getId();
+        try {
+            SingleTableGateway gateway = new SingleTableGateway(name);
+            long id = gateway.getId();
 
-        myCompound = new Compound(id, name);
-        ArrayList<madeOfDTO> elements = MadeOfTableGateway.findByCompoundID(id);
-        for (madeOfDTO e:elements) {
-            long elementID = e.getElementID();
-            SingleTableGateway elementGateway = new SingleTableGateway(elementID);
-            myCompound.addElement(elementGateway.getName());
+            myCompound = new Compound(id, name);
+            ArrayList<madeOfDTO> elements = MadeOfTableGateway.findByCompoundID(id);
+            for (madeOfDTO e:elements) {
+                long elementID = e.getElementID();
+                SingleTableGateway elementGateway = new SingleTableGateway(elementID);
+                myCompound.addElement(elementGateway.getName());
+            }
+        } catch (DataException e) {
+            throw new CompoundNotFoundException("Could not map compound", e);
         }
     }
 
@@ -65,10 +69,14 @@ public class CompoundMapper {
         gateway.delete();
     }
 
-    public static void addElement(long compoundId, String elementName) throws DataException {
-        SingleTableGateway elementGateway = new SingleTableGateway(elementName);
-        long elementToAddID = elementGateway.getId();
-        new MadeOfTableGateway(compoundId, elementToAddID);
+    public static void addElement(long compoundId, String elementName) throws ElementNotFoundException {
+        try {
+            SingleTableGateway elementGateway = new SingleTableGateway(elementName);
+            long elementToAddID = elementGateway.getId();
+            new MadeOfTableGateway(compoundId, elementToAddID);
+        } catch (DataException e) {
+            throw new ElementNotFoundException("Could not map compound", e);
+        }
     }
 
     public static List<String> getAllElements(long id) throws DataException, ElementNotFoundException {
