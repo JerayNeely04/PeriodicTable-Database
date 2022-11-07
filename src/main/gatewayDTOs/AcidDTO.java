@@ -1,6 +1,7 @@
 package gatewayDTOs;
 
 public class AcidDTO {
+    private long id;
     private long solute;
 
     /**
@@ -8,7 +9,8 @@ public class AcidDTO {
      *
      * @param solute Value for solute in DTO
      */
-    public AcidDTO(long solute) {
+    public AcidDTO(long id, long solute) {
+        this.id = id;
         this.solute = solute;
     }
 
@@ -30,6 +32,14 @@ public class AcidDTO {
         this.solute = solute;
     }
 
+    /**
+     * Get id from DTO
+     *
+     * @return the solute belonging to the DTO
+     */
+    public long getId() {
+        return id;
+    }
 }
 
 

@@ -4,19 +4,21 @@ import java.sql.*;
 import java.util.ArrayList;
 import gatewayDTOs.AcidDTO;
 
-public class tableAcidGateway {
+public class AcidTableGateway {
     private Connection conn = null;
+    private long id;
     private long solute;
 
     /**
-     * Create new instance of tableAcidGateway
+     * Create new instance of AcidTableGateway
      *
      * @param solute Solute value to set to instance variable
      */
-    public tableAcidGateway(long solute) throws DataException {
+    public AcidTableGateway(long id, long solute) throws DataException {
         this.conn = DatabaseConnection.getInstance().getConnection();
+        this.id = id;
         this.solute = solute;
-        this.insertRow(solute);
+        this.insertRow(id, solute);
     }
 
     /**
@@ -52,6 +54,15 @@ public class tableAcidGateway {
     }
 
     /**
+     * Get id value
+     *
+     * @return the solute value from instance
+     */
+    public long getId() {
+        return id;
+    }
+
+    /**
      * Create Acid DTO with information from ResultSet
      *
      * @param rs   The ResultSet containing the info for the DTO
@@ -60,8 +71,9 @@ public class tableAcidGateway {
     public static AcidDTO createAcid(ResultSet rs) throws DataException {
         try {
             long solute = rs.getLong("solute");
+            long id = rs.getLong("id");
 
-            return new AcidDTO(solute);
+            return new AcidDTO(id, solute);
         } catch (SQLException e) {
             throw new DataException(e.getMessage());
         }
@@ -126,12 +138,13 @@ public class tableAcidGateway {
      */
     public boolean persist() throws DataException {
         String query = "UPDATE AcidTable "
-                + "SET solute = ? WHERE solute = " + solute;
+                + "SET solute = ?, id = ? WHERE solute = " + solute;
 
         try {
             PreparedStatement stmt = conn.prepareStatement(query);
 
             stmt.setLong(1, solute);
+            stmt.setLong(2, id);
 
             if (stmt.executeUpdate() > 0) {
                 return true;
@@ -149,7 +162,9 @@ public class tableAcidGateway {
      * @return true if DELETE deleted 1+ rows; false otherwise
      */
     public boolean delete() throws DataException {
-        String query = "DELETE FROM AcidTable WHERE solute = " + solute;
+        // In case this fails, it was DELETE FROM AcidTable WHERE solute = solute
+        // Delete this comment is the test passed
+        String query = "DELETE FROM AcidTable WHERE id = " + id;
 
         try {
             PreparedStatement stmt = this.conn.prepareStatement(query);
@@ -169,12 +184,13 @@ public class tableAcidGateway {
      *
      * @param solute The solute value to insert into the AcidTable
      */
-    public void insertRow(long solute) throws DataException {
-        String query = "INSERT INTO AcidTable VALUES (?)";
+    public void insertRow(long id, long solute) throws DataException {
+        String query = "INSERT INTO AcidTable VALUES (?, ?)";
 
         try {
             PreparedStatement stmt = conn.prepareStatement(query);
             stmt.setLong(1, solute);
+            stmt.setLong(2, id);
 
             stmt.executeUpdate();
         } catch (SQLException e) {

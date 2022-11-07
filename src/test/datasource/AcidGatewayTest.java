@@ -18,7 +18,7 @@ public class AcidGatewayTest {
         conn.setAutoCommit(false);
 
         try {
-            tableAcidGateway acidGate = new tableAcidGateway(1);
+            AcidTableGateway acidGate = new AcidTableGateway(724, 1);
 
             assertEquals(1, acidGate.getSolute());
         } catch (SQLException e) {
@@ -31,8 +31,8 @@ public class AcidGatewayTest {
         conn.setAutoCommit(false);
 
         try {
-            tableAcidGateway acidGateway = new tableAcidGateway(2);
-            AcidDTO findAcid = tableAcidGateway.findBySolute(2);
+            AcidTableGateway acidGateway = new AcidTableGateway(725, 2);
+            AcidDTO findAcid = AcidTableGateway.findBySolute(2);
 
             assertNotNull(findAcid);
             assertEquals(2, findAcid.getSolute());
@@ -46,12 +46,12 @@ public class AcidGatewayTest {
         conn.setAutoCommit(false);
 
         try {
-            tableAcidGateway acidGateway = new tableAcidGateway(5);
-            acidGateway.insertRow(7);
-            acidGateway.insertRow(8);
-            acidGateway.insertRow(10);
+            AcidTableGateway acidGateway = new AcidTableGateway(726, 5);
+            acidGateway.insertRow(728, 7);
+            acidGateway.insertRow(729, 8);
+            acidGateway.insertRow(730, 10);
 
-            ArrayList<AcidDTO> allAcidRecords = tableAcidGateway.findAll();
+            ArrayList<AcidDTO> allAcidRecords = AcidTableGateway.findAll();
 
             assertNotNull(allAcidRecords);
             assertEquals(11, allAcidRecords.size());
@@ -65,11 +65,11 @@ public class AcidGatewayTest {
         conn.setAutoCommit(false);
 
         try {
-            tableAcidGateway acidGateway = new tableAcidGateway(11);
+            AcidTableGateway acidGateway = new AcidTableGateway(732, 11);
             assertEquals(11, acidGateway.getSolute());
             acidGateway.persist();
 
-            AcidDTO findAcid = tableAcidGateway.findBySolute(11);
+            AcidDTO findAcid = AcidTableGateway.findBySolute(11);
 
             assertNotNull(findAcid);
             assertEquals(11, findAcid.getSolute());
@@ -83,13 +83,13 @@ public class AcidGatewayTest {
         conn.setAutoCommit(false);
 
         try {
-            tableAcidGateway acidGateway = new tableAcidGateway(16);
-            AcidDTO findAcid = tableAcidGateway.findBySolute(16);
+            AcidTableGateway acidGateway = new AcidTableGateway(733, 16);
+            AcidDTO findAcid = AcidTableGateway.findBySolute(16);
             assertNotNull(findAcid);
             assertEquals(16, findAcid.getSolute());
 
             acidGateway.delete();
-            findAcid = tableAcidGateway.findBySolute(16);
+            findAcid = AcidTableGateway.findBySolute(16);
 
             assertNull(findAcid);
         } catch (SQLException e) {
