@@ -4,7 +4,9 @@ import gatewayDTOs.AcidDTO;
 import java.util.ArrayList;
 import java.sql.Connection;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 
 import java.sql.SQLException;
 
@@ -13,14 +15,30 @@ import static org.junit.Assert.*;
 public class AcidGatewayTest {
     private final Connection conn = DatabaseConnection.getInstance().getConnection();
 
+//    @Test
+//    public void testCreateTable() throws DataException {
+//        AcidTableGateway.createTable();
+//    }
+    @AfterEach
+    public void rollback() throws SQLException {
+        conn.rollback();
+    }
+
+    @BeforeEach
+    public void setAutoCommitToFalse() throws SQLException {
+        conn.setAutoCommit(false);
+    }
+
     @Test
     public void testCreateAcid() throws SQLException {
-        conn.setAutoCommit(false);
-
         try {
-            AcidTableGateway acidGate = new AcidTableGateway(724, 1);
+            ChemicalTableGateway chemicalGateway = ChemicalTableGateway.createChemical("bob");
+            long id = chemicalGateway.getId();
 
-            assertEquals(1, acidGate.getSolute());
+            AcidTableGateway acidGate = new AcidTableGateway(id);
+
+
+            assertEquals(id, acidGate.getSolute());
         } catch (SQLException e) {
             throw new DataException(e.getMessage());
         }
@@ -28,14 +46,15 @@ public class AcidGatewayTest {
 
     @Test
     public void testFindBySolute() throws SQLException {
-        conn.setAutoCommit(false);
-
         try {
-            AcidTableGateway acidGateway = new AcidTableGateway(725, 2);
-            AcidDTO findAcid = AcidTableGateway.findBySolute(2);
+            ChemicalTableGateway chemicalGateway = ChemicalTableGateway.createChemical("bob");
+            long id = chemicalGateway.getId();
+
+            AcidTableGateway acidGateway = new AcidTableGateway(id);
+            AcidDTO findAcid = AcidTableGateway.findBySolute(id);
 
             assertNotNull(findAcid);
-            assertEquals(2, findAcid.getSolute());
+            assertEquals(id, findAcid.getSolute());
         } catch (SQLException e) {
             throw new DataException(e.getMessage());
         }
@@ -43,18 +62,19 @@ public class AcidGatewayTest {
 
     @Test
     public void testFindAll() throws SQLException {
-        conn.setAutoCommit(false);
-
         try {
-            AcidTableGateway acidGateway = new AcidTableGateway(726, 5);
-            acidGateway.insertRow(728, 7);
-            acidGateway.insertRow(729, 8);
-            acidGateway.insertRow(730, 10);
+            ChemicalTableGateway chemicalGateway = ChemicalTableGateway.createChemical("bob");
+            long id = chemicalGateway.getId();
+
+            AcidTableGateway acidGateway = new AcidTableGateway(id);
+            new AcidTableGateway(id);
+            new AcidTableGateway(id);
+            new AcidTableGateway(id);
 
             ArrayList<AcidDTO> allAcidRecords = AcidTableGateway.findAll();
 
             assertNotNull(allAcidRecords);
-            assertEquals(11, allAcidRecords.size());
+            assertEquals(4, allAcidRecords.size());
         } catch (SQLException e) {
             throw new DataException(e.getMessage());
         }
@@ -62,17 +82,24 @@ public class AcidGatewayTest {
 
     @Test
     public void testPersist() throws SQLException {
-        conn.setAutoCommit(false);
 
         try {
-            AcidTableGateway acidGateway = new AcidTableGateway(732, 11);
-            assertEquals(11, acidGateway.getSolute());
+            ChemicalTableGateway chemicalGateway = ChemicalTableGateway.createChemical("bob");
+            long id = chemicalGateway.getId();
+            AcidTableGateway acidGateway = new AcidTableGateway(id);
+            assertEquals(id, acidGateway.getSolute());
+
+            ChemicalTableGateway chemicalGateway2 = ChemicalTableGateway.createChemical("steve");
+            long newID = chemicalGateway2.getId();
+
+            acidGateway.setSolute(newID);
+
             acidGateway.persist();
 
-            AcidDTO findAcid = AcidTableGateway.findBySolute(11);
+            AcidDTO findAcid = acidGateway.findBySolute(newID);
 
             assertNotNull(findAcid);
-            assertEquals(11, findAcid.getSolute());
+            assertEquals(newID, findAcid.getSolute());
         } catch (SQLException e) {
             throw new DataException(e.getMessage());
         }
@@ -80,16 +107,18 @@ public class AcidGatewayTest {
 
     @Test
     public void testDelete() throws SQLException {
-        conn.setAutoCommit(false);
 
         try {
-            AcidTableGateway acidGateway = new AcidTableGateway(733, 16);
-            AcidDTO findAcid = AcidTableGateway.findBySolute(16);
+            ChemicalTableGateway chemicalGateway = ChemicalTableGateway.createChemical("bob");
+            long id = chemicalGateway.getId();
+            AcidTableGateway acidGateway = new AcidTableGateway(id);
+
+            AcidDTO findAcid = AcidTableGateway.findBySolute(id);
             assertNotNull(findAcid);
-            assertEquals(16, findAcid.getSolute());
+            assertEquals(id, findAcid.getSolute());
 
             acidGateway.delete();
-            findAcid = AcidTableGateway.findBySolute(16);
+            findAcid = AcidTableGateway.findBySolute(id);
 
             assertNull(findAcid);
         } catch (SQLException e) {

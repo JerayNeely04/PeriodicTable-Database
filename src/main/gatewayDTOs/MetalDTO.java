@@ -4,16 +4,14 @@ package gatewayDTOs;
  * Metal Dto for the Metal Gateway
  */
 public class MetalDTO {
-    private long id;
     private long dissolvedBy;
 
     /**
      * Metal Constructor
      * @param dissolvedBy
      */
-    public MetalDTO(long id, long dissolvedBy)
+    public MetalDTO(long dissolvedBy)
     {
-        this.id = id;
         this.dissolvedBy = dissolvedBy;
     }
 
@@ -26,7 +24,6 @@ public class MetalDTO {
         this.dissolvedBy = dissolvedBy;
     }
 
-    public long getId() { return id; }
     /**
      * getter for DissolvedBy
      * @return

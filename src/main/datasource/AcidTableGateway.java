@@ -6,7 +6,6 @@ import gatewayDTOs.AcidDTO;
 
 public class AcidTableGateway {
     private Connection conn = null;
-    private long id;
     private long solute;
 
     /**
@@ -14,11 +13,10 @@ public class AcidTableGateway {
      *
      * @param solute Solute value to set to instance variable
      */
-    public AcidTableGateway(long id, long solute) throws DataException {
+    public AcidTableGateway(long solute) throws DataException {
         this.conn = DatabaseConnection.getInstance().getConnection();
-        this.id = id;
         this.solute = solute;
-        this.insertRow(id, solute);
+        this.insertRow(solute);
     }
 
     /**
@@ -28,7 +26,7 @@ public class AcidTableGateway {
         Connection conn = DatabaseConnection.getInstance().getConnection();
         String query =
                 "CREATE TABLE AcidTable ("
-                        + "solute   BIGINT,"
+                        + "solute BIGINT,"
                         + "FOREIGN KEY (solute) REFERENCES ChemicalTable(id) ON DELETE CASCADE"
                 + ")";
 
@@ -54,14 +52,10 @@ public class AcidTableGateway {
     }
 
     /**
-     * Get id value
-     *
-     * @return the solute value from instance
+     * set the solute value
+     * @param solute
      */
-    public long getId() {
-        return id;
-    }
-
+    public void setSolute(long solute) { this.solute = solute; }
     /**
      * Create Acid DTO with information from ResultSet
      *
@@ -71,9 +65,8 @@ public class AcidTableGateway {
     public static AcidDTO createAcid(ResultSet rs) throws DataException {
         try {
             long solute = rs.getLong("solute");
-            long id = rs.getLong("id");
 
-            return new AcidDTO(id, solute);
+            return new AcidDTO(solute);
         } catch (SQLException e) {
             throw new DataException(e.getMessage());
         }
@@ -138,22 +131,15 @@ public class AcidTableGateway {
      */
     public boolean persist() throws DataException {
         String query = "UPDATE AcidTable "
-                + "SET solute = ?, id = ? WHERE solute = " + solute;
+                + "SET solute = ? WHERE solute = " + solute;
 
-        try {
-            PreparedStatement stmt = conn.prepareStatement(query);
-
+        try(PreparedStatement stmt = conn.prepareStatement(query)) {
             stmt.setLong(1, solute);
-            stmt.setLong(2, id);
 
-            if (stmt.executeUpdate() > 0) {
-                return true;
-            }
+            return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
             throw new DataException(e.getMessage());
         }
-
-        return false;
     }
 
     /**
@@ -164,7 +150,7 @@ public class AcidTableGateway {
     public boolean delete() throws DataException {
         // In case this fails, it was DELETE FROM AcidTable WHERE solute = solute
         // Delete this comment is the test passed
-        String query = "DELETE FROM AcidTable WHERE id = " + id;
+        String query = "DELETE FROM AcidTable WHERE solute = " + solute;
 
         try {
             PreparedStatement stmt = this.conn.prepareStatement(query);
@@ -184,13 +170,12 @@ public class AcidTableGateway {
      *
      * @param solute The solute value to insert into the AcidTable
      */
-    public void insertRow(long id, long solute) throws DataException {
-        String query = "INSERT INTO AcidTable VALUES (?, ?)";
+    private void insertRow(long solute) throws DataException {
+        String query = "INSERT INTO AcidTable VALUES (?)";
 
         try {
             PreparedStatement stmt = conn.prepareStatement(query);
             stmt.setLong(1, solute);
-            stmt.setLong(2, id);
 
             stmt.executeUpdate();
         } catch (SQLException e) {
