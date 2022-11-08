@@ -2,8 +2,6 @@ package model;
 
 import datasource.DataException;
 import datasource.DatabaseConnection;
-import datasource.MadeOfTableGateway;
-import model.Element;
 import model.controller.CompoundController;
 import model.controller.ElementController;
 import model.mapper.CompoundMapper;
