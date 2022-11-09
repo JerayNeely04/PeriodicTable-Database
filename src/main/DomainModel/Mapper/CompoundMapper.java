@@ -14,8 +14,10 @@ public class CompoundMapper {
 
     }
 
-    public static void createCompound(String name) {
-
+    public static void createCompound(String name) throws ChemicalNotFoundException, DataException, ElementNotFoundException {
+        // TODO: Not sure..
+        ChemicalTableGateway.createChemical(name);
+        ElementTableGateway.createElement(1, 1.0);
     }
 
     public static double getAtomicMass(ArrayList<String> elements) throws ChemicalNotFoundException, DataException, ElementNotFoundException {
@@ -31,6 +33,7 @@ public class CompoundMapper {
     }
 
     public static void delete(String name) {
+
     }
 
     public Compound getMyCompound() {

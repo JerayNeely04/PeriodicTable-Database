@@ -61,16 +61,18 @@ public class ElementTableGateway {
      * @return the new constructor with the atomic number of the created element.
      * @throws DataException SQL Exception if we cannot create an Element.
      */
-    public static ElementTableGateway createElement(long id, long atomicNumber, double atomicMass) throws DataException, ElementNotFoundException {
-        String query = "INSERT INTO ElementTable VALUES (?,?,?)";
+    public static ElementTableGateway createElement(long atomicNumber, double atomicMass) throws DataException, ElementNotFoundException {
+        String query = "INSERT INTO ElementTable VALUES (?,?)";
         Connection conn = DatabaseConnection.getInstance().getConnection();
+        long id = 0;
 
-        try (PreparedStatement stmt = conn.prepareStatement(query)) {
+        try (PreparedStatement stmt = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
             stmt.setLong(1, atomicNumber);
             stmt.setDouble(2, atomicMass);
-            stmt.setLong(3, id);
+            if (stmt.executeUpdate() > 0) {
+                id = getIDFromDatabase(stmt);
+            }
 
-            stmt.executeUpdate();
         } catch (SQLException e) {
             throw new DataException("Cannot crate an Element in the Element Table!", e);
         }
@@ -203,6 +205,24 @@ public class ElementTableGateway {
         } catch (SQLException e) {
             throw new ElementNotFoundException("Cannot find ID in Element table!", e);
         }
+    }
+
+    /**
+     * Get the generated id from the database.
+     * @param stmt is the prepared statement from the creat constructor.
+     * @return the generated id.
+     * @throws DataException SQL exception if we cannot get the ID from the chemical table.
+     */
+    private static long getIDFromDatabase(PreparedStatement stmt) throws DataException {
+        try (ResultSet rs = stmt.getGeneratedKeys()) {
+            if (rs.next()) {
+                return rs.getLong(1);
+            }
+        } catch (SQLException e) {
+            throw new DataException("Cannot get Element ID from Element Table!", e);
+        }
+
+        return 0;
     }
 
     public long getId() {
