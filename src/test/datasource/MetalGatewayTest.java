@@ -36,10 +36,12 @@ public class MetalGatewayTest {
     @Test
     public void testCreateMetal() throws SQLException
     {
-        AcidTableGateway acidGateway = new AcidTableGateway(726);
-        MetalTableGateway metalGateway = new MetalTableGateway(726);
+        ChemicalTableGateway chemicalGateway = ChemicalTableGateway.createChemical("Oxygen");
+        long id = chemicalGateway.getId();
+        new AcidTableGateway(id);
+        MetalTableGateway metalGateway = new MetalTableGateway(id);
 
-        assertEquals(726, metalGateway.getDissolvedBy());
+        assertEquals(id, metalGateway.getDissolvedBy());
     }
 
     /**
@@ -48,12 +50,15 @@ public class MetalGatewayTest {
      */
     @Test
     public void testFindDissolvedBy() throws SQLException {
-        AcidTableGateway acidGateway = new AcidTableGateway(726);
-        MetalTableGateway metalGateway = new MetalTableGateway(726);
-        MetalDTO findMetal = MetalTableGateway.findDissolvedBy(726);
+        ChemicalTableGateway chemicalGateway = ChemicalTableGateway.createChemical("Oxygen");
+        long id = chemicalGateway.getId();
+        new AcidTableGateway(id);
+        new MetalTableGateway(id);
+
+        MetalDTO findMetal = MetalTableGateway.findDissolvedBy(id);
 
         assertNotNull(findMetal);
-        assertEquals(726, findMetal.getDissolvedBy());
+        assertEquals(id, findMetal.getDissolvedBy());
     }
 
     /**
@@ -62,17 +67,19 @@ public class MetalGatewayTest {
      */
     @Test
     public void testFindAllMetal() throws SQLException {
-        AcidTableGateway acidGateway = new AcidTableGateway(726);
-        MetalTableGateway metalGateway = new MetalTableGateway(726);
+        ChemicalTableGateway chemicalGateway = ChemicalTableGateway.createChemical("Oxygen");
+        long id = chemicalGateway.getId();
+        new AcidTableGateway(id);
+        new MetalTableGateway(id);
 
-        new AcidTableGateway(728);
-        new MetalTableGateway(728);
+        new AcidTableGateway(id);
+        new MetalTableGateway(id);
 
-        new AcidTableGateway(729);
-        new MetalTableGateway(729);
+        new AcidTableGateway(id);
+        new MetalTableGateway(id);
 
-        new AcidTableGateway(730);
-        new MetalTableGateway(730);
+        new AcidTableGateway(id);
+        new MetalTableGateway(id);
 
         ArrayList<MetalDTO> allMetalRecords = MetalTableGateway.findAll();
 
@@ -86,15 +93,20 @@ public class MetalGatewayTest {
      */
     @Test
     public void testPersistMetal() throws SQLException {
-        AcidTableGateway acidGateway = new AcidTableGateway(726);
-        MetalTableGateway metalGateway = new MetalTableGateway(726);
-        //assertEquals(1, metalGateway.getDissolvedBy());
+        //TODO: Not changing anything with the persist
+        ChemicalTableGateway chemicalGateway = ChemicalTableGateway.createChemical("Oxygen");
+        long id = chemicalGateway.getId();
+        new AcidTableGateway(id);
+        MetalTableGateway metalGateway = new MetalTableGateway(id);
+
+        assertEquals(id, metalGateway.getDissolvedBy());
+
         metalGateway.persist();
 
-        MetalDTO findMetal = MetalTableGateway.findDissolvedBy(726);
+        MetalDTO findMetal = MetalTableGateway.findDissolvedBy(id);
 
         assertNotNull(findMetal);
-        assertEquals(726, findMetal.getDissolvedBy());
+        assertEquals(id, findMetal.getDissolvedBy());
     }
 
     /**
@@ -103,15 +115,17 @@ public class MetalGatewayTest {
      */
     @Test
     public void testDeleteMetal() throws SQLException {
-        AcidTableGateway acidGateway = new AcidTableGateway(726);
-        MetalTableGateway metalGateway = new MetalTableGateway(726);
+        ChemicalTableGateway chemicalGateway = ChemicalTableGateway.createChemical("Oxygen");
+        long id = chemicalGateway.getId();
+        new AcidTableGateway(id);
+        MetalTableGateway metalGateway = new MetalTableGateway(id);
 
-        MetalDTO findMetal = MetalTableGateway.findDissolvedBy(726);
+        MetalDTO findMetal = MetalTableGateway.findDissolvedBy(id);
         assertNotNull(findMetal);
-        assertEquals(726, findMetal.getDissolvedBy());
+        assertEquals(id, findMetal.getDissolvedBy());
 
         metalGateway.delete();
-        findMetal = MetalTableGateway.findDissolvedBy(726);
+        findMetal = MetalTableGateway.findDissolvedBy(id);
 
         assertNull(findMetal);
     }

@@ -1,5 +1,6 @@
 package DomainModel;
 
+import DomainModel.Mapper.ChemicalNotFoundException;
 import DomainModel.Mapper.ElementMapper;
 import DomainModel.Mapper.ElementNotFoundException;
 import datasource.DataException;
@@ -25,10 +26,20 @@ public class Element {
         this.atomicMass = atomicMass;
     }
 
-    public void delete() {
-
+    /**
+     * Deletes the element from the element table
+     * @throws ChemicalNotFoundException
+     * @throws DataException
+     */
+    public void delete() throws ChemicalNotFoundException, DataException {
+        ElementMapper.delete(name);
     }
 
+    /**
+     * Persists the element data to the element table
+     * @throws DataException
+     * @throws ElementNotFoundException
+     */
     public void persist() throws DataException, ElementNotFoundException {
         ElementMapper.persist(id, name, atomicNumber, atomicMass);
     }
