@@ -11,8 +11,10 @@ import java.util.List;
 public class Compound {
     private ArrayList<String> elements = new ArrayList<String>();
     private String name;
+    private long id;
 
-    public Compound(String name) {
+    public Compound(long id, String name) {
+        this.id = id;
         this.name = name;
     }
 
@@ -28,8 +30,14 @@ public class Compound {
         return name;
     }
 
-    public List<String> getAllElements() {
-        return elements;
+    public long getId() {return id;}
+
+    public List<String> getAllElements() throws ElementNotFoundException {
+        return CompoundMapper.getAllElements(id);
+    }
+
+    public void addElementToMadeOf(String name) throws DataException, ChemicalNotFoundException {
+        CompoundMapper.addElement(id, name);
     }
 
     public double getAtomicMass() throws ChemicalNotFoundException, DataException, ElementNotFoundException {

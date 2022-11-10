@@ -30,7 +30,7 @@ public class ElementController
     }
 
     private Element myElement;
-    public ElementController(String name) throws DataException, ElementNotFoundException {
+    public ElementController(String name) throws ElementNotFoundException {
         myElement = new ElementMapper(name).getMyElement();
     }
 

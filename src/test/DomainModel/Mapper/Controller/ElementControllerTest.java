@@ -216,7 +216,7 @@ public class ElementControllerTest
     }
 
     @Test
-    public void canGetAllCompoundsContainingElement() throws ElementNotFoundException, DataException, CompoundNotFoundException {
+    public void canGetAllCompoundsContainingElement() throws ElementNotFoundException, DataException, CompoundNotFoundException, ChemicalNotFoundException {
         new ElementMapper("Hydrogen", 1, 2.1);
         new ElementMapper("Oxygen", 8, 15.99);
         new ElementMapper ("Sodium", 11, 22.990);
@@ -261,7 +261,7 @@ public class ElementControllerTest
         ElementForTest[] testData = new ElementForTest[quantity];
         for (int i = 0; i < quantity; i++)
         {
-            testData[i] = new ElementForTest("E" + FIRST_ATOMIC_NUMBER_IN_DB + i, FIRST_ATOMIC_NUMBER_IN_DB + i, FIRST_ATOMIC_NUMBER_IN_DB + 0.2 + i, 0);
+            testData[i] = new ElementForTest("E" + firstAtomicNumber + i, firstAtomicNumber + i, firstAtomicNumber + 0.2 + i, 0);
         }
         loadDB(testData);
     }

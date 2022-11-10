@@ -127,17 +127,15 @@ public class ChemicalTableGateway {
     /**
      *
      */
-    public static ChemicalDTO findByName(String name) throws ChemicalNotFoundException, DataException {
+    public static ChemicalDTO findByName(String name) throws ChemicalNotFoundException {
         String query = "SELECT * FROM ChemicalTable WHERE name = '" + name + "'";
         try(PreparedStatement stmt = DatabaseConnection.getInstance().getConnection().prepareStatement(query)) {
             ResultSet results = stmt.executeQuery();
             results.next();
 
             return new ChemicalDTO(results.getLong("id"), results.getString("name"));
-        } catch (ChemicalNotFoundException e) {
-            throw new ChemicalNotFoundException("Failed to find chemical", e);
         } catch (SQLException e) {
-            throw new DataException("SQL failed for find chemical", e);
+            throw new ChemicalNotFoundException("Failed to find chemical", e);
         }
     }
 

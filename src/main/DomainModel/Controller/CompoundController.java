@@ -10,12 +10,12 @@ import java.util.List;
 
 public class CompoundController
 {
-    public static void delete(String name) throws CompoundNotFoundException, DataException {
+    public static void delete(String name) throws CompoundNotFoundException {
         CompoundMapper.delete(name);
     }
 
     public static void createCompound(String name) throws CompoundNotFoundException {
-        new CompoundMapper(name);
+        CompoundMapper.createCompound(name);
     }
 
     public Compound getMyCompound()
@@ -28,10 +28,6 @@ public class CompoundController
         myCompound = new CompoundMapper(name).getMyCompound();
     }
 
-    public CompoundController(String name, int atomicNumber, double atomicMass) throws CompoundNotFoundException {
-        myCompound = new CompoundMapper(name).getMyCompound();
-    }
-
     public void setName(String newName)
     {
         myCompound.setName(newName);
@@ -41,11 +37,12 @@ public class CompoundController
         myCompound.persist();
     }
 
-    public void addElement(String name) {
+    public void addElement(String name) throws DataException, ChemicalNotFoundException {
         myCompound.addElement(name);
+        myCompound.addElementToMadeOf(name);
     }
 
-    public List<String> getElements() {
+    public List<String> getElements() throws ElementNotFoundException {
         return myCompound.getAllElements();
     }
 

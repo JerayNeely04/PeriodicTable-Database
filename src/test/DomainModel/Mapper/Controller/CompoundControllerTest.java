@@ -5,6 +5,7 @@ import DomainModel.Controller.ElementController;
 import DomainModel.Mapper.*;
 import datasource.DataException;
 import datasource.DatabaseConnection;
+import datasource.madeOfTable;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -27,7 +28,6 @@ public class CompoundControllerTest
     public static final int HYDROGEN_ATOMIC_MASS = 2;
     public static final double OXYGEN_ATOMIC_MASS = 15.9;
     private final String[] WATER_ELEMENT_NAMES={"Hydrogen","Hydrogen","Oxygen"};
-
 
     @AfterEach
     public void rollback() throws SQLException {
@@ -53,11 +53,11 @@ public class CompoundControllerTest
 
     @Test
     public void canCreateCompound() throws CompoundNotFoundException {
-        CompoundController.createCompound("Water");
+        CompoundController.createCompound ("Water");
 
         assertEquals("Water", new CompoundController("Water").getMyCompound().getName());
-    }
 
+    }
     @Test
     public void exceptionOnMissingCompound()
     {
@@ -80,7 +80,7 @@ public class CompoundControllerTest
         assertEquals("Sulfuric Base",controller.getMyCompound().getName());
 
         // Make sure it did not go all the way to the database
-        checkThatCompoundIsNotInDB("Sulfuric Acid");
+        checkThatCompoundIsNotInDB("Sulfuric Base");
     }
 
     private void checkThatCompoundIsNotInDB(String name)
@@ -98,7 +98,7 @@ public class CompoundControllerTest
     }
 
     @Test
-    public void canDelete() throws DataException, CompoundNotFoundException {
+    public void canDelete() throws CompoundNotFoundException {
         // put the object I'm deleting into the database
         CompoundMapper.createCompound("HCl");
 
@@ -108,7 +108,7 @@ public class CompoundControllerTest
     }
 
     @Test
-    public void canAddAndRetrieveOneElement() throws ElementNotFoundException, CompoundNotFoundException {
+    public void canAddAndRetrieveOneElement() throws ElementNotFoundException, CompoundNotFoundException, DataException, ChemicalNotFoundException {
         CompoundMapper.createCompound("Water");
         new ElementMapper("Hydrogen",1, 2);
 
@@ -122,7 +122,7 @@ public class CompoundControllerTest
 
     @Test
     public void canAddAndRetrieveMultipleElement()
-            throws ElementNotFoundException, CompoundNotFoundException {
+            throws ElementNotFoundException, CompoundNotFoundException, DataException, ChemicalNotFoundException {
         buildWater();
 
         CompoundController controller = new CompoundController(WATER);
@@ -132,7 +132,7 @@ public class CompoundControllerTest
         checkElementListMatchesNames(elements, WATER_ELEMENT_NAMES);
     }
 
-    private void buildWater() throws ElementNotFoundException, CompoundNotFoundException {
+    private void buildWater() throws ElementNotFoundException, CompoundNotFoundException, DataException, ChemicalNotFoundException {
         CompoundMapper.createCompound(WATER);
         new ElementMapper("Hydrogen",1, HYDROGEN_ATOMIC_MASS);
         new ElementMapper("Oxygen",8, OXYGEN_ATOMIC_MASS);
@@ -156,7 +156,7 @@ public class CompoundControllerTest
     }
 
     @Test
-    public void changeNameOfRelatedElementStillRelated() throws ElementNotFoundException, CompoundNotFoundException, DataException {
+    public void changeNameOfRelatedElementStillRelated() throws ElementNotFoundException, CompoundNotFoundException, DataException, ChemicalNotFoundException {
         // create the stuff we need
         CompoundMapper.createCompound("Water");
         new ElementMapper("Hydrogen",1, 2);
@@ -166,7 +166,9 @@ public class CompoundControllerTest
         controller.addElement("Hydrogen");
 
         // change the name of the element
-        (new ElementController("Hydrogen")).setName("Bad Hydrogen");
+        ElementController hydrogenController = new ElementController("Hydrogen");
+        hydrogenController.setName("Bad Hydrogen");
+        hydrogenController.persist();
 
         // Make sure we are related to the renamed element
         List<String> elements = controller.getElements();

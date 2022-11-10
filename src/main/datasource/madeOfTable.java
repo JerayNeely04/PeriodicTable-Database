@@ -8,24 +8,35 @@ public class madeOfTable {
     private long compoundID;
     private long elementID;
 
+
+    /**
+     * Constructs a new made of row in the database
+     * @param compoundID
+     * @param elementID
+     * @throws DataException
+     */
+    public madeOfTable(long compoundID, long elementID) throws DataException {
+        this.compoundID = compoundID;
+        this.elementID = elementID;
+
+        insertRow(compoundID, elementID);
+    }
+
     /**
      * Creates the madeOfTable in the database
      */
     public static void createTable() throws DataException {
+        Connection conn = DatabaseConnection.getInstance().getConnection();
+        String query =
+                "CREATE TABLE madeOfTable ("
+                        + "compoundID BIGINT NOT NULL,"
+                        + "elementID BIGINT NOT NULL,"
+                        + "FOREIGN KEY (elementID) REFERENCES ElementTable(id) ON DELETE CASCADE,"
+                        + "FOREIGN KEY (compoundID) REFERENCES ChemicalTable(id) ON DELETE CASCADE"
+                        + ")";
 
-        try (Connection conn = DatabaseConnection.getInstance().getConnection()) {
-            String query =
-                    "CREATE TABLE madeOfTable ("
-                            + "compoundID BIGINT NOT NULL,"
-                            + "elementID BIGINT NOT NULL,"
-                            + "FOREIGN KEY (elementID) REFERENCES ElementTable(id) ON DELETE CASCADE,"
-                            + "FOREIGN KEY (compoundID) REFERENCES ChemicalTable(id) ON DELETE CASCADE"
-                            + ")";
-            PreparedStatement stmt;
-
-            stmt = conn.prepareStatement(query);
+        try (PreparedStatement stmt = conn.prepareStatement(query)) {
             stmt.execute();
-            stmt.close();
         } catch (SQLException e) {
             throw new DataException(e.getMessage());
         }
@@ -80,22 +91,27 @@ public class madeOfTable {
      *
      * @param compoundID The compoundID to be found
      * @return ResultSet containing the row.
-     *         Return null is nothing is found or exception is thrown
+     * Return null is nothing is found or exception is thrown
      */
-    public static madeOfDTO findByCompoundID(long compoundID) throws DataException {
-        try (Connection conn = DatabaseConnection.getInstance().getConnection()) {
-            String query = "SELECT * FROM madeOfTable WHERE compoundID = " + compoundID;
+    public static ArrayList<madeOfDTO> findByCompoundID(long compoundID) throws DataException {
+        Connection conn = DatabaseConnection.getInstance().getConnection();
+        String query = "SELECT * FROM madeOfTable WHERE compoundID = " + compoundID;
+
+        ArrayList<madeOfDTO> elementsList = new ArrayList<>();
+
+        try {
             PreparedStatement stmt = conn.prepareStatement(query);
-            ResultSet rs = stmt.executeQuery();
+            ResultSet results = stmt.executeQuery();
 
-            if (rs.next()) {
-                return createMadeOf(rs);
+            while (results.next()) {
+                madeOfDTO element = createMadeOf(results);
+                elementsList.add(element);
             }
-        } catch (SQLException e) {
-            throw new DataException(e.getMessage());
-        }
 
-        return null;
+            return elementsList;
+        } catch (SQLException e) {
+            throw new DataException("Could not find row by compound ID", e);
+        }
     }
 
     /**

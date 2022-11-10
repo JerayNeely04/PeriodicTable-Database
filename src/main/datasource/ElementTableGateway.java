@@ -61,20 +61,19 @@ public class ElementTableGateway {
      * @return the new constructor with the atomic number of the created element.
      * @throws DataException SQL Exception if we cannot create an Element.
      */
-    public static ElementTableGateway createElement(long atomicNumber, double atomicMass) throws DataException, ElementNotFoundException {
-        String query = "INSERT INTO ElementTable VALUES (?,?)";
+    public static ElementTableGateway createElement(long id, long atomicNumber, double atomicMass) throws ElementNotFoundException {
+        String query = "INSERT INTO ElementTable VALUES (?, ?, ?)";
         Connection conn = DatabaseConnection.getInstance().getConnection();
-        long id = 0;
 
-        try (PreparedStatement stmt = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
+        try (PreparedStatement stmt = conn.prepareStatement(query)) {
             stmt.setLong(1, atomicNumber);
             stmt.setDouble(2, atomicMass);
-            if (stmt.executeUpdate() > 0) {
-                id = getIDFromDatabase(stmt);
-            }
+            stmt.setLong(3, id);
+
+            stmt.executeUpdate();
 
         } catch (SQLException e) {
-            throw new DataException("Cannot crate an Element in the Element Table!", e);
+            throw new ElementNotFoundException("Cannot crate an Element in the Element Table!", e);
         }
         return new ElementTableGateway(id);
     }
@@ -207,22 +206,24 @@ public class ElementTableGateway {
         }
     }
 
-    /**
-     * Get the generated id from the database.
-     * @param stmt is the prepared statement from the creat constructor.
-     * @return the generated id.
-     * @throws DataException SQL exception if we cannot get the ID from the chemical table.
-     */
-    private static long getIDFromDatabase(PreparedStatement stmt) throws DataException {
-        try (ResultSet rs = stmt.getGeneratedKeys()) {
-            if (rs.next()) {
-                return rs.getLong(1);
-            }
-        } catch (SQLException e) {
-            throw new DataException("Cannot get Element ID from Element Table!", e);
-        }
+    public static ArrayList<ElementDTO> findAllById(long id) throws ElementNotFoundException {
+        String query = "SELECT * FROM ElementTable WHERE id = " + id;
+        Connection conn = DatabaseConnection.getInstance().getConnection();
+        ArrayList<ElementDTO> elementsList = new ArrayList<>();
 
-        return 0;
+        try(PreparedStatement stmt = conn.prepareStatement(query)) {
+            ResultSet results = stmt.executeQuery();
+
+            while(results.next())
+            {
+                ElementDTO element = createElementRecord(results);
+                elementsList.add(element);
+            }
+            return elementsList;
+
+        } catch (SQLException e) {
+            throw new ElementNotFoundException("Cannot find ID in Element table!", e);
+        }
     }
 
     public long getId() {

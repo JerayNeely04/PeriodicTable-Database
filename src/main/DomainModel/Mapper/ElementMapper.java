@@ -5,6 +5,7 @@ import DomainModel.ElementMapperInterface;
 import datasource.DataException;
 import datasource.ChemicalTableGateway;
 import datasource.ElementTableGateway;
+import gatewayDTOs.ChemicalDTO;
 import gatewayDTOs.ElementDTO;
 
 import java.util.ArrayList;
@@ -22,16 +23,27 @@ public class ElementMapper implements ElementMapperInterface {
      * @throws ElementNotFoundException exception thrown if the element could not be mapped
      */
     public ElementMapper (String name, long atomicNumber, double atomicMass) throws ElementNotFoundException {
+        ChemicalDTO chemicalDTO;
+        long id;
+
         try {
-            ChemicalTableGateway.createChemical(name);
-            long id = ChemicalTableGateway.findByName(name).getId();
+            chemicalDTO = ChemicalTableGateway.findByName(name);
+            id = chemicalDTO.getId();
             ElementTableGateway.createElement(id, atomicNumber, atomicMass);
 
-            element = new Element(id, name, atomicNumber, atomicMass);
+        } catch (ChemicalNotFoundException ex) {
+            try {
+                ChemicalTableGateway.createChemical(name);
+                chemicalDTO = ChemicalTableGateway.findByName(name);
+                id = chemicalDTO.getId();
+                ElementTableGateway.createElement(id, atomicNumber, atomicMass);
 
-        } catch (DataException | ChemicalNotFoundException e) {
-            throw new ElementNotFoundException("Element: " + name + " could not mapped", e);
+            } catch (DataException | ChemicalNotFoundException e) {
+                throw new ElementNotFoundException("Element: " + name + " could not mapped", e);
+            }
         }
+
+        element = new Element(id, name, atomicNumber, atomicMass);
     }
 
     /**
@@ -45,7 +57,7 @@ public class ElementMapper implements ElementMapperInterface {
             ElementDTO elementDTO = ElementTableGateway.findById(id);
 
             element = new Element(id, name, elementDTO.getAtomicNumber(), elementDTO.getAtomicMass());
-        } catch (ElementNotFoundException | DataException | ChemicalNotFoundException e) {
+        } catch (ElementNotFoundException | ChemicalNotFoundException e) {
             throw new ElementNotFoundException("Element: " + name + " could not mapped", e);
         }
     }
