@@ -114,29 +114,33 @@ public class madeOfTable {
         }
     }
 
+
     /**
      * Finds all rows that match the specified ElementID
      *
      * @param elementID The elementID to be found
      * @return ResultSet containing the row.
-     *         Return null is nothing is found or exception is thrown
+     * Return null is nothing is found or exception is thrown
      */
-    public static madeOfDTO findByElementID(long elementID) throws DataException {
+    public static ArrayList<madeOfDTO> findByElementID(long elementID) throws DataException {
         Connection conn = DatabaseConnection.getInstance().getConnection();
+        String query = "SELECT * FROM madeOfTable WHERE elementID = " + elementID;
+
+        ArrayList<madeOfDTO> compounds = new ArrayList<>();
 
         try {
-            String query = "SELECT * FROM madeOfTable WHERE elementID = " + elementID;
             PreparedStatement stmt = conn.prepareStatement(query);
-            ResultSet rs = stmt.executeQuery();
+            ResultSet results = stmt.executeQuery();
 
-            if (rs.next()) {
-                return createMadeOf(rs);
+            while (results.next()) {
+                madeOfDTO element = createMadeOf(results);
+                compounds.add(element);
             }
-        } catch (SQLException e) {
-            throw new DataException(e.getMessage());
-        }
 
-        return null;
+            return compounds;
+        } catch (SQLException e) {
+            throw new DataException("Could not find MadeOf row by elementID", e);
+        }
     }
 
     /**

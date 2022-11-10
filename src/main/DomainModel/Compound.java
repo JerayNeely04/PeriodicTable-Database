@@ -36,7 +36,7 @@ public class Compound {
         return CompoundMapper.getAllElements(id);
     }
 
-    public void addElementToMadeOf(String name) throws DataException, ChemicalNotFoundException {
+    public void addElementToMadeOf(String name) throws ElementNotFoundException {
         CompoundMapper.addElement(id, name);
     }
 

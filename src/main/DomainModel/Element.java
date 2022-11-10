@@ -1,9 +1,12 @@
 package DomainModel;
 
 import DomainModel.Mapper.ChemicalNotFoundException;
+import DomainModel.Mapper.CompoundNotFoundException;
 import DomainModel.Mapper.ElementMapper;
 import DomainModel.Mapper.ElementNotFoundException;
 import datasource.DataException;
+
+import java.util.List;
 
 public class Element {
     private long id;
@@ -71,6 +74,17 @@ public class Element {
     }
 
     /**
+     *
+     * @return
+     * @throws DataException
+     * @throws CompoundNotFoundException
+     */
+    public List<String> getCompoundsContaining() throws DataException, ChemicalNotFoundException {
+        return ElementMapper.getCompoundsContaining(id);
+    }
+
+
+    /**
      * Getter for the name
      * @return the name of the element
      */
@@ -121,4 +135,5 @@ public class Element {
     public void setAtomicMass(double newAtomicMass) {
         atomicMass = newAtomicMass;
     }
+
 }

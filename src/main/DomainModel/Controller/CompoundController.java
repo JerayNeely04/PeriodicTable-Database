@@ -37,7 +37,7 @@ public class CompoundController
         myCompound.persist();
     }
 
-    public void addElement(String name) throws DataException, ChemicalNotFoundException {
+    public void addElement(String name) throws ElementNotFoundException {
         myCompound.addElement(name);
         myCompound.addElementToMadeOf(name);
     }

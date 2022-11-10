@@ -2,6 +2,7 @@ package DomainModel.Controller;
 
 import DomainModel.Element;
 import DomainModel.Mapper.ChemicalNotFoundException;
+import DomainModel.Mapper.CompoundNotFoundException;
 import DomainModel.Mapper.ElementMapper;
 import DomainModel.Mapper.ElementNotFoundException;
 import datasource.DataException;
@@ -57,7 +58,7 @@ public class ElementController
         myElement.persist();
     }
 
-    public List<String> getCompoundsContaining() {
-        return null;
+    public List<String> getCompoundsContaining() throws DataException, ChemicalNotFoundException {
+        return myElement.getCompoundsContaining();
     }
 }

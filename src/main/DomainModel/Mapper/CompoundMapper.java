@@ -55,24 +55,28 @@ public class CompoundMapper {
         return totalMass;
     }
 
-    public static List<String> getAllElements(long id) throws ElementNotFoundException {
+    public static List<String> getAllElements(long compoundId) throws ElementNotFoundException {
         try {
-            ArrayList<ElementDTO> elementsDTOs = ElementTableGateway.findAllById(id);
+            ArrayList<madeOfDTO> elementsDTOs = madeOfTable.findByCompoundID(compoundId);
             List<String> elements = new ArrayList<>();
-            for (ElementDTO element: elementsDTOs) {
-                ChemicalTableGateway chemicalGateway = new ChemicalTableGateway(element.getId());
+            for (madeOfDTO element: elementsDTOs) {
+                ChemicalTableGateway chemicalGateway = new ChemicalTableGateway(element.getElementID());
                 elements.add(chemicalGateway.getName());
             }
             return elements;
-        } catch (ChemicalNotFoundException e) {
+        } catch (ChemicalNotFoundException | DataException e) {
             throw new ElementNotFoundException("Could not get all elements for compound", e);
         }
     }
 
-    public static void addElement(long compoundId, String elementName) throws DataException, ChemicalNotFoundException {
-        ChemicalDTO element = ChemicalTableGateway.findByName(elementName);
-        long elementToAddID = element.getId();
-        new madeOfTable(compoundId, elementToAddID);
+    public static void addElement(long compoundId, String elementName) throws ElementNotFoundException {
+        try {
+            ChemicalDTO element = ChemicalTableGateway.findByName(elementName);
+            long elementToAddID = element.getId();
+            new madeOfTable(compoundId, elementToAddID);
+        } catch (DataException | ChemicalNotFoundException e) {
+            throw new ElementNotFoundException("Element could not be added", e);
+        }
     }
 
 

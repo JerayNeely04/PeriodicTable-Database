@@ -228,7 +228,7 @@ public class ElementControllerTest
         waterController.addElement("Oxygen");
 
         CompoundMapper.createCompound("Sodium Hydroxide");
-        CompoundController h2SController = new CompoundController("Hydrogen Sulfide");
+        CompoundController h2SController = new CompoundController("Sodium Hydroxide");
         h2SController.addElement("Hydrogen");
         h2SController.addElement("Oxygen");
         h2SController.addElement("Sodium");

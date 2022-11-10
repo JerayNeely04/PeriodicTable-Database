@@ -5,10 +5,13 @@ import DomainModel.ElementMapperInterface;
 import datasource.DataException;
 import datasource.ChemicalTableGateway;
 import datasource.ElementTableGateway;
+import datasource.madeOfTable;
 import gatewayDTOs.ChemicalDTO;
 import gatewayDTOs.ElementDTO;
+import gatewayDTOs.madeOfDTO;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class ElementMapper implements ElementMapperInterface {
 
@@ -101,44 +104,71 @@ public class ElementMapper implements ElementMapperInterface {
         }
     }
 
+    /**
+     *
+     * @param name
+     * @throws ChemicalNotFoundException
+     * @throws DataException
+     */
     public static void delete(String name) throws ChemicalNotFoundException, DataException {
-        try {
-            long id = ChemicalTableGateway.findByName(name).getId();
-            ChemicalTableGateway gateway = new ChemicalTableGateway(id);
-            gateway.delete();
-
-        } catch(ChemicalNotFoundException e) {
-//            long id = ElementTableGateway.findByName(name).getId();
-//            ElementTableGateway gateway = new ElementTableGateway(id);
-//            gateway.delete();
-        }
+        long id = ChemicalTableGateway.findByName(name).getId();
+        ChemicalTableGateway gateway = new ChemicalTableGateway(id);
+        gateway.delete();
     }
 
+    /**
+     *
+     * @param startAtomicNum
+     * @param endAtomicNum
+     * @return
+     * @throws DataException
+     * @throws ElementNotFoundException
+     */
     public static Element[] getElementsBetween(int startAtomicNum, int endAtomicNum) throws DataException, ElementNotFoundException {
         ArrayList<ElementDTO> elementDTOs = ElementTableGateway.findAllBetween(startAtomicNum, endAtomicNum);
-        Element[] elements = new Element[elementDTOs.size()];
-
-        for(int i = 0; i < elementDTOs.size(); i++) {
-            try {
-                ElementDTO currentDTO = elementDTOs.get(i);
-                long id = currentDTO.getId();
-                double atomicMass = currentDTO.getAtomicMass();
-                long atomicNumber = currentDTO.getAtomicNumber();
-
-                ChemicalTableGateway gateway = ChemicalTableGateway.findById(id);
-                String name = gateway.getName();
-
-                elements[i] = new Element(id, name, atomicNumber, atomicMass);
-            } catch (ChemicalNotFoundException e) {
-                throw new ElementNotFoundException("Element could not be mapped", e);
-            }
-        }
-
-        return elements;
+        return getElements(elementDTOs);
     }
 
+    /**
+     * @param elementID the id of the element to check against
+     * @return the list of all compounds containing an element
+     * @throws DataException
+     * @throws CompoundNotFoundException
+     */
+    public static List<String> getCompoundsContaining(long elementID) throws DataException, ChemicalNotFoundException {
+        ArrayList<madeOfDTO> compounds = madeOfTable.findByElementID(elementID);
+        ArrayList<String> namesOfCompounds = new ArrayList<>();
+
+        for (madeOfDTO compound: compounds) {
+            long compoundID = compound.getCompoundID();
+            ChemicalTableGateway chemicalGateway = new ChemicalTableGateway(compoundID);
+            String compoundName = chemicalGateway.getName();
+
+            if(!namesOfCompounds.contains(compoundName)) {
+                namesOfCompounds.add(chemicalGateway.getName());
+            }
+        }
+        return namesOfCompounds;
+    }
+
+    /**
+     *
+     * @return
+     * @throws DataException
+     * @throws ElementNotFoundException
+     */
     public static Element[] getAllElements() throws DataException, ElementNotFoundException {
         ArrayList<ElementDTO> elementDTOs = ElementTableGateway.findAll();
+        return getElements(elementDTOs);
+    }
+
+    /**
+     *
+     * @param elementDTOs
+     * @return
+     * @throws ElementNotFoundException
+     */
+    private static Element[] getElements(ArrayList<ElementDTO> elementDTOs) throws ElementNotFoundException {
         Element[] elements = new Element[elementDTOs.size()];
 
         for(int i = 0; i < elementDTOs.size(); i++) {
